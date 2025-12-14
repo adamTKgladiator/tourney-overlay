@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Tournament Restream</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body {
+            background-color: #0e0e10;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tournament-header {
+            background: rgba(20, 20, 25, 0.9);
+            padding: 15px 30px;
+            text-align: center;
+            border-bottom: 3px solid #9146FF;
+        }
+        
+        .header-title {
+            font-size: 2rem;
+            background: linear-gradient(90deg, #9146FF, #00ADEF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        
+        .round-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #9146FF, #6441a5);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .streams-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 120px);
+        }
+        
+        .stream-box {
+            flex: 1;
+            position: relative;
+            border: 2px solid #333;
+            background: #000;
+        }
+        
+        .stream-label {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        .twitch-embed {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* IMPORTANT: Domain setup instructions */
+        .setup-box {
+            background: rgba(145, 70, 255, 0.1);
+            border: 2px solid #9146FF;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            display: none; /* Hidden by default */
+        }
+        
+        .setup-box.visible { display: block; }
+        
+        .domain-input {
+            background: #1a1a1f;
+            border: 2px solid #333;
+            color: white;
+            padding: 10px;
+            width: 300px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .update-btn {
+            background: #9146FF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .footer-note {
+            text-align: center;
+            padding: 15px;
+            color: #aaa;
+            font-size: 0.9rem;
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Tournament Header -->
+    <div class="tournament-header">
+        <div class="header-title">TWITCH TOURNAMENT STREAM</div>
+        <div>Live Dual Stream Display</div>
+        <div class="round-badge">ROUND 1</div>
+    </div>
+    
+    <!-- Stream Container -->
+    <div class="streams-container">
+        <!-- TK47 Stream -->
+        <div class="stream-box" id="stream1">
+            <div class="stream-label">TK47</div>
+            <!-- REPLACE DOMAIN-PLACEHOLDER with your actual domain -->
+            <iframe 
+                class="twitch-embed"
+                src="https://player.twitch.tv/?channel=adamtkgladiator&parent=DOMAIN-PLACEHOLDER&autoplay=true&muted=true"
+                allowfullscreen
+                allow="autoplay; encrypted-media">
+            </iframe>
+        </div>
+        
+        <!-- DarkLizzard Stream -->
+        <div class="stream-box" id="stream2">
+            <div class="stream-label">DarkLizzard</div>
+            <!-- REPLACE DOMAIN-PLACEHOLDER with your actual domain -->
+            <iframe 
+                class="twitch-embed"
+                src="https://player.twitch.tv/?channel=darklizzard666&parent=DOMAIN-PLACEHOLDER&autoplay=true&muted=true"
+                allowfullscreen
+                allow="autoplay; encrypted-media">
+            </iframe>
+        </div>
+    </div>
+    
+    <!-- Domain Setup Instructions (appears if streams fail) -->
+    <div class="setup-box" id="setupBox">
+        <h3><i class="fas fa-cog"></i> Setup Required for Twitch Embeds</h3>
+        <p>Twitch requires your website domain to be authorized for embedding.</p>
+        
+        <p><strong>Your current website domain is:</strong></p>
+        <input type="text" id="domainInput" class="domain-input" placeholder="e.g., tournaments.yoursite.com">
+        <button class="update-btn" onclick="updateDomains()">Update Embed URLs</button>
+        
+        <p><small>Enter just the domain (no http://). If your site uses www, include it.</small></p>
+        
+        <div class="requirements">
+            <p><strong>Requirements:</strong></p>
+            <ul>
+                <li>✅ Your site <strong>MUST</strong> use HTTPS (https://)</li>
+                <li>✅ Domain must match exactly (www vs non-www matters)</li>
+                <li>✅ Streamers must have embedding enabled on their channels</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer-note">
+        Tournament Stream Display | TK47 vs DarkLizzard | Using Twitch Official Embeds
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Loading Twitch tournament streams...");
+            
+            // Check if streams loaded after 3 seconds
+            setTimeout(function() {
+                const iframes = document.querySelectorAll('.twitch-embed');
+                let hasPlaceholder = false;
+                
+                // Check if DOMAIN-PLACEHOLDER is still in the URLs
+                iframes.forEach(iframe => {
+                    if (iframe.src.includes('DOMAIN-PLACEHOLDER')) {
+                        hasPlaceholder = true;
+                    }
+                });
+                
+                if (hasPlaceholder) {
+                    // Show setup instructions
+                    document.getElementById('setupBox').classList.add('visible');
+                    
+                    // Try to auto-detect domain
+                    const currentDomain = window.location.hostname;
+                    if (currentDomain && currentDomain !== '') {
+                        document.getElementById('domainInput').value = currentDomain;
+                    }
+                }
+            }, 3000);
+        });
+        
+        // Function to update the domain in embed URLs
+        function updateDomains() {
+            const domain = document.getElementById('domainInput').value.trim();
+            
+            if (!domain) {
+                alert("Please enter your website domain");
+                return;
+            }
+            
+            // Remove http:// or https:// if user included it
+            const cleanDomain = domain.replace(/^https?:\/\//, '');
+            
+            // Update both iframe URLs
+            const iframes = document.querySelectorAll('.twitch-embed');
+            iframes.forEach(iframe => {
+                const newSrc = iframe.src.replace('DOMAIN-PLACEHOLDER', cleanDomain);
+                iframe.src = newSrc;
+            });
+            
+            // Hide setup box and reload iframes
+            document.getElementById('setupBox').classList.remove('visible');
+            alert("Domain updated! The streams should now load. If not, make sure your site uses HTTPS.");
+        }
+        
+        // Auto-check for domain placeholder on page load
+        window.onload = function() {
+            const currentIframe = document.querySelector('.twitch-embed');
+            if (currentIframe && currentIframe.src.includes('DOMAIN-PLACEHOLDER')) {
+                const currentDomain = window.location.hostname;
+                if (currentDomain && currentDomain !== '' && currentDomain !== 'DOMAIN-PLACEHOLDER') {
+                    // Auto-update if we can detect the domain
+                    const iframes = document.querySelectorAll('.twitch-embed');
+                    iframes.forEach(iframe => {
+                        iframe.src = iframe.src.replace('DOMAIN-PLACEHOLDER', currentDomain);
+                    });
+                    console.log("Auto-updated domain to:", currentDomain);
+                }
+            }
+        };
+    </script>
+</body>
+</html>
