@@ -9,7 +9,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         body {
-            background-color: #0e0e10;
+            background-image: url('./Assets/BG.png');
+            background-size: cover;
             color: white;
             height: 100vh;
             display: flex;
@@ -17,20 +18,25 @@
         }
         
         .tournament-header {
-            background: rgba(20, 20, 25, 0.9);
             padding: 15px 30px;
             text-align: center;
             border-bottom: 3px solid #9146FF;
         }
         
         .header-title {
-            font-size: 2rem;
-            background: linear-gradient(90deg, #9146FF, #00ADEF);
-            -webkit-background-clip: text;
+            font-size: 3rem;
             background-clip: text;
-            color: transparent;
-            font-weight: 800;
-            margin-bottom: 5px;
+            /* margin-bottom: 5px; */
+            color: #fff;
+            text-shadow:
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #fff,
+                0 0 40px #0ff,
+                0 0 80px #0ff,
+                0 0 90px #0ff,
+                0 0 100px #0ff,
+                0 0 150px #0ff;
         }
         
         .round-badge {
@@ -54,6 +60,8 @@
             position: relative;
             border: 2px solid #333;
             background: #000;
+            width: 960px;
+            height: 540px;
         }
         
         .stream-label {
@@ -114,21 +122,81 @@
             font-size: 0.9rem;
             border-top: 1px solid #333;
         }
+        .neonText {
+        color: #fff;
+        text-shadow:
+            0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 40px #0ff,
+            0 0 80px #0ff,
+            0 0 90px #0ff,
+            0 0 100px #0ff,
+            0 0 150px #0ff;
+            }
+        
+        .Player {
+            font-size: 3.5rem;
+            text-align: center;
+            align-items: center;
+            margin-top: 650px;
+        }
+
+        .split {
+        height: 100%;
+        width: 50%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        overflow-x: hidden;
+        padding-top: 20px;
+        }
+
+        .left {
+        left: 0;
+        }
+
+        .right {
+        right: 0;
+        }
+
+        .P1{
+        color: #fff;
+        text-shadow:
+            0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 40px #00ff1a,
+            0 0 80px #00ff1a,
+            0 0 90px #00ff1a,
+            0 0 100px #00ff1a,
+            0 0 150px #00ff1a;
+        }
+        .P2{
+        color: #fff;
+        text-shadow:
+            0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 40px #ff008c,
+            0 0 80px #ff008c,
+            0 0 90px #ff008c,
+            0 0 100px #ff008c,
+            0 0 150px #ff008c;
+        }
     </style>
 </head>
 <body>
     <!-- Tournament Header -->
     <div class="tournament-header">
-        <div class="header-title">TWITCH TOURNAMENT STREAM</div>
-        <div>Live Dual Stream Display</div>
-        <div class="round-badge">ROUND 1</div>
+        <div class="header-title">CASINO SPEEDRUN CHAMPIONSHIP | QUARTER FINAL</div>
     </div>
     
     <!-- Stream Container -->
     <div class="streams-container">
         <!-- TK47 Stream -->
         <div class="stream-box" id="stream1">
-            <div class="stream-label">TK47</div>
+            <!-- <div class="stream-label">TK47</div> -->
             <!-- REPLACE DOMAIN-PLACEHOLDER with your actual domain -->
             <iframe 
                 class="twitch-embed"
@@ -140,7 +208,7 @@
         
         <!-- DarkLizzard Stream -->
         <div class="stream-box" id="stream2">
-            <div class="stream-label">DarkLizzard</div>
+            <!-- <div class="stream-label">DarkLizzard</div> -->
             <!-- REPLACE DOMAIN-PLACEHOLDER with your actual domain -->
             <iframe 
                 class="twitch-embed"
@@ -150,9 +218,18 @@
             </iframe>
         </div>
     </div>
+
+    <div>
+        <div class="P1 Player split left">
+            ANTONIO CURTIS
+        </div>
+        <div class="P2 Player split right">
+            DR MONKEYMAN
+        </div>
+    </div>
     
     <!-- Domain Setup Instructions (appears if streams fail) -->
-    <div class="setup-box" id="setupBox">
+    <!-- <div class="setup-box" id="setupBox">
         <h3><i class="fas fa-cog"></i> Setup Required for Twitch Embeds</h3>
         <p>Twitch requires your website domain to be authorized for embedding.</p>
         
@@ -170,11 +247,11 @@
                 <li>✅ Streamers must have embedding enabled on their channels</li>
             </ul>
         </div>
-    </div>
+    </div> -->
     
-    <div class="footer-note">
-        Tournament Stream Display | TK47 vs DarkLizzard | Using Twitch Official Embeds
-    </div>
+        <!-- <div class="footer-note">   
+            Tournament Stream Display | TK47 vs DarkLizzard | Using Twitch Official Embeds
+        </div> -->
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
