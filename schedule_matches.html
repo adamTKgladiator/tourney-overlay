@@ -731,7 +731,7 @@
                     match_date: dateTime.toISOString(),
                     match_time: timeString,
                     status: status,
-                    layout_url: `${window.location.origin}/tournament.html?match_id=${matchId}`
+                    layout_url: `${window.location.origin}/TK.html?match_id=${matchId}`
                 };
                 
                 console.log('Creating match:', matchData);
@@ -759,7 +759,7 @@
                 // Success message with URL
                 const player1 = allPlayers.find(p => p.id === player1Id);
                 const player2 = allPlayers.find(p => p.id === player2Id);
-                const tournamentUrl = `${window.location.origin}/tournament.html?match_id=${matchId}`;
+                const tournamentUrl = `${window.location.origin}/TK.html?match_id=${matchId}`;
                 
                 showResult(
                     `✅ Match scheduled!<br>
