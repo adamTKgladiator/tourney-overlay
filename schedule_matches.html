@@ -159,8 +159,19 @@
             border-left-color: #00ff1a;
         }
         
-        .match-card.unscheduled {
+        .match-card.live {
             border-left-color: #ff008c;
+            animation: pulse 2s infinite;
+        }
+        
+        .match-card.completed {
+            border-left-color: #9146FF;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px rgba(255, 0, 140, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 0, 140, 0.6); }
+            100% { box-shadow: 0 0 20px rgba(255, 0, 140, 0.3); }
         }
         
         .match-header {
@@ -185,6 +196,27 @@
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.8rem;
+        }
+        
+        .status-scheduled {
+            background: linear-gradient(135deg, #00ff1a, #00cc15);
+            color: white;
+        }
+        
+        .status-live {
+            background: linear-gradient(135deg, #ff008c, #cc006f);
+            color: white;
+            animation: blink 1.5s infinite;
+        }
+        
+        .status-completed {
+            background: linear-gradient(135deg, #9146FF, #6441a5);
+            color: white;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
         
         .match-players {
@@ -256,13 +288,31 @@
             background: linear-gradient(135deg, #33ff52, #00e61f);
         }
         
-        .view-btn {
+        .go-live-btn {
+            background: linear-gradient(135deg, #ff008c, #cc006f);
+            color: white;
+        }
+        
+        .go-live-btn:hover {
+            background: linear-gradient(135deg, #ff33a8, #e6007a);
+        }
+        
+        .complete-btn {
             background: linear-gradient(135deg, #9146FF, #6441a5);
             color: white;
         }
         
-        .view-btn:hover {
+        .complete-btn:hover {
             background: linear-gradient(135deg, #a35cff, #7551c7);
+        }
+        
+        .view-btn {
+            background: linear-gradient(135deg, #333, #666);
+            color: white;
+        }
+        
+        .view-btn:hover {
+            background: linear-gradient(135deg, #444, #777);
         }
         
         .no-matches {
@@ -366,6 +416,14 @@
             .vs {
                 margin: 10px 0;
             }
+            
+            .match-actions {
+                flex-wrap: wrap;
+            }
+            
+            .action-btn {
+                min-width: 120px;
+            }
         }
     </style>
 </head>
@@ -457,6 +515,7 @@
                 <button class="filter-tab" onclick="filterMatches('unscheduled')">Unscheduled</button>
                 <button class="filter-tab" onclick="filterMatches('scheduled')">Scheduled</button>
                 <button class="filter-tab" onclick="filterMatches('live')">Live</button>
+                <button class="filter-tab" onclick="filterMatches('completed')">Completed</button>
             </div>
             
             <!-- Matches List -->
@@ -470,8 +529,8 @@
 
     <script>
         // Supabase Configuration
-    const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x'; // Your publishable key
+        const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x';
         
         // DOM Elements
         const scheduleForm = document.getElementById('scheduleForm');
@@ -542,7 +601,7 @@
         // Load matches from database
         async function loadMatches() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&order=match_date.asc`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&order=match_date.desc`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
@@ -569,6 +628,7 @@
                 if (filter === 'unscheduled') return !match.match_date;
                 if (filter === 'scheduled') return match.status === 'scheduled';
                 if (filter === 'live') return match.status === 'live';
+                if (filter === 'completed') return match.status === 'completed';
                 return true;
             });
             
@@ -596,14 +656,15 @@
                     matchTime = `${matchDate.toLocaleDateString()} at ${timeString}`;
                 }
                 
-                // Determine card class
-                const cardClass = match.match_date ? 'match-card scheduled' : 'match-card unscheduled';
+                // Determine card class and status class
+                const cardClass = `match-card ${match.status || 'unscheduled'}`;
+                const statusClass = `match-status status-${match.status || 'unscheduled'}`;
                 
                 html += `
                     <div class="${cardClass}" data-match-id="${match.id}">
                         <div class="match-header">
                             <span class="match-round">${match.round || 'UNKNOWN ROUND'}</span>
-                            <span class="match-status">${match.status || 'unscheduled'}</span>
+                            <span class="${statusClass}">${match.status ? match.status.toUpperCase() : 'UNSCHEDULED'}</span>
                         </div>
                         
                         <div class="match-players">
@@ -631,8 +692,26 @@
                                 </button>
                             ` : ''}
                             
+                            ${match.status === 'scheduled' ? `
+                                <button class="action-btn go-live-btn" onclick="updateMatchStatus('${match.id}', 'live')">
+                                    <i class="fas fa-broadcast-tower"></i> Go Live
+                                </button>
+                            ` : ''}
+                            
+                            ${match.status === 'live' ? `
+                                <button class="action-btn complete-btn" onclick="updateMatchStatus('${match.id}', 'completed')">
+                                    <i class="fas fa-check-circle"></i> Mark Complete
+                                </button>
+                            ` : ''}
+                            
+                            ${match.status === 'completed' ? `
+                                <button class="action-btn schedule-btn" onclick="updateMatchStatus('${match.id}', 'scheduled')">
+                                    <i class="fas fa-redo"></i> Re-schedule
+                                </button>
+                            ` : ''}
+                            
                             <button class="action-btn view-btn" onclick="viewMatch('${match.id}')">
-                                <i class="fas fa-external-link-alt"></i> View Match
+                                <i class="fas fa-external-link-alt"></i> View
                             </button>
                         </div>
                     </div>
@@ -674,6 +753,70 @@
         function viewMatch(matchId) {
             const url = `TK.html?match_id=${matchId}`;
             window.open(url, '_blank');
+        }
+        
+        // Update match status (scheduled → live → completed)
+        async function updateMatchStatus(matchId, newStatus) {
+            const match = allMatches.find(m => m.id === matchId);
+            if (!match) return;
+            
+            const currentStatus = match.status;
+            const confirmMessage = `Change match status from "${currentStatus}" to "${newStatus}"?`;
+            
+            if (!confirm(confirmMessage)) return;
+            
+            try {
+                // Show loading
+                const matchElement = document.querySelector(`[data-match-id="${matchId}"]`);
+                if (matchElement) {
+                    matchElement.style.opacity = '0.5';
+                    matchElement.style.pointerEvents = 'none';
+                }
+                
+                console.log(`Updating match ${matchId} status to ${newStatus}`);
+                
+                // Update match in Supabase
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${matchId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}`);
+                }
+                
+                // Update local data
+                const matchIndex = allMatches.findIndex(m => m.id === matchId);
+                if (matchIndex !== -1) {
+                    allMatches[matchIndex].status = newStatus;
+                }
+                
+                // Re-render matches
+                const activeTab = document.querySelector('.filter-tab.active');
+                const currentFilter = activeTab ? activeTab.textContent.toLowerCase() : 'all';
+                renderMatches(currentFilter);
+                
+                // Show success message
+                showResult(`✅ Match status updated to "${newStatus}"`, 'success');
+                
+            } catch (error) {
+                console.error('Error updating match status:', error);
+                showResult(`Error: ${error.message}`, 'error');
+                
+                // Restore match element
+                const matchElement = document.querySelector(`[data-match-id="${matchId}"]`);
+                if (matchElement) {
+                    matchElement.style.opacity = '1';
+                    matchElement.style.pointerEvents = 'auto';
+                }
+            }
         }
         
         // Form submission
@@ -764,7 +907,8 @@
                 showResult(
                     `✅ Match scheduled!<br>
                     <strong>${player1?.name} vs ${player2?.name}</strong><br>
-                    ${round} on ${dateTime.toLocaleDateString()} at ${timeString}<br><br>
+                    ${round} on ${dateTime.toLocaleDateString()} at ${timeString}<br>
+                    Status: ${status}<br><br>
                     <a href="${tournamentUrl}" target="_blank" style="color: #9146FF; text-decoration: none;">
                         <i class="fas fa-external-link-alt"></i> Open Tournament Page
                     </a>`,
