@@ -355,12 +355,12 @@
             // Update tournament title and round
             document.getElementById('tournamentTitle').textContent = 
                 `CASINO SPEEDRUN CHAMPIONSHIP | ${matchData.round}`;
-            document.getElementById('roundBadge').textContent = matchData.round;
+            // document.getElementById('roundBadge').textContent = matchData.round;
             
             // Update match info
             const matchDate = new Date(matchData.match_date).toLocaleDateString();
-            document.getElementById('matchInfo').textContent = 
-                `${matchDate} | ${matchData.match_time}`;
+            // document.getElementById('matchInfo').textContent = 
+            //     `${matchDate} | ${matchData.match_time}`;
             
             // Update player names (use display_name if available, otherwise name)
             const player1Name = matchData.player1_display || matchData.player1_name || 'Player 1';
@@ -387,8 +387,8 @@
             }
             
             // Update footer
-            document.getElementById('footerNote').textContent = 
-                `Tournament Stream Display | ${player1Name} vs ${player2Name} | ${matchData.round}`;
+            // document.getElementById('footerNote').textContent = 
+            //     `Tournament Stream Display | ${player1Name} vs ${player2Name} | ${matchData.round}`;
             
             // Show the streams container
             document.getElementById('streamsContainer').style.display = 'flex';
