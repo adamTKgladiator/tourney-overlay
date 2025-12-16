@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Tournament Matches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body {
+            background-image: url('./Assets/BG.png');
+            background-size: cover;
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .tournament-header {
+            padding: 15px 30px;
+            text-align: center;
+            border-bottom: 3px solid #9146FF;
+            background: rgba(0, 0, 0, 0.85);
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+        
+        .header-title {
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow:
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #fff,
+                0 0 40px #0ff,
+                0 0 80px #0ff,
+                0 0 90px #0ff,
+                0 0 100px #0ff,
+                0 0 150px #0ff;
+        }
+        
+        .container {
+            display: flex;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .panel {
+            background: rgba(0, 0, 0, 0.85);
+            border: 3px solid #9146FF;
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(145, 70, 255, 0.3);
+        }
+        
+        .left-panel {
+            flex: 1;
+            max-width: 400px;
+        }
+        
+        .right-panel {
+            flex: 2;
+        }
+        
+        .panel-title {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px #9146FF;
+            border-bottom: 2px solid #9146FF;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-weight: 600;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #9146FF;
+            box-shadow: 0 0 15px rgba(145, 70, 255, 0.5);
+        }
+        
+        option {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        .time-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #9146FF, #6441a5);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #a35cff, #7551c7);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(145, 70, 255, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .match-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .match-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .match-card.scheduled {
+            border-left-color: #00ff1a;
+        }
+        
+        .match-card.unscheduled {
+            border-left-color: #ff008c;
+        }
+        
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .match-round {
+            background: #9146FF;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .match-status {
+            background: #333;
+            color: #aaa;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .match-players {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        
+        .player {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .player-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .player-twitch {
+            color: #9146FF;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .vs {
+            color: #aaa;
+            font-weight: bold;
+            margin: 0 20px;
+        }
+        
+        .match-time {
+            color: #aaa;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .match-time strong {
+            color: #fff;
+        }
+        
+        .match-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .schedule-btn {
+            background: linear-gradient(135deg, #00ff1a, #00cc15);
+            color: white;
+        }
+        
+        .schedule-btn:hover {
+            background: linear-gradient(135deg, #33ff52, #00e61f);
+        }
+        
+        .view-btn {
+            background: linear-gradient(135deg, #9146FF, #6441a5);
+            color: white;
+        }
+        
+        .view-btn:hover {
+            background: linear-gradient(135deg, #a35cff, #7551c7);
+        }
+        
+        .no-matches {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+        
+        .result-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff1a;
+            color: #00ff1a;
+        }
+        
+        .error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid #ff008c;
+            color: #ff008c;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-tab {
+            flex: 1;
+            padding: 10px;
+            background: #333;
+            border: none;
+            border-radius: 5px;
+            color: #aaa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-tab.active {
+            background: #9146FF;
+            color: white;
+        }
+        
+        .filter-tab:hover:not(.active) {
+            background: #444;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .left-panel {
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 2rem;
+            }
+            
+            .time-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .match-players {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .vs {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tournament Header -->
+    <div class="tournament-header">
+        <div class="header-title">CASINO SPEEDRUN CHAMPIONSHIP | SCHEDULE MATCHES</div>
+    </div>
+    
+    <div class="container">
+        <!-- Left Panel: Schedule Form -->
+        <div class="panel left-panel">
+            <h2 class="panel-title"><i class="fas fa-calendar-plus"></i> Schedule New Match</h2>
+            
+            <form id="scheduleForm">
+                <div class="form-group">
+                    <label for="player1"><i class="fas fa-user"></i> Player 1</label>
+                    <select id="player1" required>
+                        <option value="">Select Player 1</option>
+                        <!-- Players will be loaded here -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="player2"><i class="fas fa-user"></i> Player 2</label>
+                    <select id="player2" required>
+                        <option value="">Select Player 2</option>
+                        <!-- Players will be loaded here -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="round"><i class="fas fa-trophy"></i> Round</label>
+                    <select id="round" required>
+                        <option value="">Select Round</option>
+                        <option value="ROUND 1">ROUND 1</option>
+                        <option value="ROUND 2">ROUND 2</option>
+                        <option value="QUARTER FINAL">QUARTER FINAL</option>
+                        <option value="SEMI FINAL">SEMI FINAL</option>
+                        <option value="FINAL">FINAL</option>
+                        <option value="GRAND FINAL">GRAND FINAL</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Match Date & Time</label>
+                    <div class="time-inputs">
+                        <div>
+                            <label for="matchDate">Date</label>
+                            <input type="date" id="matchDate" required>
+                        </div>
+                        <div>
+                            <label for="matchTime">Time (EST)</label>
+                            <input type="time" id="matchTime" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="matchStatus"><i class="fas fa-circle"></i> Status</label>
+                    <select id="matchStatus">
+                        <option value="scheduled">Scheduled</option>
+                        <option value="live">Live</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-calendar-check"></i> Schedule Match
+                </button>
+            </form>
+            
+            <!-- Result Message -->
+            <div class="result-message" id="resultMessage"></div>
+            
+            <!-- Loading -->
+            <div class="loading" id="loading" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i> Scheduling match...
+            </div>
+        </div>
+        
+        <!-- Right Panel: Existing Matches -->
+        <div class="panel right-panel">
+            <h2 class="panel-title"><i class="fas fa-list"></i> Tournament Matches</h2>
+            
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterMatches('all')">All Matches</button>
+                <button class="filter-tab" onclick="filterMatches('unscheduled')">Unscheduled</button>
+                <button class="filter-tab" onclick="filterMatches('scheduled')">Scheduled</button>
+                <button class="filter-tab" onclick="filterMatches('live')">Live</button>
+            </div>
+            
+            <!-- Matches List -->
+            <div id="matchesList">
+                <div class="loading" id="matchesLoading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading matches...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase Configuration
+    const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x'; // Your publishable key
+        
+        // DOM Elements
+        const scheduleForm = document.getElementById('scheduleForm');
+        const player1Select = document.getElementById('player1');
+        const player2Select = document.getElementById('player2');
+        const submitBtn = document.getElementById('submitBtn');
+        const resultMessage = document.getElementById('resultMessage');
+        const loading = document.getElementById('loading');
+        const matchesList = document.getElementById('matchesList');
+        const matchesLoading = document.getElementById('matchesLoading');
+        
+        // Global variables
+        let allPlayers = [];
+        let allMatches = [];
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Set default date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('matchDate').value = tomorrow.toISOString().split('T')[0];
+            
+            // Set default time to 8:00 PM
+            document.getElementById('matchTime').value = '20:00';
+            
+            // Load players and matches
+            await Promise.all([loadPlayers(), loadMatches()]);
+        });
+        
+        // Load players from database
+        async function loadPlayers() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/players?select=id,name,twitch_username,display_name&order=name.asc`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                allPlayers = await response.json();
+                
+                // Clear and populate player selects
+                player1Select.innerHTML = '<option value="">Select Player 1</option>';
+                player2Select.innerHTML = '<option value="">Select Player 2</option>';
+                
+                allPlayers.forEach(player => {
+                    const option1 = document.createElement('option');
+                    option1.value = player.id;
+                    option1.textContent = `${player.name} (@${player.twitch_username})`;
+                    player1Select.appendChild(option1);
+                    
+                    const option2 = document.createElement('option');
+                    option2.value = player.id;
+                    option2.textContent = `${player.name} (@${player.twitch_username})`;
+                    player2Select.appendChild(option2);
+                });
+                
+                console.log(`Loaded ${allPlayers.length} players`);
+                
+            } catch (error) {
+                console.error('Error loading players:', error);
+                showResult(`Error loading players: ${error.message}`, 'error');
+            }
+        }
+        
+        // Load matches from database
+        async function loadMatches() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&order=match_date.asc`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                allMatches = await response.json();
+                renderMatches('all');
+                
+            } catch (error) {
+                console.error('Error loading matches:', error);
+                matchesList.innerHTML = `<div class="error result-message">Error loading matches: ${error.message}</div>`;
+            } finally {
+                matchesLoading.style.display = 'none';
+            }
+        }
+        
+        // Render matches based on filter
+        function renderMatches(filter) {
+            const filteredMatches = allMatches.filter(match => {
+                if (filter === 'all') return true;
+                if (filter === 'unscheduled') return !match.match_date;
+                if (filter === 'scheduled') return match.status === 'scheduled';
+                if (filter === 'live') return match.status === 'live';
+                return true;
+            });
+            
+            if (filteredMatches.length === 0) {
+                matchesList.innerHTML = `
+                    <div class="no-matches">
+                        <i class="fas fa-calendar-times" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>No ${filter !== 'all' ? filter + ' ' : ''}matches found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            filteredMatches.forEach(match => {
+                const player1 = match.player1 || { name: 'Unknown', twitch_username: 'unknown' };
+                const player2 = match.player2 || { name: 'Unknown', twitch_username: 'unknown' };
+                
+                // Format match date
+                let matchTime = 'Not scheduled';
+                if (match.match_date) {
+                    const matchDate = new Date(match.match_date);
+                    const timeString = match.match_time || matchDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    matchTime = `${matchDate.toLocaleDateString()} at ${timeString}`;
+                }
+                
+                // Determine card class
+                const cardClass = match.match_date ? 'match-card scheduled' : 'match-card unscheduled';
+                
+                html += `
+                    <div class="${cardClass}" data-match-id="${match.id}">
+                        <div class="match-header">
+                            <span class="match-round">${match.round || 'UNKNOWN ROUND'}</span>
+                            <span class="match-status">${match.status || 'unscheduled'}</span>
+                        </div>
+                        
+                        <div class="match-players">
+                            <div class="player">
+                                <div class="player-name">${player1.name}</div>
+                                <div class="player-twitch">@${player1.twitch_username}</div>
+                            </div>
+                            
+                            <div class="vs">VS</div>
+                            
+                            <div class="player">
+                                <div class="player-name">${player2.name}</div>
+                                <div class="player-twitch">@${player2.twitch_username}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="match-time">
+                            <strong>Time:</strong> ${matchTime}
+                        </div>
+                        
+                        <div class="match-actions">
+                            ${!match.match_date ? `
+                                <button class="action-btn schedule-btn" onclick="quickSchedule('${match.id}')">
+                                    <i class="fas fa-calendar-plus"></i> Schedule Now
+                                </button>
+                            ` : ''}
+                            
+                            <button class="action-btn view-btn" onclick="viewMatch('${match.id}')">
+                                <i class="fas fa-external-link-alt"></i> View Match
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            matchesList.innerHTML = html;
+        }
+        
+        // Filter matches
+        function filterMatches(filter) {
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Render filtered matches
+            renderMatches(filter);
+        }
+        
+        // Quick schedule for unscheduled matches
+        function quickSchedule(matchId) {
+            const match = allMatches.find(m => m.id === matchId);
+            if (!match) return;
+            
+            // Pre-fill the form
+            if (match.player1) document.getElementById('player1').value = match.player1.id;
+            if (match.player2) document.getElementById('player2').value = match.player2.id;
+            if (match.round) document.getElementById('round').value = match.round;
+            
+            // Scroll to form
+            document.querySelector('.left-panel').scrollIntoView({ behavior: 'smooth' });
+            
+            showResult('Form pre-filled! Set date/time and click Schedule Match', 'success');
+        }
+        
+        // View match in tournament page
+        function viewMatch(matchId) {
+            const url = `TK.html?match_id=${matchId}`;
+            window.open(url, '_blank');
+        }
+        
+        // Form submission
+        scheduleForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const player1Id = document.getElementById('player1').value;
+            const player2Id = document.getElementById('player2').value;
+            const round = document.getElementById('round').value;
+            const matchDate = document.getElementById('matchDate').value;
+            const matchTime = document.getElementById('matchTime').value;
+            const status = document.getElementById('matchStatus').value;
+            
+            // Validation
+            if (!player1Id || !player2Id) {
+                showResult('Please select both players', 'error');
+                return;
+            }
+            
+            if (player1Id === player2Id) {
+                showResult('Players must be different', 'error');
+                return;
+            }
+            
+            if (!round) {
+                showResult('Please select a round', 'error');
+                return;
+            }
+            
+            if (!matchDate || !matchTime) {
+                showResult('Please set date and time', 'error');
+                return;
+            }
+            
+            // Show loading
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            resultMessage.style.display = 'none';
+            
+            try {
+                // Format date for database
+                const dateTime = new Date(`${matchDate}T${matchTime}`);
+                const timeString = `${dateTime.getHours() % 12 || 12}:${dateTime.getMinutes().toString().padStart(2, '0')} ${dateTime.getHours() >= 12 ? 'PM' : 'AM'} EST`;
+                
+                // Generate match ID
+                const matchId = crypto.randomUUID();
+                
+                // Prepare match data
+                const matchData = {
+                    id: matchId,
+                    player1_id: player1Id,
+                    player2_id: player2Id,
+                    round: round,
+                    match_date: dateTime.toISOString(),
+                    match_time: timeString,
+                    status: status,
+                    layout_url: `${window.location.origin}/tournament.html?match_id=${matchId}`
+                };
+                
+                console.log('Creating match:', matchData);
+                
+                // Insert match into Supabase
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(matchData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Match created:', result);
+                
+                // Success message with URL
+                const player1 = allPlayers.find(p => p.id === player1Id);
+                const player2 = allPlayers.find(p => p.id === player2Id);
+                const tournamentUrl = `${window.location.origin}/tournament.html?match_id=${matchId}`;
+                
+                showResult(
+                    `✅ Match scheduled!<br>
+                    <strong>${player1?.name} vs ${player2?.name}</strong><br>
+                    ${round} on ${dateTime.toLocaleDateString()} at ${timeString}<br><br>
+                    <a href="${tournamentUrl}" target="_blank" style="color: #9146FF; text-decoration: none;">
+                        <i class="fas fa-external-link-alt"></i> Open Tournament Page
+                    </a>`,
+                    'success'
+                );
+                
+                // Clear form
+                scheduleForm.reset();
+                
+                // Reset to defaults
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                document.getElementById('matchDate').value = tomorrow.toISOString().split('T')[0];
+                document.getElementById('matchTime').value = '20:00';
+                document.getElementById('matchStatus').value = 'scheduled';
+                
+                // Reload matches
+                await loadMatches();
+                
+            } catch (error) {
+                console.error('Error scheduling match:', error);
+                
+                // Check for duplicate match
+                if (error.message.includes('duplicate') || error.message.includes('already exists')) {
+                    showResult('This match already exists in the database', 'error');
+                } else {
+                    showResult(`Error: ${error.message}`, 'error');
+                }
+                
+            } finally {
+                // Hide loading
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+        
+        // Show result messages
+        function showResult(message, type) {
+            resultMessage.innerHTML = message;
+            resultMessage.className = `result-message ${type}`;
+            resultMessage.style.display = 'block';
+            
+            // Auto-hide success messages after 8 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    resultMessage.style.display = 'none';
+                }, 8000);
+            }
+        }
+        
+        // Auto-update match list every 30 seconds
+        setInterval(loadMatches, 30000);
+    </script>
+</body>
+</html>
