@@ -15,6 +15,32 @@
             color: white;
             min-height: 100vh;
             padding: 20px;
+            overflow-y: auto;
+            max-height: 1080px;
+        }
+        
+        .obs-scroll-container {
+            max-height: 1000px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .obs-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .obs-scroll-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+        
+        .obs-scroll-container::-webkit-scrollbar-thumb {
+            background: #9146FF;
+            border-radius: 4px;
+        }
+        
+        .obs-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #a35cff;
         }
         
         .tournament-header {
@@ -25,6 +51,9 @@
             margin-bottom: 30px;
             border-radius: 10px;
             animation: glow 2s ease-in-out infinite alternate;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
         @keyframes glow {
@@ -52,6 +81,13 @@
             font-size: 1.2rem;
         }
         
+        .timezone-info {
+            color: #00ff1a;
+            font-size: 1rem;
+            margin-top: 5px;
+            text-shadow: 0 0 5px #00ff1a;
+        }
+        
         .matches-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -64,6 +100,10 @@
             color: #fff;
             text-shadow: 0 0 10px #9146FF;
             position: relative;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #9146FF;
         }
         
         .section-title::after {
@@ -365,6 +405,13 @@
             border-top: 1px solid #333;
         }
         
+        .local-time-display {
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
         @media (max-width: 768px) {
             .header-title {
                 font-size: 2rem;
@@ -414,53 +461,67 @@
     <div class="tournament-header">
         <div class="header-title">CASINO SPEEDRUN CHAMPIONSHIP</div>
         <div class="header-subtitle">Upcoming & Live Matches Schedule</div>
-    </div>
-    
-    <!-- Matches Container -->
-    <div class="matches-container">
-        <!-- Live Matches Section -->
-        <h2 class="section-title"><i class="fas fa-broadcast-tower"></i> LIVE NOW</h2>
-        <div class="live-matches" id="liveMatches">
-            <div class="loading" id="liveLoading">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Loading live matches...</p>
-            </div>
-        </div>
-        
-        <!-- Upcoming Matches Section -->
-        <h2 class="section-title"><i class="fas fa-clock"></i> UPCOMING MATCHES</h2>
-        <div class="upcoming-matches" id="upcomingMatches">
-            <div class="loading" id="upcomingLoading">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Loading upcoming matches...</p>
-            </div>
-        </div>
-        
-        <!-- No Matches Message -->
-        <div class="no-matches" id="noMatches" style="display: none;">
-            <i class="fas fa-calendar-times no-matches-icon"></i>
-            <h3>No Scheduled Matches</h3>
-            <p>Check back later for upcoming tournament matches!</p>
+        <div class="timezone-info" id="timezoneInfo">
+            <i class="fas fa-clock"></i> All times displayed in CET | Your local time: <span id="localTime"></span>
         </div>
     </div>
     
-    <!-- Footer -->
-    <div class="footer-note">
-        Tournament Schedule | Auto-refreshes every 30 seconds
+    <!-- Scrollable Container for OBS -->
+    <div class="obs-scroll-container" id="scrollContainer">
+        <!-- Matches Container -->
+        <div class="matches-container">
+            <!-- Live Matches Section -->
+            <h2 class="section-title"><i class="fas fa-broadcast-tower"></i> LIVE NOW</h2>
+            <div class="live-matches" id="liveMatches">
+                <div class="loading" id="liveLoading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading live matches...</p>
+                </div>
+            </div>
+            
+            <!-- Upcoming Matches Section -->
+            <h2 class="section-title"><i class="fas fa-clock"></i> UPCOMING MATCHES</h2>
+            <div class="upcoming-matches" id="upcomingMatches">
+                <div class="loading" id="upcomingLoading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading upcoming matches...</p>
+                </div>
+            </div>
+            
+            <!-- No Matches Message -->
+            <div class="no-matches" id="noMatches" style="display: none;">
+                <i class="fas fa-calendar-times no-matches-icon"></i>
+                <h3>No Scheduled Matches</h3>
+                <p>Check back later for upcoming tournament matches!</p>
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer-note">
+                Tournament Schedule | All times in CET (Central European Time) | Auto-refreshes every 30 seconds
+            </div>
+        </div>
     </div>
 
     <script>
         // Supabase Configuration
     const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x'; // Your publishable key
-
         
         // Global variables
         let matches = [];
         let countdownIntervals = new Map();
         
+        // Timezone configuration - CET (Central European Time)
+        const TOURNAMENT_TIMEZONE = 'Europe/Paris'; // CET
+        
         // Initialize page
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Page loaded, initializing...');
+            
+            // Update local time display
+            updateLocalTimeDisplay();
+            setInterval(updateLocalTimeDisplay, 1000);
+            
             // Load matches immediately
             await loadMatches();
             
@@ -468,16 +529,192 @@
             setInterval(loadMatches, 30000);
         });
         
+        // Update local time display
+        function updateLocalTimeDisplay() {
+            const localTimeElement = document.getElementById('localTime');
+            if (!localTimeElement) return;
+            
+            const now = new Date();
+            const localTime = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZoneName: 'short'
+            });
+            localTimeElement.textContent = localTime;
+        }
+        
+        // Parse match time - SIMPLE VERSION (database times are already in CET)
+        function parseMatchTime(match) {
+            if (!match.match_date) {
+                console.log('No match_date for match:', match.id);
+                return null;
+            }
+            
+            try {
+                // Database times are already in CET, so we can use them directly
+                // But JavaScript Date objects interpret ISO strings as UTC
+                // So we need to adjust for the CET timezone
+                
+                const dateTime = new Date(match.match_date);
+                console.log('Parsing match time for', match.round, ':', {
+                    rawDate: match.match_date,
+                    jsDate: dateTime.toISOString(),
+                    matchTime: match.match_time
+                });
+                
+                // If the date has no time component (midnight UTC), 
+                // and we have a match_time, we need to apply it
+                if (dateTime.getUTCHours() === 0 && dateTime.getUTCMinutes() === 0 && 
+                    dateTime.getUTCSeconds() === 0 && match.match_time) {
+                    
+                    // Parse time from match_time (e.g., "20:00" or "8:00 PM")
+                    const timeMatch = match.match_time.match(/(\d{1,2}):(\d{2})\s*([AP]M)?/i);
+                    if (timeMatch) {
+                        let hours = parseInt(timeMatch[1]);
+                        const minutes = parseInt(timeMatch[2]);
+                        const period = timeMatch[3];
+                        
+                        // Convert 12-hour format to 24-hour
+                        if (period) {
+                            if (period.toUpperCase() === 'PM' && hours < 12) hours += 12;
+                            if (period.toUpperCase() === 'AM' && hours === 12) hours = 0;
+                        }
+                        
+                        // CET is UTC+1, so subtract 1 hour to store correctly
+                        dateTime.setUTCHours(hours - 1, minutes, 0, 0);
+                        console.log('Applied time from match_time:', hours + ':' + minutes + ' CET');
+                    }
+                }
+                
+                return dateTime;
+                
+            } catch (error) {
+                console.error('Error parsing match time:', error, match);
+                return null;
+            }
+        }
+        
+        // Format CET time for display
+        function formatCETTime(utcTime) {
+            if (!utcTime) return 'Time not set';
+            
+            try {
+                // Convert UTC to CET for display
+                const date = new Date(utcTime);
+                return date.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZone: 'Europe/Paris',
+                    timeZoneName: 'short'
+                });
+            } catch (error) {
+                console.error('Error formatting CET time:', error);
+                return 'Time error';
+            }
+        }
+        
+        // Format CET date for display
+        function formatCETDate(utcTime) {
+            if (!utcTime) return 'Date not set';
+            
+            try {
+                const date = new Date(utcTime);
+                return date.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    timeZone: 'Europe/Paris'
+                });
+            } catch (error) {
+                console.error('Error formatting CET date:', error);
+                return 'Date error';
+            }
+        }
+        
+        // Format local time for viewer
+        function formatLocalTime(utcTime) {
+            if (!utcTime) return 'Time not set';
+            
+            try {
+                const date = new Date(utcTime);
+                return date.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZoneName: 'short'
+                });
+            } catch (error) {
+                console.error('Error formatting local time:', error);
+                return 'Time error';
+            }
+        }
+        
+        // Calculate time until match (treating database times as CET)
+        function calculateTimeUntilMatch(match) {
+            const matchTime = parseMatchTime(match);
+            if (!matchTime) {
+                console.log('No valid match time for:', match.id);
+                return null;
+            }
+            
+            const now = new Date();
+            
+            // IMPORTANT: matchTime is in UTC but represents CET time
+            // So when we compare with "now" (which is local/UTC), 
+            // we're effectively comparing CET time with local time
+            // This is correct because we want the countdown to match time in CET
+            
+            const timeDiff = matchTime - now;
+            
+            console.log('Time calculation for', match.round, ':', {
+                matchTimeUTC: matchTime.toISOString(),
+                matchTimeCET: formatCETTime(matchTime),
+                nowUTC: now.toISOString(),
+                nowLocal: now.toLocaleTimeString(),
+                timeDiff: timeDiff,
+                isFuture: timeDiff > 0
+            });
+            
+            if (timeDiff <= 0) {
+                return {
+                    hasStarted: true,
+                    days: 0,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0
+                };
+            }
+            
+            const seconds = Math.floor(timeDiff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            return {
+                hasStarted: false,
+                days: days,
+                hours: hours % 24,
+                minutes: minutes % 60,
+                seconds: seconds % 60
+            };
+        }
+        
         // Load matches from database
         async function loadMatches() {
             try {
                 // Show loading states
-                document.getElementById('liveLoading').style.display = 'block';
-                document.getElementById('upcomingLoading').style.display = 'block';
+                const liveLoading = document.getElementById('liveLoading');
+                const upcomingLoading = document.getElementById('upcomingLoading');
                 
-                // Fetch scheduled matches
+                if (liveLoading) liveLoading.style.display = 'block';
+                if (upcomingLoading) upcomingLoading.style.display = 'block';
+                
+                console.log('Loading matches from database...');
+                
+                // Fetch ALL matches with player data
                 const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&match_date=gte.now()&order=match_date.asc`,
+                    `${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&order=match_date.asc`,
                     {
                         headers: {
                             'apikey': SUPABASE_ANON_KEY,
@@ -486,25 +723,28 @@
                     }
                 );
                 
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
                 
-                const scheduledMatches = await response.json();
+                const allMatches = await response.json();
+                console.log('All matches from database:', allMatches.length, 'matches');
                 
-                // Fetch live matches
-                const liveResponse = await fetch(
-                    `${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&status=eq.live&order=match_date.asc`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                        }
-                    }
-                );
+                // Show ALL scheduled and live matches
+                matches = allMatches.filter(match => {
+                    const isScheduledOrLive = match.status === 'scheduled' || match.status === 'live';
+                    console.log(`Match ${match.id} (${match.round}): status=${match.status}, included=${isScheduledOrLive}`);
+                    return isScheduledOrLive;
+                });
                 
-                const liveMatches = liveResponse.ok ? await liveResponse.json() : [];
+                console.log('Filtered matches (scheduled/live):', matches.length, 'matches');
                 
-                // Combine and sort matches
-                matches = [...liveMatches, ...scheduledMatches.filter(m => m.status !== 'live')];
+                // Sort by date
+                matches.sort((a, b) => {
+                    const timeA = parseMatchTime(a) || new Date(0);
+                    const timeB = parseMatchTime(b) || new Date(0);
+                    return timeA - timeB;
+                });
                 
                 // Render matches
                 renderMatches();
@@ -517,8 +757,11 @@
                 showErrorMessage();
             } finally {
                 // Hide loading states
-                document.getElementById('liveLoading').style.display = 'none';
-                document.getElementById('upcomingLoading').style.display = 'none';
+                const liveLoading = document.getElementById('liveLoading');
+                const upcomingLoading = document.getElementById('upcomingLoading');
+                
+                if (liveLoading) liveLoading.style.display = 'none';
+                if (upcomingLoading) upcomingLoading.style.display = 'none';
             }
         }
         
@@ -528,13 +771,24 @@
             const upcomingContainer = document.getElementById('upcomingMatches');
             const noMatchesDiv = document.getElementById('noMatches');
             
-            // Clear previous content (except loading)
+            // Check for elements
+            if (!liveContainer || !upcomingContainer || !noMatchesDiv) {
+                console.error('Missing container elements!');
+                return;
+            }
+            
+            console.log('Rendering matches. Total:', matches.length);
+            
+            // Clear previous content
             liveContainer.innerHTML = '';
             upcomingContainer.innerHTML = '';
             
             // Separate live and upcoming matches
             const liveMatches = matches.filter(match => match.status === 'live');
-            const upcomingMatches = matches.filter(match => match.status !== 'live' && match.match_date);
+            const upcomingMatches = matches.filter(match => match.status === 'scheduled');
+            
+            console.log('Live matches:', liveMatches.length);
+            console.log('Upcoming matches:', upcomingMatches.length);
             
             // Clear existing countdown intervals
             countdownIntervals.forEach(interval => clearInterval(interval));
@@ -542,6 +796,7 @@
             
             // Show/hide no matches message
             if (liveMatches.length === 0 && upcomingMatches.length === 0) {
+                console.log('No matches to display');
                 noMatchesDiv.style.display = 'block';
                 return;
             } else {
@@ -550,10 +805,12 @@
             
             // Render live matches
             if (liveMatches.length > 0) {
+                console.log('Rendering live matches');
                 liveMatches.forEach(match => {
                     liveContainer.appendChild(createMatchCard(match, true));
                 });
             } else {
+                console.log('No live matches');
                 liveContainer.innerHTML = `
                     <div class="no-matches">
                         <i class="fas fa-broadcast-tower no-matches-icon"></i>
@@ -565,10 +822,12 @@
             
             // Render upcoming matches
             if (upcomingMatches.length > 0) {
+                console.log('Rendering upcoming matches');
                 upcomingMatches.forEach(match => {
                     upcomingContainer.appendChild(createMatchCard(match, false));
                 });
             } else {
+                console.log('No upcoming matches');
                 upcomingContainer.innerHTML = `
                     <div class="no-matches">
                         <i class="fas fa-clock no-matches-icon"></i>
@@ -588,25 +847,26 @@
             card.className = `match-card ${isLive ? 'live' : 'upcoming'}`;
             card.dataset.matchId = match.id;
             
-            // Format match date
-            let dateString = 'Date not set';
-            let timeString = '';
+            // Get match time
+            const matchTime = parseMatchTime(match);
             
-            if (match.match_date) {
-                const matchDate = new Date(match.match_date);
-                dateString = matchDate.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-                
-                timeString = match.match_time || matchDate.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    timeZoneName: 'short'
-                });
+            // Format display strings
+            let cetTimeString = 'Time not set';
+            let cetDateString = 'Date not set';
+            let localTimeString = 'Time not set';
+            
+            if (matchTime) {
+                // Format in CET
+                cetTimeString = formatCETTime(matchTime);
+                cetDateString = formatCETDate(matchTime);
+                localTimeString = formatLocalTime(matchTime);
+            } else if (match.match_time) {
+                // Fallback to raw match_time if parsing failed
+                cetTimeString = match.match_time + ' CET';
+                cetDateString = match.match_date ? new Date(match.match_date).toLocaleDateString() : 'Date not set';
             }
+            
+            console.log('Creating card for match:', match.round, 'CET:', cetTimeString);
             
             // Create card content
             card.innerHTML = `
@@ -639,12 +899,15 @@
                 
                 <div class="match-info">
                     <div class="info-row">
-                        <span class="info-label">Date:</span>
-                        <span class="info-value">${dateString}</span>
+                        <span class="info-label">Date (CET):</span>
+                        <span class="info-value">${cetDateString}</span>
                     </div>
                     <div class="info-row">
-                        <span class="info-label">Time:</span>
-                        <span class="info-value">${timeString}</span>
+                        <span class="info-label">Time (CET):</span>
+                        <span class="info-value">${cetTimeString}</span>
+                    </div>
+                    <div class="local-time-display">
+                        Your local time: ${localTimeString}
                     </div>
                 </div>
                 
@@ -685,23 +948,28 @@
         
         // Start countdown timers for all upcoming matches
         function startCountdowns() {
+            console.log('Starting countdowns for', matches.filter(m => m.status !== 'live').length, 'matches');
+            
             matches.forEach(match => {
-                if (match.status !== 'live' && match.match_date) {
-                    startCountdownTimer(match.id, match.match_date);
+                if (match.status !== 'live') {
+                    startCountdownTimer(match.id);
                 }
             });
         }
         
         // Start individual countdown timer
-        function startCountdownTimer(matchId, matchDate) {
-            // Clear existing interval for this match
+        function startCountdownTimer(matchId) {
+            // Clear existing interval
             if (countdownIntervals.has(matchId)) {
                 clearInterval(countdownIntervals.get(matchId));
             }
             
             // Get countdown element
             const countdownEl = document.getElementById(`countdown-${matchId}`);
-            if (!countdownEl) return;
+            if (!countdownEl) {
+                console.log('No countdown element for match:', matchId);
+                return;
+            }
             
             // Time units elements
             const daysEl = countdownEl.querySelector('.time-unit:nth-child(1) .time-value');
@@ -717,11 +985,17 @@
             countdownIntervals.set(matchId, interval);
             
             function updateCountdown() {
-                const now = new Date();
-                const matchTime = new Date(matchDate);
-                const timeDiff = matchTime - now;
+                const match = matches.find(m => m.id === matchId);
+                if (!match) {
+                    console.log('Match not found for countdown:', matchId);
+                    clearInterval(interval);
+                    countdownIntervals.delete(matchId);
+                    return;
+                }
                 
-                if (timeDiff <= 0) {
+                const timeUntil = calculateTimeUntilMatch(match);
+                
+                if (!timeUntil || timeUntil.hasStarted) {
                     // Match time has arrived
                     daysEl.textContent = '00';
                     hoursEl.textContent = '00';
@@ -729,7 +1003,7 @@
                     secondsEl.textContent = '00';
                     
                     // Change to "Match Starting" message
-                    if (countdownEl.parentElement) {
+                    if (timeUntil && timeUntil.hasStarted && countdownEl.parentElement) {
                         countdownEl.parentElement.innerHTML = `
                             <div class="match-started">
                                 <strong>🎮 MATCH STARTING!</strong>
@@ -746,17 +1020,11 @@
                     return;
                 }
                 
-                // Calculate time units
-                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-                
                 // Update display
-                daysEl.textContent = days.toString().padStart(2, '0');
-                hoursEl.textContent = hours.toString().padStart(2, '0');
-                minutesEl.textContent = minutes.toString().padStart(2, '0');
-                secondsEl.textContent = seconds.toString().padStart(2, '0');
+                daysEl.textContent = timeUntil.days.toString().padStart(2, '0');
+                hoursEl.textContent = timeUntil.hours.toString().padStart(2, '0');
+                minutesEl.textContent = timeUntil.minutes.toString().padStart(2, '0');
+                secondsEl.textContent = timeUntil.seconds.toString().padStart(2, '0');
             }
         }
         
@@ -764,6 +1032,9 @@
         function showErrorMessage() {
             const upcomingContainer = document.getElementById('upcomingMatches');
             const liveContainer = document.getElementById('liveMatches');
+            
+            // Check for containers
+            if (!upcomingContainer || !liveContainer) return;
             
             const errorHtml = `
                 <div class="no-matches">
@@ -776,29 +1047,12 @@
             upcomingContainer.innerHTML = errorHtml;
             liveContainer.innerHTML = errorHtml;
             
-            // Hide loading
-            document.getElementById('liveLoading').style.display = 'none';
-            document.getElementById('upcomingLoading').style.display = 'none';
-        }
-        
-        // Format time difference in human-readable format
-        function formatTimeDifference(date1, date2) {
-            const diff = Math.abs(date2 - date1);
+            // Hide loading states
+            const liveLoading = document.getElementById('liveLoading');
+            const upcomingLoading = document.getElementById('upcomingLoading');
             
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            if (days > 0) {
-                return `${days}d ${hours}h ${minutes}m`;
-            } else if (hours > 0) {
-                return `${hours}h ${minutes}m ${seconds}s`;
-            } else if (minutes > 0) {
-                return `${minutes}m ${seconds}s`;
-            } else {
-                return `${seconds}s`;
-            }
+            if (liveLoading) liveLoading.style.display = 'none';
+            if (upcomingLoading) upcomingLoading.style.display = 'none';
         }
     </script>
 </body>

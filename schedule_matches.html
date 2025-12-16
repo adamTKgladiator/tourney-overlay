@@ -418,7 +418,7 @@
                             <input type="date" id="matchDate" required>
                         </div>
                         <div>
-                            <label for="matchTime">Time (EST)</label>
+                            <label for="matchTime">Time (CET)</label>
                             <input type="time" id="matchTime" required>
                         </div>
                     </div>
@@ -717,7 +717,7 @@
             try {
                 // Format date for database
                 const dateTime = new Date(`${matchDate}T${matchTime}`);
-                const timeString = `${dateTime.getHours() % 12 || 12}:${dateTime.getMinutes().toString().padStart(2, '0')} ${dateTime.getHours() >= 12 ? 'PM' : 'AM'} EST`;
+                const timeString = `${dateTime.getHours() % 12 || 12}:${dateTime.getMinutes().toString().padStart(2, '0')} ${dateTime.getHours() >= 12 ? 'PM' : 'AM'} CET`;
                 
                 // Generate match ID
                 const matchId = crypto.randomUUID();
