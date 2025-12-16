@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upcoming Tournament Matches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body {
+            background-image: url('./Assets/BG.png');
+            background-size: cover;
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .tournament-header {
+            padding: 15px 30px;
+            text-align: center;
+            border-bottom: 3px solid #9146FF;
+            background: rgba(0, 0, 0, 0.9);
+            margin-bottom: 30px;
+            border-radius: 10px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 10px #9146FF; }
+            to { box-shadow: 0 0 30px #9146FF, 0 0 40px #9146FF; }
+        }
+        
+        .header-title {
+            font-size: 2.8rem;
+            color: #fff;
+            text-shadow:
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #fff,
+                0 0 40px #0ff,
+                0 0 80px #0ff,
+                0 0 90px #0ff,
+                0 0 100px #0ff,
+                0 0 150px #0ff;
+            margin-bottom: 10px;
+        }
+        
+        .header-subtitle {
+            color: #aaa;
+            font-size: 1.2rem;
+        }
+        
+        .matches-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin: 40px 0 30px 0;
+            color: #fff;
+            text-shadow: 0 0 10px #9146FF;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 200px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #9146FF, transparent);
+            margin: 10px auto;
+        }
+        
+        .upcoming-matches, .live-matches {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .match-card {
+            background: rgba(0, 0, 0, 0.85);
+            border: 3px solid;
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .match-card.upcoming {
+            border-color: #9146FF;
+            box-shadow: 0 0 20px rgba(145, 70, 255, 0.3);
+        }
+        
+        .match-card.live {
+            border-color: #ff008c;
+            box-shadow: 0 0 20px rgba(255, 0, 140, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px rgba(255, 0, 140, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 0, 140, 0.6); }
+            100% { box-shadow: 0 0 20px rgba(255, 0, 140, 0.3); }
+        }
+        
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(145, 70, 255, 0.4);
+        }
+        
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .match-round {
+            background: linear-gradient(135deg, #9146FF, #6441a5);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .match-status {
+            background: #333;
+            color: #aaa;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .status-live {
+            background: linear-gradient(135deg, #ff008c, #cc006f);
+            color: white;
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .match-players {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            position: relative;
+        }
+        
+        .player {
+            text-align: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .player-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #9146FF;
+        }
+        
+        .player-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .player-twitch {
+            color: #9146FF;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        .vs {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #9146FF;
+            z-index: 2;
+        }
+        
+        .match-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .info-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #aaa;
+            font-weight: 600;
+        }
+        
+        .info-value {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .countdown {
+            background: rgba(145, 70, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .countdown-title {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .time-unit {
+            text-align: center;
+            min-width: 70px;
+        }
+        
+        .time-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #00ff1a;
+            text-shadow: 0 0 10px #00ff1a;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .time-label {
+            color: #aaa;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        
+        .match-started {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 255, 26, 0.1);
+            border: 2px solid #00ff1a;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .match-started a {
+            color: #00ff1a;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 20px;
+            background: rgba(0, 255, 26, 0.2);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .match-started a:hover {
+            background: rgba(0, 255, 26, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .no-matches {
+            text-align: center;
+            padding: 60px 40px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            border: 2px dashed #9146FF;
+            grid-column: 1 / -1;
+        }
+        
+        .no-matches-icon {
+            font-size: 4rem;
+            color: #9146FF;
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+        
+        .no-matches h3 {
+            color: #fff;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .no-matches p {
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            grid-column: 1 / -1;
+        }
+        
+        .loading i {
+            font-size: 3rem;
+            color: #9146FF;
+            margin-bottom: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading p {
+            color: #aaa;
+            font-size: 1.2rem;
+        }
+        
+        .footer-note {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            margin-top: 40px;
+            border-top: 1px solid #333;
+        }
+        
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 2rem;
+            }
+            
+            .upcoming-matches, .live-matches {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .match-card {
+                padding: 20px;
+            }
+            
+            .match-players {
+                flex-direction: column;
+                gap: 20px;
+                padding: 30px 20px;
+            }
+            
+            .vs {
+                position: relative;
+                left: auto;
+                top: auto;
+                transform: none;
+                margin: 10px 0;
+                order: 2;
+            }
+            
+            .countdown-timer {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .time-unit {
+                min-width: 60px;
+            }
+            
+            .time-value {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tournament Header -->
+    <div class="tournament-header">
+        <div class="header-title">CASINO SPEEDRUN CHAMPIONSHIP</div>
+        <div class="header-subtitle">Upcoming & Live Matches Schedule</div>
+    </div>
+    
+    <!-- Matches Container -->
+    <div class="matches-container">
+        <!-- Live Matches Section -->
+        <h2 class="section-title"><i class="fas fa-broadcast-tower"></i> LIVE NOW</h2>
+        <div class="live-matches" id="liveMatches">
+            <div class="loading" id="liveLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading live matches...</p>
+            </div>
+        </div>
+        
+        <!-- Upcoming Matches Section -->
+        <h2 class="section-title"><i class="fas fa-clock"></i> UPCOMING MATCHES</h2>
+        <div class="upcoming-matches" id="upcomingMatches">
+            <div class="loading" id="upcomingLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading upcoming matches...</p>
+            </div>
+        </div>
+        
+        <!-- No Matches Message -->
+        <div class="no-matches" id="noMatches" style="display: none;">
+            <i class="fas fa-calendar-times no-matches-icon"></i>
+            <h3>No Scheduled Matches</h3>
+            <p>Check back later for upcoming tournament matches!</p>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer-note">
+        Tournament Schedule | Auto-refreshes every 30 seconds
+    </div>
+
+    <script>
+        // Supabase Configuration
+    const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x'; // Your publishable key
+
+        
+        // Global variables
+        let matches = [];
+        let countdownIntervals = new Map();
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load matches immediately
+            await loadMatches();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(loadMatches, 30000);
+        });
+        
+        // Load matches from database
+        async function loadMatches() {
+            try {
+                // Show loading states
+                document.getElementById('liveLoading').style.display = 'block';
+                document.getElementById('upcomingLoading').style.display = 'block';
+                
+                // Fetch scheduled matches
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&match_date=gte.now()&order=match_date.asc`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const scheduledMatches = await response.json();
+                
+                // Fetch live matches
+                const liveResponse = await fetch(
+                    `${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&status=eq.live&order=match_date.asc`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                
+                const liveMatches = liveResponse.ok ? await liveResponse.json() : [];
+                
+                // Combine and sort matches
+                matches = [...liveMatches, ...scheduledMatches.filter(m => m.status !== 'live')];
+                
+                // Render matches
+                renderMatches();
+                
+                // Start countdown timers
+                startCountdowns();
+                
+            } catch (error) {
+                console.error('Error loading matches:', error);
+                showErrorMessage();
+            } finally {
+                // Hide loading states
+                document.getElementById('liveLoading').style.display = 'none';
+                document.getElementById('upcomingLoading').style.display = 'none';
+            }
+        }
+        
+        // Render matches
+        function renderMatches() {
+            const liveContainer = document.getElementById('liveMatches');
+            const upcomingContainer = document.getElementById('upcomingMatches');
+            const noMatchesDiv = document.getElementById('noMatches');
+            
+            // Clear previous content (except loading)
+            liveContainer.innerHTML = '';
+            upcomingContainer.innerHTML = '';
+            
+            // Separate live and upcoming matches
+            const liveMatches = matches.filter(match => match.status === 'live');
+            const upcomingMatches = matches.filter(match => match.status !== 'live' && match.match_date);
+            
+            // Clear existing countdown intervals
+            countdownIntervals.forEach(interval => clearInterval(interval));
+            countdownIntervals.clear();
+            
+            // Show/hide no matches message
+            if (liveMatches.length === 0 && upcomingMatches.length === 0) {
+                noMatchesDiv.style.display = 'block';
+                return;
+            } else {
+                noMatchesDiv.style.display = 'none';
+            }
+            
+            // Render live matches
+            if (liveMatches.length > 0) {
+                liveMatches.forEach(match => {
+                    liveContainer.appendChild(createMatchCard(match, true));
+                });
+            } else {
+                liveContainer.innerHTML = `
+                    <div class="no-matches">
+                        <i class="fas fa-broadcast-tower no-matches-icon"></i>
+                        <h3>No Live Matches</h3>
+                        <p>Check upcoming matches below!</p>
+                    </div>
+                `;
+            }
+            
+            // Render upcoming matches
+            if (upcomingMatches.length > 0) {
+                upcomingMatches.forEach(match => {
+                    upcomingContainer.appendChild(createMatchCard(match, false));
+                });
+            } else {
+                upcomingContainer.innerHTML = `
+                    <div class="no-matches">
+                        <i class="fas fa-clock no-matches-icon"></i>
+                        <h3>No Upcoming Matches</h3>
+                        <p>Matches will appear here once scheduled.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Create match card element
+        function createMatchCard(match, isLive) {
+            const player1 = match.player1 || { name: 'Player 1', twitch_username: 'unknown' };
+            const player2 = match.player2 || { name: 'Player 2', twitch_username: 'unknown' };
+            
+            const card = document.createElement('div');
+            card.className = `match-card ${isLive ? 'live' : 'upcoming'}`;
+            card.dataset.matchId = match.id;
+            
+            // Format match date
+            let dateString = 'Date not set';
+            let timeString = '';
+            
+            if (match.match_date) {
+                const matchDate = new Date(match.match_date);
+                dateString = matchDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                timeString = match.match_time || matchDate.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZoneName: 'short'
+                });
+            }
+            
+            // Create card content
+            card.innerHTML = `
+                <div class="match-header">
+                    <span class="match-round">${match.round || 'TOURNAMENT MATCH'}</span>
+                    <span class="match-status ${isLive ? 'status-live' : ''}">
+                        ${isLive ? '🔴 LIVE NOW' : '⏰ UPCOMING'}
+                    </span>
+                </div>
+                
+                <div class="match-players">
+                    <div class="player">
+                        <div class="player-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="player-name">${player1.name}</div>
+                        <div class="player-twitch">@${player1.twitch_username}</div>
+                    </div>
+                    
+                    <div class="vs">VS</div>
+                    
+                    <div class="player">
+                        <div class="player-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="player-name">${player2.name}</div>
+                        <div class="player-twitch">@${player2.twitch_username}</div>
+                    </div>
+                </div>
+                
+                <div class="match-info">
+                    <div class="info-row">
+                        <span class="info-label">Date:</span>
+                        <span class="info-value">${dateString}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Time:</span>
+                        <span class="info-value">${timeString}</span>
+                    </div>
+                </div>
+                
+                ${isLive ? `
+                    <div class="match-started">
+                        <strong>🎮 MATCH IS LIVE!</strong>
+                        <a href="TK.html?match_id=${match.id}" target="_blank">
+                            <i class="fas fa-external-link-alt"></i> Watch Live Stream
+                        </a>
+                    </div>
+                ` : `
+                    <div class="countdown">
+                        <div class="countdown-title">Match starts in:</div>
+                        <div class="countdown-timer" id="countdown-${match.id}">
+                            <div class="time-unit">
+                                <div class="time-value">00</div>
+                                <div class="time-label">Days</div>
+                            </div>
+                            <div class="time-unit">
+                                <div class="time-value">00</div>
+                                <div class="time-label">Hours</div>
+                            </div>
+                            <div class="time-unit">
+                                <div class="time-value">00</div>
+                                <div class="time-label">Minutes</div>
+                            </div>
+                            <div class="time-unit">
+                                <div class="time-value">00</div>
+                                <div class="time-label">Seconds</div>
+                            </div>
+                        </div>
+                    </div>
+                `}
+            `;
+            
+            return card;
+        }
+        
+        // Start countdown timers for all upcoming matches
+        function startCountdowns() {
+            matches.forEach(match => {
+                if (match.status !== 'live' && match.match_date) {
+                    startCountdownTimer(match.id, match.match_date);
+                }
+            });
+        }
+        
+        // Start individual countdown timer
+        function startCountdownTimer(matchId, matchDate) {
+            // Clear existing interval for this match
+            if (countdownIntervals.has(matchId)) {
+                clearInterval(countdownIntervals.get(matchId));
+            }
+            
+            // Get countdown element
+            const countdownEl = document.getElementById(`countdown-${matchId}`);
+            if (!countdownEl) return;
+            
+            // Time units elements
+            const daysEl = countdownEl.querySelector('.time-unit:nth-child(1) .time-value');
+            const hoursEl = countdownEl.querySelector('.time-unit:nth-child(2) .time-value');
+            const minutesEl = countdownEl.querySelector('.time-unit:nth-child(3) .time-value');
+            const secondsEl = countdownEl.querySelector('.time-unit:nth-child(4) .time-value');
+            
+            // Update countdown immediately
+            updateCountdown();
+            
+            // Set interval to update every second
+            const interval = setInterval(updateCountdown, 1000);
+            countdownIntervals.set(matchId, interval);
+            
+            function updateCountdown() {
+                const now = new Date();
+                const matchTime = new Date(matchDate);
+                const timeDiff = matchTime - now;
+                
+                if (timeDiff <= 0) {
+                    // Match time has arrived
+                    daysEl.textContent = '00';
+                    hoursEl.textContent = '00';
+                    minutesEl.textContent = '00';
+                    secondsEl.textContent = '00';
+                    
+                    // Change to "Match Starting" message
+                    if (countdownEl.parentElement) {
+                        countdownEl.parentElement.innerHTML = `
+                            <div class="match-started">
+                                <strong>🎮 MATCH STARTING!</strong>
+                                <a href="tournament.html?match_id=${matchId}" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i> Watch Live Stream
+                                </a>
+                            </div>
+                        `;
+                    }
+                    
+                    // Clear interval
+                    clearInterval(interval);
+                    countdownIntervals.delete(matchId);
+                    return;
+                }
+                
+                // Calculate time units
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                
+                // Update display
+                daysEl.textContent = days.toString().padStart(2, '0');
+                hoursEl.textContent = hours.toString().padStart(2, '0');
+                minutesEl.textContent = minutes.toString().padStart(2, '0');
+                secondsEl.textContent = seconds.toString().padStart(2, '0');
+            }
+        }
+        
+        // Show error message
+        function showErrorMessage() {
+            const upcomingContainer = document.getElementById('upcomingMatches');
+            const liveContainer = document.getElementById('liveMatches');
+            
+            const errorHtml = `
+                <div class="no-matches">
+                    <i class="fas fa-exclamation-triangle no-matches-icon"></i>
+                    <h3>Unable to Load Matches</h3>
+                    <p>Please check your connection and try again.</p>
+                </div>
+            `;
+            
+            upcomingContainer.innerHTML = errorHtml;
+            liveContainer.innerHTML = errorHtml;
+            
+            // Hide loading
+            document.getElementById('liveLoading').style.display = 'none';
+            document.getElementById('upcomingLoading').style.display = 'none';
+        }
+        
+        // Format time difference in human-readable format
+        function formatTimeDifference(date1, date2) {
+            const diff = Math.abs(date2 - date1);
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            if (days > 0) {
+                return `${days}d ${hours}h ${minutes}m`;
+            } else if (hours > 0) {
+                return `${hours}h ${minutes}m ${seconds}s`;
+            } else if (minutes > 0) {
+                return `${minutes}m ${seconds}s`;
+            } else {
+                return `${seconds}s`;
+            }
+        }
+    </script>
+</body>
+</html>
