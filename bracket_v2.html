@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Double Elimination Tournament Bracket v2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-image: url('./Assets/BG.png');
+            background-size: cover;
+            background-attachment: fixed;
+            color: #ccc;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        /* Header & Controls */
+        .tournament-header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header-title {
+            font-size: 3rem;
+            color: #fff;
+            text-shadow:
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #fff,
+                0 0 40px #0ff,
+                0 0 80px #0ff,
+                0 0 90px #0ff,
+                0 0 100px #0ff,
+                0 0 150px #0ff;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .header-subtitle {
+            color: #aaa;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 4px;
+            border: 1px solid #444;
+            min-width: 1000px;
+        }
+
+        .btn {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #444;
+            border-color: #9146FF;
+        }
+
+        .btn-primary {
+            background: #9146FF;
+            border-color: #7c2cf5;
+            color: white;
+            box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #8234ea;
+            box-shadow: 0 0 15px rgba(145, 70, 255, 0.5);
+        }
+
+        /* Bracket Layout */
+        .obs-scroll-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            padding: 20px;
+            min-width: 1200px;
+            position: relative;
+        }
+
+        .bracket-section {
+            position: relative;
+            margin-bottom: 50px;
+        }
+
+        .section-header {
+            font-size: 1.2rem;
+            color: #a970ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #9146FF;
+            margin-bottom: 20px;
+            padding-bottom: 5px;
+            text-shadow: 0 0 5px rgba(145, 70, 255, 0.5);
+        }
+
+        /* Bracket Container & SVG Context */
+        .bracket-container {
+            position: relative;
+        }
+
+        .bracket {
+            display: flex;
+            gap: 60px;
+        }
+
+        .bracket-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 200px;
+            position: relative;
+        }
+
+        .round-label {
+            text-align: center;
+            color: #888;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* Match Card - Styled to match theme */
+        .match-node {
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid #444;
+            border-radius: 3px;
+            margin: 10px 0;
+            position: relative;
+            z-index: 5;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .match-node:hover {
+            border-color: #9146FF;
+            box-shadow: 0 0 10px rgba(145, 70, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .match-identifier {
+            position: absolute;
+            top: -18px;
+            right: 0;
+            font-size: 0.7rem;
+            color: #888;
+            font-weight: bold;
+        }
+
+        .match-row {
+            display: flex;
+            align-items: center;
+            height: 30px;
+            border-bottom: 1px solid #333;
+        }
+
+        .match-row:last-child {
+            border-bottom: none;
+        }
+
+        .player-seed {
+            width: 25px;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #555;
+            background: rgba(0, 0, 0, 0.3);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid #333;
+        }
+
+        .player-name {
+            flex: 1;
+            padding: 0 10px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #aaa;
+        }
+
+        .player-score {
+            width: 30px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 1px solid #333;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #666;
+        }
+
+        /* Winner State - Purple Theme */
+        .match-row.winner .player-name {
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(145, 70, 255, 0.5);
+        }
+
+        .match-row.winner .player-score {
+            background: #9146FF;
+            color: #fff;
+            box-shadow: 0 0 5px #9146FF;
+        }
+
+        .match-row.winner .player-seed {
+            background: #333;
+            color: #ccc;
+        }
+
+        /* Connector Lines */
+        .bracket-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .connector {
+            fill: none;
+            stroke: #555;
+            stroke-width: 2px;
+        }
+
+        .connector.active {
+            stroke: #7a7a7a;
+        }
+
+        /* Modal & Utils */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-box {
+            background: #1a1a1a;
+            padding: 20px;
+            width: 400px;
+            border-radius: 5px;
+            border: 1px solid #9146FF;
+            box-shadow: 0 0 20px rgba(145, 70, 255, 0.2);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 10px 20px;
+            border-left: 4px solid #9146FF;
+            display: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            color: #9146FF;
+            font-size: 1.5rem;
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-overlay" id="loadingOverlay">Processing...</div>
+    <div class="notification" id="notification"></div>
+
+    <div class="tournament-header">
+        <div class="header-title">CASINO SPEEDRUN CHAMPIONSHIP</div>
+        <div class="header-subtitle">Double Elimination Bracket</div>
+    </div>
+
+    <!-- Controls removed and moved to index.html -->
+
+    <div class="obs-scroll-container">
+        <!-- Winners -->
+        <div class="bracket-section">
+            <div class="section-header">Upper Bracket</div>
+            <div class="bracket-container" id="winnersBracket"></div>
+        </div>
+
+        <!-- Losers -->
+        <div class="bracket-section">
+            <div class="section-header">Lower Bracket</div>
+            <div class="bracket-container" id="losersBracket"></div>
+        </div>
+
+        <!-- Finals -->
+    </div>
+
+
+    <!-- Match Modal -->
+    <div id="matchModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-actions">
+                <button class="setup-btn" style="background:#4299e1" id="setWinner1">P1 Win</button>
+                <button class="setup-btn" style="background:#ed8936" id="setWinner2">P2 Win</button>
+                <button class="setup-btn danger" id="resetWinner">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x';
+
+        // Progression Logic for 8-Player Double Elim
+        const PROGRESSION_MAP = {
+            // Winners Round 1
+            'ROUND 1': {
+                1: { w: { r: 'WINNERS SEMI-FINAL', p: 1, s: 'p1' }, l: { r: 'LOSERS ROUND 1', p: 1, s: 'p1' } },
+                2: { w: { r: 'WINNERS SEMI-FINAL', p: 1, s: 'p2' }, l: { r: 'LOSERS ROUND 1', p: 1, s: 'p2' } },
+                3: { w: { r: 'WINNERS SEMI-FINAL', p: 2, s: 'p1' }, l: { r: 'LOSERS ROUND 1', p: 2, s: 'p1' } },
+                4: { w: { r: 'WINNERS SEMI-FINAL', p: 2, s: 'p2' }, l: { r: 'LOSERS ROUND 1', p: 2, s: 'p2' } }
+            },
+            // Winners Semi-Finals
+            'WINNERS SEMI-FINAL': {
+                1: { w: { r: 'WINNERS FINAL', p: 1, s: 'p1' }, l: { r: 'LOSERS ROUND 2', p: 2, s: 'p2' } }, // Loser drops to L2 match 2 (Cross-over)
+                2: { w: { r: 'WINNERS FINAL', p: 1, s: 'p2' }, l: { r: 'LOSERS ROUND 2', p: 1, s: 'p2' } }  // Loser drops to L2 match 1 (Cross-over)
+            },
+            // Winners Final
+            'WINNERS FINAL': {
+                1: { w: { r: 'GRAND FINAL', p: 1, s: 'p1' }, l: { r: 'LOSERS FINAL', p: 1, s: 'p1' } }
+            },
+
+            // Losers Round 1 (Losers from R1)
+            'LOSERS ROUND 1': {
+                1: { w: { r: 'LOSERS ROUND 2', p: 1, s: 'p1' } }, // Winner plays Loser of WSF 1
+                2: { w: { r: 'LOSERS ROUND 2', p: 2, s: 'p1' } }  // Winner plays Loser of WSF 2
+            },
+            // Losers Round 2 (Winners L1 vs Losers WSF)
+            'LOSERS ROUND 2': {
+                1: { w: { r: 'LOSERS ROUND 3', p: 1, s: 'p1' } },
+                2: { w: { r: 'LOSERS ROUND 3', p: 1, s: 'p2' } }
+            },
+            // Losers Round 3 (L3 vs L3)
+            'LOSERS ROUND 3': {
+                1: { w: { r: 'LOSERS FINAL', p: 1, s: 'p2' } }
+            },
+            // Losers Final (Winner goes to Grand Final)
+            'LOSERS FINAL': {
+                1: { w: { r: 'GRAND FINAL', p: 1, s: 'p2' } }
+            }
+        };
+
+        const BRACKET_STRUCTURE = {
+            winners: [
+                { name: 'ROUND 1', label: 'Quarter Finals', count: 4 },
+                { name: 'WINNERS SEMI-FINAL', label: 'Semi Finals', count: 2 },
+                { name: 'WINNERS FINAL', label: 'Upper Final', count: 1 },
+                { name: 'GRAND FINAL', label: 'Grand Final', count: 1 }
+            ],
+            losers: [
+                { name: 'LOSERS ROUND 1', label: 'LB Round 1', count: 2 },
+                { name: 'LOSERS ROUND 2', label: 'LB Round 2', count: 2 },
+                { name: 'LOSERS ROUND 3', label: 'LB Round 3', count: 1 },
+                { name: 'LOSERS FINAL', label: 'Lower Final', count: 1 }
+            ]
+        };
+
+        let players = [];
+        let matches = [];
+        let selectedMatchId = null;
+
+        // --- APP INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            checkDatabaseConnection();
+            loadPlayers();
+            loadMatchesFromDatabase();
+
+            // Re-draw lines on resize
+            window.addEventListener('resize', () => {
+                requestAnimationFrame(drawConnectors);
+            });
+        });
+
+        function setupEventListeners() {
+            // Modal controls
+            const modal = document.getElementById('matchModal');
+            document.querySelector('.close').onclick = () => modal.style.display = 'none';
+            window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; };
+
+            document.getElementById('setWinner1').onclick = () => setWinner(1);
+            document.getElementById('setWinner2').onclick = () => setWinner(2);
+            document.getElementById('resetWinner').onclick = resetMatch;
+        }
+
+        // --- CORE LOGIC ---
+
+        async function checkDatabaseConnection() {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/players?limit=1`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+                console.log('DB check:', res.ok);
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadPlayers() {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/players?select=*&order=name.asc`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+                if (res.ok) {
+                    players = await res.json();
+                }
+            } catch (e) { console.error('Error loading players', e); }
+        }
+
+        async function loadMatchesFromDatabase() {
+            showLoading('Syncing...');
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*&order=round.asc,bracket_position.asc`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+
+                if (!res.ok) throw new Error('Fetch failed');
+
+                matches = await res.json();
+
+                // Hydrate matches with players
+                matches.forEach(m => {
+                    m.player1 = players.find(p => p.id === m.player1_id);
+                    m.player2 = players.find(p => p.id === m.player2_id);
+                });
+
+                renderAllBrackets();
+                showNotification('Bracket synced!', 'success');
+
+            } catch (e) {
+                console.error(e);
+                showNotification('Sync failed', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // --- RENDERING ---
+
+        function renderAllBrackets() {
+            renderBracketSection('winnersBracket', BRACKET_STRUCTURE.winners);
+            renderBracketSection('losersBracket', BRACKET_STRUCTURE.losers);
+            // GF is now part of winners
+
+            // Wait for DOM layout then draw lines
+            setTimeout(drawConnectors, 200);
+        }
+
+        function renderBracketSection(containerId, structure) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '<svg class="bracket-svg"></svg>'; // Reset & add SVG layer
+
+            const bracketDiv = document.createElement('div');
+            bracketDiv.className = 'bracket';
+
+            structure.forEach(roundStruct => {
+                const col = document.createElement('div');
+                col.className = 'bracket-column';
+                col.innerHTML = `<div class="round-label">${roundStruct.label}</div>`;
+
+                const roundMatches = matches.filter(m => m.round === roundStruct.name)
+                    .sort((a, b) => a.bracket_position - b.bracket_position);
+
+                if (roundMatches.length === 0) {
+                    col.innerHTML += '<div style="height:100px; color:#666">No matches</div>';
+                } else {
+                    roundMatches.forEach(m => col.appendChild(createMatchNode(m)));
+                }
+                bracketDiv.appendChild(col);
+            });
+
+            container.appendChild(bracketDiv);
+        }
+
+        function createMatchNode(m) {
+            const div = document.createElement('div');
+            div.className = `match-node ${m.status}`;
+            div.id = `match-${m.id}`;
+            div.onclick = () => openModal(m);
+
+            // Determine Winners for styling
+            const p1Win = m.winner_id && m.player1 && m.winner_id === m.player1.id;
+            const p2Win = m.winner_id && m.player2 && m.winner_id === m.player2.id;
+
+            // Build inner HTML for split rows
+            div.innerHTML = `
+                <div class="match-identifier">M${m.bracket_position}</div>
+                <div class="match-row ${p1Win ? 'winner' : ''}">
+                    <div class="player-seed">${m.player1 ? '1' : '-'}</div>
+                    <div class="player-name">${m.player1 ? m.player1.name : 'TBD'}</div>
+                    <div class="player-score">${p1Win ? 'W' : '-'}</div>
+                </div>
+                <div class="match-row ${p2Win ? 'winner' : ''}">
+                    <div class="player-seed">${m.player2 ? '2' : '-'}</div>
+                    <div class="player-name">${m.player2 ? m.player2.name : 'TBD'}</div>
+                    <div class="player-score">${p2Win ? 'W' : '-'}</div>
+                </div>
+            `;
+            return div;
+        }
+
+        // --- VISUAL CONNECTORS (Adjusted for Seam) ---
+        function drawConnectors() {
+            drawBracketLines('winnersBracket');
+            drawBracketLines('losersBracket');
+        }
+
+        function drawBracketLines(containerId) {
+            const container = document.getElementById(containerId);
+            const svg = container.querySelector('.bracket-svg');
+            if (!svg || !svg.parentNode) return;
+
+            // Reset
+            svg.innerHTML = '';
+            const containerRect = container.getBoundingClientRect();
+
+            matches.forEach(match => {
+                const progression = PROGRESSION_MAP[match.round];
+                if (!progression || !progression[match.bracket_position]) return;
+
+                const nextInfo = progression[match.bracket_position];
+
+                if (nextInfo.w) {
+                    const nextMatch = matches.find(m => m.round === nextInfo.w.r && m.bracket_position === nextInfo.w.p);
+                    if (nextMatch && isSameBracket(match, nextMatch)) {
+                        // Ensure we are drawing in the correct container
+                        // Only draw if the match belongs to the container's section
+                        const matchType = getBracketType(match.round);
+                        const containerType = containerId === 'winnersBracket' ? 'winners' : 'losers';
+
+                        if (matchType === containerType) {
+                            drawLine(svg, match, nextMatch, containerRect);
+                        }
+                    }
+                }
+            });
+        }
+
+        function drawLine(svg, m1, m2, containerRect) {
+            const el1 = document.getElementById(`match-${m1.id}`);
+            const el2 = document.getElementById(`match-${m2.id}`);
+            if (!el1 || !el2) return;
+
+            const r1 = el1.getBoundingClientRect();
+            const r2 = el2.getBoundingClientRect();
+
+            // Coordinates
+            // Start: Right side of match 1, vertically centered
+            // Added offset to "drag them down" as requested (approx 5px usually looks better with borders)
+            const yOffset = 0;
+
+            const x1 = r1.right - containerRect.left;
+            const y1 = r1.top + (r1.height / 2) - containerRect.top + yOffset;
+
+            // End: Left side of match 2, vertically centered
+            const x2 = r2.left - containerRect.left;
+            const y2 = r2.top + (r2.height / 2) - containerRect.top + yOffset;
+
+            // Orthogonal Line (Horizontal -> Vertical -> Horizontal)
+            const midX = x1 + (x2 - x1) / 2;
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            // M (Start) -> L (Mid Horizontal) -> L (Vertical to Target Y) -> L (End)
+            const d = `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
+
+            path.setAttribute('d', d);
+            path.setAttribute('class', `connector ${m1.status === 'completed' ? 'completed' : ''}`);
+            svg.appendChild(path);
+        }
+
+        function isSameBracket(m1, m2) {
+            const type1 = getBracketType(m1.round);
+            const type2 = getBracketType(m2.round);
+            return type1 && type2 && type1 === type2;
+        }
+
+        function getBracketType(roundName) {
+            if (BRACKET_STRUCTURE.winners.some(r => r.name === roundName)) return 'winners';
+            if (BRACKET_STRUCTURE.losers.some(r => r.name === roundName)) return 'losers';
+            return null;
+        }
+
+        // --- MATCH UPDATES ---
+
+        function openModal(match) {
+            selectedMatchId = match.id;
+            const modal = document.getElementById('matchModal');
+            const body = document.getElementById('modalBody');
+
+            const p1n = match.player1 ? (match.player1.display_name || match.player1.name) : 'TBD';
+            const p2n = match.player2 ? (match.player2.display_name || match.player2.name) : 'TBD';
+
+            body.innerHTML = `
+                <h2 style="text-align:center; color:#9146FF">${match.round}</h2>
+                <div style="display:flex; justify-content:space-between; margin:20px 0; font-size:1.2rem;">
+                    <span>${p1n}</span>
+                    <span>vs</span>
+                    <span>${p2n}</span>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        async function setWinner(winnerNum) {
+            const m = matches.find(x => x.id === selectedMatchId);
+            if (!m) return;
+
+            const winnerId = winnerNum === 1 ? m.player1_id : m.player2_id;
+            const loserId = winnerNum === 1 ? m.player2_id : m.player1_id;
+
+            if (!winnerId || !loserId) return alert('Wait for players!');
+
+            if (!confirm(`Confirm winner?`)) return;
+            showLoading('Updating...');
+
+            try {
+                // 1. Update Match
+                await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${m.id}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ winner_id: winnerId, status: 'completed', updated_at: new Date() })
+                });
+
+                // 2. Advance Players
+                const prog = PROGRESSION_MAP[m.round][m.bracket_position];
+
+                // Advance Winner
+                if (prog.w) await advancePlayer(winnerId, prog.w);
+
+                // Advance Loser (if drops to losers bracket)
+                if (prog.l) await advancePlayer(loserId, prog.l);
+
+                document.getElementById('matchModal').style.display = 'none';
+                await loadMatchesFromDatabase();
+
+            } catch (e) { console.error(e); showNotification('Update failed'); }
+            finally { hideLoading(); }
+        }
+
+        async function advancePlayer(playerId, dest) {
+            // Find dest match
+            const destMatch = matches.find(x => x.round === dest.r && x.bracket_position === dest.p);
+            if (!destMatch) return;
+
+            // Build update
+            const update = {};
+            if (dest.s === 'p1' || !destMatch.player1_id) update.player1_id = playerId;
+            else if (dest.s === 'p2' || !destMatch.player2_id) update.player2_id = playerId;
+
+            // Check if ready
+            if ((update.player1_id || destMatch.player1_id) && (update.player2_id || destMatch.player2_id)) {
+                update.status = 'scheduled';
+            }
+
+            await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${destMatch.id}`, {
+                method: 'PATCH',
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(update)
+            });
+        }
+
+        async function resetMatch() {
+            const m = matches.find(x => x.id === selectedMatchId);
+            if (!m) return;
+            if (!confirm('Reset?')) return;
+
+            showLoading('Resetting...');
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${m.id}`, {
+                    method: 'PATCH',
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ winner_id: null, status: 'scheduled' })
+                });
+
+                document.getElementById('matchModal').style.display = 'none';
+                await loadMatchesFromDatabase();
+            } catch (e) { console.error(e); }
+            finally { hideLoading(); }
+        }
+
+        // Utils
+        function showLoading(msg) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.textContent = msg || 'Processing...';
+                overlay.style.display = 'flex';
+            }
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+
+        function showNotification(msg, type = 'info') {
+            const n = document.getElementById('notification');
+            n.textContent = msg; n.className = `notification ${type}`; n.style.display = 'block';
+            setTimeout(() => n.style.display = 'none', 3000);
+        }
+
+    </script>
+</body>
+
+</html>

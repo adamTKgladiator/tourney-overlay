@@ -141,6 +141,14 @@
             box-shadow: none;
         }
         
+        .submit-btn.update-mode {
+            background: linear-gradient(135deg, #00ff1a, #00cc15);
+        }
+        
+        .submit-btn.update-mode:hover {
+            background: linear-gradient(135deg, #33ff52, #00e61f);
+        }
+        
         .match-card {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
@@ -288,6 +296,15 @@
             background: linear-gradient(135deg, #33ff52, #00e61f);
         }
         
+        .edit-btn {
+            background: linear-gradient(135deg, #4299e1, #2c5282);
+            color: white;
+        }
+        
+        .edit-btn:hover {
+            background: linear-gradient(135deg, #5fa3e3, #3d689f);
+        }
+        
         .go-live-btn {
             background: linear-gradient(135deg, #ff008c, #cc006f);
             color: white;
@@ -379,6 +396,220 @@
             background: #444;
         }
         
+        /* Winner Selection Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #9146FF;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 50px rgba(145, 70, 255, 0.5);
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-title {
+            color: #fff;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px #9146FF;
+        }
+        
+        .modal-players {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .modal-player {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-player:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .modal-player.selected {
+            border-color: #00ff1a;
+            background: rgba(0, 255, 26, 0.1);
+        }
+        
+        .modal-player-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .modal-player-twitch {
+            color: #9146FF;
+            font-size: 1rem;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-confirm {
+            background: linear-gradient(135deg, #00ff1a, #00cc15);
+            color: white;
+        }
+        
+        .modal-confirm:hover {
+            background: linear-gradient(135deg, #33ff52, #00e61f);
+            transform: translateY(-2px);
+        }
+        
+        .modal-cancel {
+            background: linear-gradient(135deg, #666, #444);
+            color: white;
+        }
+        
+        .modal-cancel:hover {
+            background: linear-gradient(135deg, #777, #555);
+            transform: translateY(-2px);
+        }
+        
+        /* Winner badge */
+        .winner-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+            animation: goldGlow 2s infinite;
+        }
+        
+        @keyframes goldGlow {
+            0%, 100% { box-shadow: 0 0 5px #ffd700; }
+            50% { box-shadow: 0 0 15px #ffd700; }
+        }
+        
+        /* Form mode indicator */
+        .form-mode {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(145, 70, 255, 0.2);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .mode-indicator {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .mode-create {
+            background: linear-gradient(135deg, #9146FF, #6441a5);
+            color: white;
+        }
+        
+        .mode-edit {
+            background: linear-gradient(135deg, #00ff1a, #00cc15);
+            color: white;
+        }
+        
+        .clear-form {
+            background: linear-gradient(135deg, #666, #444);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .clear-form:hover {
+            background: linear-gradient(135deg, #777, #555);
+        }
+        
+        /* Tournament actions */
+        .tournament-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tournament-action-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #9146FF, #6441a5);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .tournament-action-btn:hover {
+            background: linear-gradient(135deg, #a35cff, #7551c7);
+            transform: translateY(-2px);
+        }
+        
+        .tournament-action-btn.create-bracket {
+            background: linear-gradient(135deg, #00ff1a, #00cc15);
+        }
+        
+        .tournament-action-btn.create-bracket:hover {
+            background: linear-gradient(135deg, #33ff52, #00e61f);
+        }
+        
+        .tournament-action-btn.reset-bracket {
+            background: linear-gradient(135deg, #ff008c, #cc006f);
+        }
+        
+        .tournament-action-btn.reset-bracket:hover {
+            background: linear-gradient(135deg, #ff33a8, #e6007a);
+        }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -424,10 +655,41 @@
             .action-btn {
                 min-width: 120px;
             }
+            
+            .modal-content {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .tournament-actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Winner Selection Modal -->
+    <div class="modal-overlay" id="winnerModal">
+        <div class="modal-content">
+            <h2 class="modal-title"><i class="fas fa-trophy"></i> Select Match Winner</h2>
+            <div class="modal-players" id="modalPlayers">
+                <!-- Will be populated dynamically -->
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-cancel" id="cancelWinner">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="modal-btn modal-confirm" id="confirmWinner">
+                    <i class="fas fa-check"></i> Confirm Winner
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Tournament Header -->
     <div class="tournament-header">
         <div class="header-title">CASINO SPEEDRUN CHAMPIONSHIP | SCHEDULE MATCHES</div>
@@ -436,9 +698,33 @@
     <div class="container">
         <!-- Left Panel: Schedule Form -->
         <div class="panel left-panel">
-            <h2 class="panel-title"><i class="fas fa-calendar-plus"></i> Schedule New Match</h2>
+            <h2 class="panel-title"><i class="fas fa-calendar-plus"></i> Schedule/Edit Match</h2>
+            
+            <!-- Tournament Actions -->
+            <div class="tournament-actions">
+                <button class="tournament-action-btn create-bracket" onclick="createTournamentBracket()">
+                    <i class="fas fa-sitemap"></i> Create Full Bracket
+                </button>
+                <button class="tournament-action-btn reset-bracket" onclick="resetTournamentBracket()">
+                    <i class="fas fa-redo"></i> Reset Bracket
+                </button>
+                <button class="tournament-action-btn" onclick="debugBracket()" style="background: linear-gradient(135deg, #FF9800, #F57C00);">
+                    <i class="fas fa-bug"></i> Debug Bracket
+                </button>
+            </div>
+            
+            <!-- Form Mode Indicator -->
+            <div class="form-mode" id="formMode">
+                <span>Mode: <span class="mode-indicator mode-create" id="modeIndicator">CREATE NEW</span></span>
+                <button class="clear-form" id="clearForm">
+                    <i class="fas fa-times"></i> Clear Form
+                </button>
+            </div>
             
             <form id="scheduleForm">
+                <!-- Hidden field for match ID when editing -->
+                <input type="hidden" id="matchId">
+                
                 <div class="form-group">
                     <label for="player1"><i class="fas fa-user"></i> Player 1</label>
                     <select id="player1" required>
@@ -460,12 +746,19 @@
                     <select id="round" required>
                         <option value="">Select Round</option>
                         <option value="ROUND 1">ROUND 1</option>
-                        <option value="ROUND 2">ROUND 2</option>
-                        <option value="QUARTER FINAL">QUARTER FINAL</option>
-                        <option value="SEMI FINAL">SEMI FINAL</option>
-                        <option value="FINAL">FINAL</option>
+                        <option value="WINNERS SEMI-FINAL">WINNERS SEMI-FINAL</option>
+                        <option value="WINNERS FINAL">WINNERS FINAL</option>
+                        <option value="LOSERS ROUND 1">LOSERS ROUND 1</option>
+                        <option value="LOSERS ROUND 2">LOSERS ROUND 2</option>
+                        <option value="LOSERS ROUND 3">LOSERS ROUND 3</option>
+                        <option value="LOSERS FINAL">LOSERS FINAL</option>
                         <option value="GRAND FINAL">GRAND FINAL</option>
                     </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bracketPosition"><i class="fas fa-arrows-alt-h"></i> Bracket Position</label>
+                    <input type="number" id="bracketPosition" min="1" max="4" placeholder="Position in bracket (1-4)">
                 </div>
                 
                 <div class="form-group">
@@ -501,7 +794,7 @@
             
             <!-- Loading -->
             <div class="loading" id="loading" style="display: none;">
-                <i class="fas fa-spinner fa-spin"></i> Scheduling match...
+                <i class="fas fa-spinner fa-spin"></i> Processing...
             </div>
         </div>
         
@@ -528,7 +821,7 @@
     </div>
 
     <script>
-        // Supabase Configuration
+        // Supabase Configuration - Same as bracket page
         const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x';
         
@@ -536,15 +829,32 @@
         const scheduleForm = document.getElementById('scheduleForm');
         const player1Select = document.getElementById('player1');
         const player2Select = document.getElementById('player2');
+        const matchIdInput = document.getElementById('matchId');
+        const roundSelect = document.getElementById('round');
+        const bracketPositionInput = document.getElementById('bracketPosition');
+        const matchDateInput = document.getElementById('matchDate');
+        const matchTimeInput = document.getElementById('matchTime');
+        const matchStatusSelect = document.getElementById('matchStatus');
         const submitBtn = document.getElementById('submitBtn');
         const resultMessage = document.getElementById('resultMessage');
         const loading = document.getElementById('loading');
         const matchesList = document.getElementById('matchesList');
         const matchesLoading = document.getElementById('matchesLoading');
+        const winnerModal = document.getElementById('winnerModal');
+        const modalPlayers = document.getElementById('modalPlayers');
+        const cancelWinner = document.getElementById('cancelWinner');
+        const confirmWinner = document.getElementById('confirmWinner');
+        const formMode = document.getElementById('formMode');
+        const modeIndicator = document.getElementById('modeIndicator');
+        const clearFormBtn = document.getElementById('clearForm');
         
         // Global variables
         let allPlayers = [];
         let allMatches = [];
+        let currentMatchForCompletion = null;
+        let selectedWinnerId = null;
+        let isEditMode = false;
+        let currentEditMatchId = null;
         
         // Initialize page
         document.addEventListener('DOMContentLoaded', async function() {
@@ -558,7 +868,69 @@
             
             // Load players and matches
             await Promise.all([loadPlayers(), loadMatches()]);
+            
+            // Setup event listeners
+            setupModalListeners();
+            setupFormListeners();
         });
+        
+        // Setup modal event listeners
+        function setupModalListeners() {
+            cancelWinner.addEventListener('click', () => {
+                winnerModal.style.display = 'none';
+                currentMatchForCompletion = null;
+                selectedWinnerId = null;
+            });
+            
+            confirmWinner.addEventListener('click', async () => {
+                if (!currentMatchForCompletion || !selectedWinnerId) {
+                    showResult('Please select a winner', 'error');
+                    return;
+                }
+                
+                await completeMatchWithWinner(currentMatchForCompletion, selectedWinnerId);
+            });
+            
+            // Close modal when clicking outside
+            winnerModal.addEventListener('click', (e) => {
+                if (e.target === winnerModal) {
+                    winnerModal.style.display = 'none';
+                    currentMatchForCompletion = null;
+                    selectedWinnerId = null;
+                }
+            });
+        }
+        
+        // Setup form event listeners
+        function setupFormListeners() {
+            clearFormBtn.addEventListener('click', resetForm);
+        }
+        
+        // Reset form to create new mode
+        function resetForm() {
+            isEditMode = false;
+            currentEditMatchId = null;
+            matchIdInput.value = '';
+            
+            // Update UI
+            modeIndicator.textContent = 'CREATE NEW';
+            modeIndicator.className = 'mode-indicator mode-create';
+            submitBtn.innerHTML = '<i class="fas fa-calendar-check"></i> Schedule Match';
+            submitBtn.className = 'submit-btn';
+            
+            // Reset form values
+            scheduleForm.reset();
+            
+            // Reset to defaults
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            matchDateInput.value = tomorrow.toISOString().split('T')[0];
+            matchTimeInput.value = '20:00';
+            matchStatusSelect.value = 'scheduled';
+            bracketPositionInput.value = '';
+            
+            showResult('Form reset to create new match', 'success');
+        }
         
         // Load players from database
         async function loadPlayers() {
@@ -581,12 +953,12 @@
                 allPlayers.forEach(player => {
                     const option1 = document.createElement('option');
                     option1.value = player.id;
-                    option1.textContent = `${player.name} (@${player.twitch_username})`;
+                    option1.textContent = `${player.display_name || player.name} (@${player.twitch_username})`;
                     player1Select.appendChild(option1);
                     
                     const option2 = document.createElement('option');
                     option2.value = player.id;
-                    option2.textContent = `${player.name} (@${player.twitch_username})`;
+                    option2.textContent = `${player.display_name || player.name} (@${player.twitch_username})`;
                     player2Select.appendChild(option2);
                 });
                 
@@ -598,10 +970,11 @@
             }
         }
         
-        // Load matches from database
+        // Load matches from database (without foreign key relationships)
         async function loadMatches() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&order=match_date.desc`, {
+                // Load matches without foreign key relationships
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*&order=bracket_position.asc,round.asc`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
@@ -611,6 +984,19 @@
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 allMatches = await response.json();
+                
+                // Load players if not already loaded
+                if (allPlayers.length === 0) {
+                    await loadPlayers();
+                }
+                
+                // Manually combine match data with player data
+                allMatches.forEach(match => {
+                    match.player1 = allPlayers.find(p => p.id === match.player1_id);
+                    match.player2 = allPlayers.find(p => p.id === match.player2_id);
+                    match.winner = allPlayers.find(p => p.id === match.winner_id);
+                });
+                
                 renderMatches('all');
                 
             } catch (error) {
@@ -625,7 +1011,7 @@
         function renderMatches(filter) {
             const filteredMatches = allMatches.filter(match => {
                 if (filter === 'all') return true;
-                if (filter === 'unscheduled') return !match.match_date;
+                if (filter === 'unscheduled') return !match.player1_id || !match.player2_id || !match.status || match.status === 'unscheduled';
                 if (filter === 'scheduled') return match.status === 'scheduled';
                 if (filter === 'live') return match.status === 'live';
                 if (filter === 'completed') return match.status === 'completed';
@@ -645,8 +1031,9 @@
             let html = '';
             
             filteredMatches.forEach(match => {
-                const player1 = match.player1 || { name: 'Unknown', twitch_username: 'unknown' };
-                const player2 = match.player2 || { name: 'Unknown', twitch_username: 'unknown' };
+                const player1 = match.player1 || { name: 'Unknown', twitch_username: 'unknown', display_name: 'Unknown' };
+                const player2 = match.player2 || { name: 'Unknown', twitch_username: 'unknown', display_name: 'Unknown' };
+                const winner = match.winner || null;
                 
                 // Format match date
                 let matchTime = 'Not scheduled';
@@ -660,23 +1047,40 @@
                 const cardClass = `match-card ${match.status || 'unscheduled'}`;
                 const statusClass = `match-status status-${match.status || 'unscheduled'}`;
                 
+                // Check if there's a winner
+                const hasWinner = match.winner_id;
+                const isPlayer1Winner = hasWinner && match.winner_id === match.player1_id;
+                const isPlayer2Winner = hasWinner && match.winner_id === match.player2_id;
+                
+                // Show bracket position if available
+                const bracketInfo = match.bracket_position ? ` (Position: ${match.bracket_position})` : '';
+                
                 html += `
                     <div class="${cardClass}" data-match-id="${match.id}">
                         <div class="match-header">
-                            <span class="match-round">${match.round || 'UNKNOWN ROUND'}</span>
-                            <span class="${statusClass}">${match.status ? match.status.toUpperCase() : 'UNSCHEDULED'}</span>
+                            <span class="match-round">${match.round || 'UNKNOWN ROUND'}${bracketInfo}</span>
+                            <span class="${statusClass}">
+                                ${match.status ? match.status.toUpperCase() : 'UNSCHEDULED'}
+                                ${hasWinner ? ' <span class="winner-badge">✓ WINNER SET</span>' : ''}
+                            </span>
                         </div>
                         
                         <div class="match-players">
                             <div class="player">
-                                <div class="player-name">${player1.name}</div>
+                                <div class="player-name">
+                                    ${player1.display_name || player1.name}
+                                    ${isPlayer1Winner ? ' <span class="winner-badge">🏆</span>' : ''}
+                                </div>
                                 <div class="player-twitch">@${player1.twitch_username}</div>
                             </div>
                             
                             <div class="vs">VS</div>
                             
                             <div class="player">
-                                <div class="player-name">${player2.name}</div>
+                                <div class="player-name">
+                                    ${player2.display_name || player2.name}
+                                    ${isPlayer2Winner ? ' <span class="winner-badge">🏆</span>' : ''}
+                                </div>
                                 <div class="player-twitch">@${player2.twitch_username}</div>
                             </div>
                         </div>
@@ -686,11 +1090,9 @@
                         </div>
                         
                         <div class="match-actions">
-                            ${!match.match_date ? `
-                                <button class="action-btn schedule-btn" onclick="quickSchedule('${match.id}')">
-                                    <i class="fas fa-calendar-plus"></i> Schedule Now
-                                </button>
-                            ` : ''}
+                            <button class="action-btn edit-btn" onclick="editMatch('${match.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
                             
                             ${match.status === 'scheduled' ? `
                                 <button class="action-btn go-live-btn" onclick="updateMatchStatus('${match.id}', 'live')">
@@ -699,19 +1101,25 @@
                             ` : ''}
                             
                             ${match.status === 'live' ? `
-                                <button class="action-btn complete-btn" onclick="updateMatchStatus('${match.id}', 'completed')">
+                                <button class="action-btn complete-btn" onclick="openWinnerSelection('${match.id}')">
                                     <i class="fas fa-check-circle"></i> Mark Complete
                                 </button>
                             ` : ''}
                             
-                            ${match.status === 'completed' ? `
-                                <button class="action-btn schedule-btn" onclick="updateMatchStatus('${match.id}', 'scheduled')">
-                                    <i class="fas fa-redo"></i> Re-schedule
+                            ${match.status === 'completed' && !hasWinner ? `
+                                <button class="action-btn complete-btn" onclick="openWinnerSelection('${match.id}')">
+                                    <i class="fas fa-trophy"></i> Set Winner
                                 </button>
                             ` : ''}
                             
-                            <button class="action-btn view-btn" onclick="viewMatch('${match.id}')">
-                                <i class="fas fa-external-link-alt"></i> View
+                            ${match.status === 'completed' && hasWinner ? `
+                                <button class="action-btn schedule-btn" onclick="resetMatchWinner('${match.id}')">
+                                    <i class="fas fa-redo"></i> Reset Winner
+                                </button>
+                            ` : ''}
+                            
+                            <button class="action-btn view-btn" onclick="viewBracketPage()">
+                                <i class="fas fa-external-link-alt"></i> View Bracket
                             </button>
                         </div>
                     </div>
@@ -719,6 +1127,738 @@
             });
             
             matchesList.innerHTML = html;
+        }
+        
+        // Edit existing match
+        function editMatch(matchId) {
+            const match = allMatches.find(m => m.id === matchId);
+            if (!match) return;
+            
+            // Set edit mode
+            isEditMode = true;
+            currentEditMatchId = matchId;
+            
+            // Update UI
+            modeIndicator.textContent = 'EDIT EXISTING';
+            modeIndicator.className = 'mode-indicator mode-edit';
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Match';
+            submitBtn.className = 'submit-btn update-mode';
+            
+            // Populate form with match data
+            matchIdInput.value = matchId;
+            
+            if (match.player1) player1Select.value = match.player1.id;
+            if (match.player2) player2Select.value = match.player2.id;
+            if (match.round) roundSelect.value = match.round;
+            if (match.bracket_position) bracketPositionInput.value = match.bracket_position;
+            
+            // Format date and time
+            if (match.match_date) {
+                const matchDate = new Date(match.match_date);
+                matchDateInput.value = matchDate.toISOString().split('T')[0];
+                
+                // Extract time from match_time or match_date
+                if (match.match_time) {
+                    // Parse time from string like "8:00 PM CET"
+                    const timeMatch = match.match_time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                    if (timeMatch) {
+                        let hours = parseInt(timeMatch[1]);
+                        const minutes = timeMatch[2];
+                        const period = timeMatch[3].toUpperCase();
+                        
+                        if (period === 'PM' && hours < 12) hours += 12;
+                        if (period === 'AM' && hours === 12) hours = 0;
+                        
+                        matchTimeInput.value = `${hours.toString().padStart(2, '0')}:${minutes}`;
+                    }
+                } else {
+                    // Use time from date object
+                    matchTimeInput.value = `${matchDate.getHours().toString().padStart(2, '0')}:${matchDate.getMinutes().toString().padStart(2, '0')}`;
+                }
+            }
+            
+            if (match.status) matchStatusSelect.value = match.status;
+            
+            // Scroll to form
+            document.querySelector('.left-panel').scrollIntoView({ behavior: 'smooth' });
+            
+            showResult('Form pre-filled for editing. Make changes and click Update Match.', 'success');
+        }
+        
+        // Open winner selection modal
+        function openWinnerSelection(matchId) {
+            const match = allMatches.find(m => m.id === matchId);
+            if (!match || !match.player1 || !match.player2) return;
+            
+            currentMatchForCompletion = match;
+            selectedWinnerId = null;
+            
+            // Populate modal with players
+            modalPlayers.innerHTML = `
+                <div class="modal-player" data-player-id="${match.player1_id}">
+                    <div class="modal-player-name">
+                        ${match.player1.display_name || match.player1.name}
+                    </div>
+                    <div class="modal-player-twitch">@${match.player1.twitch_username}</div>
+                </div>
+                <div class="modal-player" data-player-id="${match.player2_id}">
+                    <div class="modal-player-name">
+                        ${match.player2.display_name || match.player2.name}
+                    </div>
+                    <div class="modal-player-twitch">@${match.player2.twitch_username}</div>
+                </div>
+            `;
+            
+            // Add click handlers for player selection
+            modalPlayers.querySelectorAll('.modal-player').forEach(playerEl => {
+                playerEl.addEventListener('click', () => {
+                    modalPlayers.querySelectorAll('.modal-player').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    playerEl.classList.add('selected');
+                    selectedWinnerId = playerEl.dataset.playerId;
+                });
+            });
+            
+            // Show modal
+            winnerModal.style.display = 'flex';
+        }
+        
+        // Get next match information based on current round and bracket position
+        async function getNextMatchInfo(currentMatch, winnerId, loserId) {
+            const round = currentMatch.round;
+            const bracketPosition = currentMatch.bracket_position || 1;
+            const result = { winnersMatch: null, losersMatch: null };
+            
+            try {
+                console.log(`🔍 Finding next matches for: ${round} position ${bracketPosition}`);
+                
+                // Load all matches
+                const allMatchesResponse = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*&order=round.asc,bracket_position.asc`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!allMatchesResponse.ok) throw new Error('Failed to load matches');
+                const allDbMatches = await allMatchesResponse.json();
+                
+                // Round 1 logic (4 matches)
+                if (round === 'ROUND 1') {
+                    switch(bracketPosition) {
+                        case 1: // ROUND 1 position 1
+                            // Winner goes to Winners Semi 1 Player 1
+                            result.winnersMatch = allDbMatches.find(m => 
+                                m.round === 'WINNERS SEMI-FINAL' && m.bracket_position === 1
+                            );
+                            // Loser goes to Losers Round 1 position 1 Player 1
+                            result.losersMatch = allDbMatches.find(m => 
+                                m.round === 'LOSERS ROUND 1' && m.bracket_position === 1
+                            );
+                            break;
+                        case 2: // ROUND 1 position 2
+                            // Winner goes to Winners Semi 1 Player 2
+                            result.winnersMatch = allDbMatches.find(m => 
+                                m.round === 'WINNERS SEMI-FINAL' && m.bracket_position === 1
+                            );
+                            // Loser goes to Losers Round 1 position 2 Player 1
+                            result.losersMatch = allDbMatches.find(m => 
+                                m.round === 'LOSERS ROUND 1' && m.bracket_position === 1
+                            );
+                            break;
+                        case 3: // ROUND 1 position 3
+                            // Winner goes to Winners Semi 2 Player 1
+                            result.winnersMatch = allDbMatches.find(m => 
+                                m.round === 'WINNERS SEMI-FINAL' && m.bracket_position === 2
+                            );
+                            // Loser goes to Losers Round 1 position 1 Player 2
+                            result.losersMatch = allDbMatches.find(m => 
+                                m.round === 'LOSERS ROUND 1' && m.bracket_position === 2
+                            );
+                            break;
+                        case 4: // ROUND 1 position 4
+                            // Winner goes to Winners Semi 2 Player 2
+                            result.winnersMatch = allDbMatches.find(m => 
+                                m.round === 'WINNERS SEMI-FINAL' && m.bracket_position === 2
+                            );
+                            // Loser goes to Losers Round 1 position 2 Player 2
+                            result.losersMatch = allDbMatches.find(m => 
+                                m.round === 'LOSERS ROUND 1' && m.bracket_position === 2
+                            );
+                            break;
+                    }
+                }
+                
+                // Winners Semi-Final logic (2 matches)
+                else if (round === 'WINNERS SEMI-FINAL') {
+                    switch(bracketPosition) {
+                        case 1: // Winners Semi 1
+                            // Winner goes to Winners Final Player 1
+                            result.winnersMatch = allDbMatches.find(m => 
+                                m.round === 'WINNERS FINAL' && m.bracket_position === 1
+                            );
+                            // Loser goes to Losers Round 2 position 1 Player 2
+                            result.losersMatch = allDbMatches.find(m => 
+                                m.round === 'LOSERS ROUND 2' && m.bracket_position === 1
+                            );
+                            break;
+                        case 2: // Winners Semi 2
+                            // Winner goes to Winners Final Player 2
+                            result.winnersMatch = allDbMatches.find(m => 
+                                m.round === 'WINNERS FINAL' && m.bracket_position === 1
+                            );
+                            // Loser goes to Losers Round 2 position 2 Player 2
+                            result.losersMatch = allDbMatches.find(m => 
+                                m.round === 'LOSERS ROUND 2' && m.bracket_position === 2
+                            );
+                            break;
+                    }
+                }
+                
+                // Losers Round 1 logic (2 matches)
+                else if (round === 'LOSERS ROUND 1') {
+                    switch(bracketPosition) {
+                        case 1: // Losers Round 1 position 1
+                            // Winner goes to Losers Round 2 position 1 Player 1
+                            result.winnersMatch = allDbMatches.find(m => 
+                                m.round === 'LOSERS ROUND 2' && m.bracket_position === 1
+                            );
+                            // Loser eliminated (2 losses)
+                            console.log('Loser eliminated (2 losses)');
+                            break;
+                        case 2: // Losers Round 1 position 2
+                            // Winner goes to Losers Round 2 position 2 Player 1
+                            result.winnersMatch = allDbMatches.find(m => 
+                                m.round === 'LOSERS ROUND 2' && m.bracket_position === 2
+                            );
+                            // Loser eliminated (2 losses)
+                            console.log('Loser eliminated (2 losses)');
+                            break;
+                    }
+                }
+                
+                // Losers Round 2 logic (2 matches)
+                else if (round === 'LOSERS ROUND 2') {
+                    switch(bracketPosition) {
+                        case 1: // Losers Round 2 position 1
+                            // Winner goes to Losers Round 3 Player 1
+                            result.winnersMatch = allDbMatches.find(m => 
+                                m.round === 'LOSERS ROUND 3' && m.bracket_position === 1
+                            );
+                            // Loser eliminated (2 losses)
+                            console.log('Loser eliminated (2 losses)');
+                            break;
+                        case 2: // Losers Round 2 position 2
+                            // Winner goes to Losers Round 3 Player 2
+                            result.winnersMatch = allDbMatches.find(m => 
+                                m.round === 'LOSERS ROUND 3' && m.bracket_position === 1
+                            );
+                            // Loser eliminated (2 losses)
+                            console.log('Loser eliminated (2 losses)');
+                            break;
+                    }
+                }
+                
+                // Winners Final logic (1 match)
+                else if (round === 'WINNERS FINAL') {
+                    // Winner goes to Grand Final Player 1
+                    result.winnersMatch = allDbMatches.find(m => 
+                        m.round === 'GRAND FINAL' && m.bracket_position === 1
+                    );
+                    // Loser goes to Losers Final Player 1
+                    result.losersMatch = allDbMatches.find(m => 
+                        m.round === 'LOSERS FINAL' && m.bracket_position === 1
+                    );
+                }
+                
+                // Losers Round 3 logic (1 match)
+                else if (round === 'LOSERS ROUND 3') {
+                    // Winner goes to Losers Final Player 2
+                    result.winnersMatch = allDbMatches.find(m => 
+                        m.round === 'LOSERS FINAL' && m.bracket_position === 1
+                    );
+                    // Loser eliminated (2 losses)
+                    console.log('Loser eliminated (2 losses)');
+                }
+                
+                // Losers Final logic (1 match)
+                else if (round === 'LOSERS FINAL') {
+                    // Winner goes to Grand Final Player 2
+                    result.winnersMatch = allDbMatches.find(m => 
+                        m.round === 'GRAND FINAL' && m.bracket_position === 1
+                    );
+                    // Loser eliminated (2 losses)
+                    console.log('Loser eliminated (2 losses)');
+                }
+                
+                // Grand Final has no next matches
+                else if (round === 'GRAND FINAL') {
+                    console.log('Grand Final - tournament complete');
+                }
+                
+                console.log(`Found next matches:`, result);
+                return result;
+                
+            } catch (error) {
+                console.error('Error finding next match:', error);
+                return result;
+            }
+        }
+        
+        // Complete match with selected winner
+        async function completeMatchWithWinner(match, winnerId) {
+            try {
+                const winnerName = winnerId === match.player1_id ? 
+                    (match.player1.display_name || match.player1.name) : 
+                    (match.player2.display_name || match.player2.name);
+                
+                const loserId = winnerId === match.player1_id ? match.player2_id : match.player1_id;
+                const loserName = loserId === match.player1_id ? 
+                    (match.player1.display_name || match.player1.name) : 
+                    (match.player2.display_name || match.player2.name);
+                
+                if (!confirm(`Set ${winnerName} as the winner and advance them in the bracket? Loser ${loserName} will move to losers bracket.`)) {
+                    return;
+                }
+                
+                // Show loading in modal
+                confirmWinner.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                confirmWinner.disabled = true;
+                
+                // 1. Update the current match with winner and status
+                const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${match.id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify({
+                        winner_id: winnerId,
+                        status: 'completed',
+                        updated_at: new Date().toISOString()
+                    })
+                });
+                
+                if (!updateResponse.ok) {
+                    throw new Error('Failed to update match winner');
+                }
+                
+                // 2. Determine next match based on round and bracket
+                const nextMatchInfo = await getNextMatchInfo(match, winnerId, loserId);
+                
+                let successMessage = `✅ ${winnerName} set as winner!`;
+                
+                // 3. Update next matches if found
+                if (nextMatchInfo.winnersMatch) {
+                    // Determine which slot to fill based on round and position
+                    let preferredSlot = null;
+                    
+                    // Round 1 logic for slot assignment
+                    if (match.round === 'ROUND 1') {
+                        if (match.bracket_position === 1 || match.bracket_position === 3) {
+                            preferredSlot = 'player1_id';
+                        } else if (match.bracket_position === 2 || match.bracket_position === 4) {
+                            preferredSlot = 'player2_id';
+                        }
+                    }
+                    // Winners Semi-Final logic
+                    else if (match.round === 'WINNERS SEMI-FINAL') {
+                        if (match.bracket_position === 1) {
+                            preferredSlot = 'player1_id';
+                        } else if (match.bracket_position === 2) {
+                            preferredSlot = 'player2_id';
+                        }
+                    }
+                    // Losers Round 1 winners go to player2_id slots
+                    else if (match.round === 'LOSERS ROUND 1') {
+                        preferredSlot = 'player2_id';
+                    }
+                    // Losers Round 2 winners
+                    else if (match.round === 'LOSERS ROUND 2') {
+                        if (match.bracket_position === 1) {
+                            preferredSlot = 'player1_id';
+                        } else if (match.bracket_position === 2) {
+                            preferredSlot = 'player2_id';
+                        }
+                    }
+                    // Winners Final winner goes to player1_id
+                    else if (match.round === 'WINNERS FINAL') {
+                        preferredSlot = 'player1_id';
+                    }
+                    // Losers Round 3 winner goes to player2_id
+                    else if (match.round === 'LOSERS ROUND 3') {
+                        preferredSlot = 'player2_id';
+                    }
+                    // Losers Final winner goes to player2_id
+                    else if (match.round === 'LOSERS FINAL') {
+                        preferredSlot = 'player2_id';
+                    }
+                    
+                    const updated = await updateNextMatch(nextMatchInfo.winnersMatch, winnerId, preferredSlot);
+                    if (updated) {
+                        successMessage += `<br>✅ Winner advanced to ${nextMatchInfo.winnersMatch.round}`;
+                    } else {
+                        successMessage += `<br>⚠️ Winner could not be added to ${nextMatchInfo.winnersMatch.round} (slot already filled)`;
+                    }
+                }
+                
+                // Only update losers match if loser exists and hasn't been eliminated
+                if (nextMatchInfo.losersMatch && loserId) {
+                    // Check if loser is coming from losers bracket (would have 2 losses)
+                    const isFromLosersBracket = ['LOSERS ROUND 1', 'LOSERS ROUND 2', 'LOSERS ROUND 3', 'LOSERS FINAL'].includes(match.round);
+                    
+                    if (isFromLosersBracket) {
+                        successMessage += `<br>⚠️ ${loserName} eliminated (2 losses)`;
+                    } else {
+                        // Determine which slot to fill for loser
+                        let preferredSlot = null;
+                        
+                        if (match.round === 'ROUND 1') {
+                            if (match.bracket_position === 1 || match.bracket_position === 2) {
+                                preferredSlot = 'player1_id';
+                            } else if (match.bracket_position === 3 || match.bracket_position === 4) {
+                                preferredSlot = 'player2_id';
+                            }
+                        }
+                        // Winners Semi-Final losers go to player2_id in Losers Round 2
+                        else if (match.round === 'WINNERS SEMI-FINAL') {
+                            preferredSlot = 'player2_id';
+                        }
+                        // Winners Final loser goes to player1_id in Losers Final
+                        else if (match.round === 'WINNERS FINAL') {
+                            preferredSlot = 'player1_id';
+                        }
+                        
+                        const updated = await updateNextMatch(nextMatchInfo.losersMatch, loserId, preferredSlot);
+                        if (updated) {
+                            successMessage += `<br>✅ Loser moved to ${nextMatchInfo.losersMatch.round}`;
+                        } else {
+                            successMessage += `<br>⚠️ Loser could not be added to ${nextMatchInfo.losersMatch.round} (slot already filled)`;
+                        }
+                    }
+                } else if (loserId && match.round !== 'GRAND FINAL') {
+                    // Check if this is an elimination (loser from losers bracket)
+                    const isFromLosersBracket = ['LOSERS ROUND 1', 'LOSERS ROUND 2', 'LOSERS ROUND 3', 'LOSERS FINAL'].includes(match.round);
+                    if (isFromLosersBracket) {
+                        successMessage += `<br>⚠️ ${loserName} eliminated (2 losses)`;
+                    } else if (match.round !== 'WINNERS FINAL' && match.round !== 'LOSERS FINAL') {
+                        successMessage += `<br>⚠️ ${loserName} eliminated from tournament`;
+                    }
+                }
+                
+                // 4. Reload matches and close modal
+                await loadMatches();
+                winnerModal.style.display = 'none';
+                currentMatchForCompletion = null;
+                selectedWinnerId = null;
+                
+                showResult(successMessage, 'success');
+                
+            } catch (error) {
+                console.error('Error completing match:', error);
+                showResult(`Error: ${error.message}`, 'error');
+            } finally {
+                confirmWinner.innerHTML = '<i class="fas fa-check"></i> Confirm Winner';
+                confirmWinner.disabled = false;
+            }
+        }
+        
+        // Update next match with player
+        async function updateNextMatch(nextMatch, playerId, preferredSlot = null) {
+            if (!nextMatch) {
+                console.log('No next match to update');
+                return false;
+            }
+            
+            console.log(`📝 Updating next match: ${nextMatch.round} position ${nextMatch.bracket_position}`);
+            console.log(`Adding player ${playerId}, preferred slot: ${preferredSlot}`);
+            
+            // Check if player is already in this match
+            if (nextMatch.player1_id === playerId || nextMatch.player2_id === playerId) {
+                console.log(`Player ${playerId} already in this match`);
+                return false;
+            }
+            
+            // Determine which slot to fill
+            const updateData = {};
+            let slotAssigned = false;
+            
+            // Try to use preferred slot first
+            if (preferredSlot === 'player1_id') {
+                if (!nextMatch.player1_id) {
+                    updateData.player1_id = playerId;
+                    slotAssigned = true;
+                    console.log(`Assigned to player1_id slot`);
+                } else if (!nextMatch.player2_id) {
+                    updateData.player2_id = playerId;
+                    slotAssigned = true;
+                    console.log(`player1_id full, assigned to player2_id instead`);
+                }
+            } else if (preferredSlot === 'player2_id') {
+                if (!nextMatch.player2_id) {
+                    updateData.player2_id = playerId;
+                    slotAssigned = true;
+                    console.log(`Assigned to player2_id slot`);
+                } else if (!nextMatch.player1_id) {
+                    updateData.player1_id = playerId;
+                    slotAssigned = true;
+                    console.log(`player2_id full, assigned to player1_id instead`);
+                }
+            }
+            
+            // If no preferred slot or preferred slot not available, fill empty slot
+            if (!slotAssigned) {
+                if (!nextMatch.player1_id) {
+                    updateData.player1_id = playerId;
+                    slotAssigned = true;
+                    console.log(`Assigned to empty player1_id slot`);
+                } else if (!nextMatch.player2_id) {
+                    updateData.player2_id = playerId;
+                    slotAssigned = true;
+                    console.log(`Assigned to empty player2_id slot`);
+                }
+            }
+            
+            if (!slotAssigned) {
+                console.log(`Both slots are already filled in this match`);
+                return false;
+            }
+            
+            // Update match status if both players are now set
+            const willHaveBothPlayers = (updateData.player1_id && nextMatch.player2_id) || 
+                                       (updateData.player2_id && nextMatch.player1_id) ||
+                                       (nextMatch.player1_id && nextMatch.player2_id);
+            
+            if (willHaveBothPlayers && (!nextMatch.status || nextMatch.status === 'unscheduled')) {
+                updateData.status = 'scheduled';
+                console.log(`Match now has both players, setting status to 'scheduled'`);
+            }
+            
+            updateData.updated_at = new Date().toISOString();
+            
+            console.log(`Sending update to database:`, updateData);
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${nextMatch.id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (response.ok) {
+                    console.log(`✅ Successfully updated match ${nextMatch.id}`);
+                    return true;
+                } else {
+                    const errorText = await response.text();
+                    console.error(`❌ Failed to update match ${nextMatch.id}:`, errorText);
+                    return false;
+                }
+            } catch (error) {
+                console.error(`❌ Error updating match:`, error);
+                return false;
+            }
+        }
+        
+        // Reset match winner
+        async function resetMatchWinner(matchId) {
+            const match = allMatches.find(m => m.id === matchId);
+            if (!match) return;
+            
+            if (!confirm('Reset this match winner? This will remove the winner and reset the match status.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${matchId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({
+                        winner_id: null,
+                        status: match.player1_id && match.player2_id ? 'scheduled' : 'unscheduled',
+                        updated_at: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to reset match');
+                
+                await loadMatches();
+                showResult('✅ Match winner reset', 'success');
+                
+            } catch (error) {
+                console.error('Error resetting match:', error);
+                showResult(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Create full tournament bracket
+        async function createTournamentBracket() {
+            if (!confirm('Create full 8-player double elimination bracket? This will create all required matches.')) {
+                return;
+            }
+            
+            try {
+                loading.style.display = 'block';
+                
+                // Load players
+                await loadPlayers();
+                
+                if (allPlayers.length < 8) {
+                    showResult('Need 8 players to create bracket. Currently have ' + allPlayers.length + ' players.', 'error');
+                    loading.style.display = 'none';
+                    return;
+                }
+                
+                // Shuffle players for random draw
+                const shuffledPlayers = [...allPlayers].sort(() => Math.random() - 0.5);
+                
+                // Define all bracket matches for 8-player double elimination
+                const bracketMatches = [
+                    // Round 1 - 4 matches (with players assigned)
+                    { round: 'ROUND 1', bracket_position: 1, player1: shuffledPlayers[0], player2: shuffledPlayers[1] },
+                    { round: 'ROUND 1', bracket_position: 2, player1: shuffledPlayers[2], player2: shuffledPlayers[3] },
+                    { round: 'ROUND 1', bracket_position: 3, player1: shuffledPlayers[4], player2: shuffledPlayers[5] },
+                    { round: 'ROUND 1', bracket_position: 4, player1: shuffledPlayers[6], player2: shuffledPlayers[7] },
+                    
+                    // Winners Bracket (no players yet)
+                    { round: 'WINNERS SEMI-FINAL', bracket_position: 1 },
+                    { round: 'WINNERS SEMI-FINAL', bracket_position: 2 },
+                    { round: 'WINNERS FINAL', bracket_position: 1 },
+                    
+                    // Losers Bracket (no players yet)
+                    { round: 'LOSERS ROUND 1', bracket_position: 1 },
+                    { round: 'LOSERS ROUND 1', bracket_position: 2 },
+                    { round: 'LOSERS ROUND 2', bracket_position: 1 },
+                    { round: 'LOSERS ROUND 2', bracket_position: 2 },
+                    { round: 'LOSERS ROUND 3', bracket_position: 1 },
+                    { round: 'LOSERS FINAL', bracket_position: 1 },
+                    
+                    // Championship
+                    { round: 'GRAND FINAL', bracket_position: 1 }
+                ];
+                
+                let createdCount = 0;
+                
+                // Create each match
+                for (const matchTemplate of bracketMatches) {
+                    const matchId = crypto.randomUUID();
+                    const matchData = {
+                        id: matchId,
+                        round: matchTemplate.round,
+                        bracket_position: matchTemplate.bracket_position,
+                        player1_id: matchTemplate.player1 ? matchTemplate.player1.id : null,
+                        player2_id: matchTemplate.player2 ? matchTemplate.player2.id : null,
+                        winner_id: null,
+                        status: matchTemplate.player1 && matchTemplate.player2 ? 'scheduled' : 'unscheduled',
+                        match_date: null,
+                        match_time: null,
+                        layout_url: `${window.location.origin}/TK.html?match_id=${matchId}`,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    };
+                    
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/matches`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify(matchData)
+                    });
+                    
+                    if (response.ok) {
+                        createdCount++;
+                    }
+                }
+                
+                await loadMatches();
+                showResult(`✅ Created ${createdCount} bracket matches for 8-player double elimination tournament`, 'success');
+                
+            } catch (error) {
+                console.error('Error creating bracket:', error);
+                showResult(`Error: ${error.message}`, 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        // Reset tournament bracket
+        async function resetTournamentBracket() {
+            if (!confirm('Reset entire tournament bracket? This will clear all match data but keep the match structure.')) {
+                return;
+            }
+            
+            try {
+                loading.style.display = 'block';
+                
+                // Load all matches
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load matches');
+                
+                const allDbMatches = await response.json();
+                
+                // Reset each match individually
+                for (const match of allDbMatches) {
+                    const resetData = {
+                        player1_id: null,
+                        player2_id: null,
+                        winner_id: null,
+                        status: 'unscheduled',
+                        match_date: null,
+                        match_time: null,
+                        updated_at: new Date().toISOString()
+                    };
+                    
+                    // Keep players for Round 1 matches
+                    if (match.round === 'ROUND 1') {
+                        resetData.status = 'scheduled';
+                    }
+                    
+                    const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${match.id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify(resetData)
+                    });
+                    
+                    if (!updateResponse.ok) {
+                        console.error(`Failed to reset match ${match.id}`);
+                    }
+                }
+                
+                await loadMatches();
+                showResult('✅ Tournament bracket reset. All matches cleared.', 'success');
+                
+            } catch (error) {
+                console.error('Error resetting bracket:', error);
+                showResult(`Error: ${error.message}`, 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
         }
         
         // Filter matches
@@ -733,26 +1873,9 @@
             renderMatches(filter);
         }
         
-        // Quick schedule for unscheduled matches
-        function quickSchedule(matchId) {
-            const match = allMatches.find(m => m.id === matchId);
-            if (!match) return;
-            
-            // Pre-fill the form
-            if (match.player1) document.getElementById('player1').value = match.player1.id;
-            if (match.player2) document.getElementById('player2').value = match.player2.id;
-            if (match.round) document.getElementById('round').value = match.round;
-            
-            // Scroll to form
-            document.querySelector('.left-panel').scrollIntoView({ behavior: 'smooth' });
-            
-            showResult('Form pre-filled! Set date/time and click Schedule Match', 'success');
-        }
-        
-        // View match in tournament page
-        function viewMatch(matchId) {
-            const url = `TK.html?match_id=${matchId}`;
-            window.open(url, '_blank');
+        // View bracket page
+        function viewBracketPage() {
+            window.open('index.html', '_blank'); // Assuming bracket page is index.html
         }
         
         // Update match status (scheduled → live → completed)
@@ -761,6 +1884,13 @@
             if (!match) return;
             
             const currentStatus = match.status;
+            
+            // If completing a match, open winner selection instead
+            if (newStatus === 'completed') {
+                openWinnerSelection(matchId);
+                return;
+            }
+            
             const confirmMessage = `Change match status from "${currentStatus}" to "${newStatus}"?`;
             
             if (!confirm(confirmMessage)) return;
@@ -784,7 +1914,10 @@
                         'Content-Type': 'application/json',
                         'Prefer': 'return=representation'
                     },
-                    body: JSON.stringify({ status: newStatus })
+                    body: JSON.stringify({ 
+                        status: newStatus,
+                        updated_at: new Date().toISOString()
+                    })
                 });
                 
                 if (!response.ok) {
@@ -819,17 +1952,93 @@
             }
         }
         
+        // Debug function to check bracket structure
+        async function debugBracket() {
+            try {
+                console.log('🔧 DEBUG: Checking bracket structure');
+                
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*&order=round.asc,bracket_position.asc`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load matches');
+                const allDbMatches = await response.json();
+                
+                console.log('Current matches in database:');
+                allDbMatches.forEach(match => {
+                    console.log(`${match.round} position ${match.bracket_position} - Match ${match.id}`);
+                    console.log(`  Player 1: ${match.player1_id}, Player 2: ${match.player2_id}`);
+                    console.log(`  Status: ${match.status}, Winner: ${match.winner_id}`);
+                });
+                
+                // Check for missing matches
+                const expectedMatches = [
+                    { round: 'ROUND 1', positions: [1, 2, 3, 4] },
+                    { round: 'WINNERS SEMI-FINAL', positions: [1, 2] },
+                    { round: 'WINNERS FINAL', positions: [1] },
+                    { round: 'LOSERS ROUND 1', positions: [1, 2] },
+                    { round: 'LOSERS ROUND 2', positions: [1, 2] },
+                    { round: 'LOSERS ROUND 3', positions: [1] },
+                    { round: 'LOSERS FINAL', positions: [1] },
+                    { round: 'GRAND FINAL', positions: [1] }
+                ];
+                
+                let debugHtml = '<div class="result-message success"><strong>🔧 Bracket Debug Results:</strong><br>';
+                
+                expectedMatches.forEach(expected => {
+                    expected.positions.forEach(position => {
+                        const exists = allDbMatches.some(m => 
+                            m.round === expected.round && m.bracket_position === position
+                        );
+                        if (!exists) {
+                            debugHtml += `❌ MISSING: ${expected.round} position ${position}<br>`;
+                            console.log(`❌ MISSING: ${expected.round} position ${position}`);
+                        } else {
+                            debugHtml += `✅ FOUND: ${expected.round} position ${position}<br>`;
+                            console.log(`✅ FOUND: ${expected.round} position ${position}`);
+                        }
+                    });
+                });
+                
+                debugHtml += `<br><strong>Total Matches:</strong> ${allDbMatches.length}`;
+                debugHtml += '</div>';
+                
+                // Show debug results
+                const debugContainer = document.createElement('div');
+                debugContainer.innerHTML = debugHtml;
+                matchesList.parentNode.insertBefore(debugContainer, matchesList);
+                
+                // Auto-remove after 10 seconds
+                setTimeout(() => {
+                    if (debugContainer.parentNode) {
+                        debugContainer.parentNode.removeChild(debugContainer);
+                    }
+                }, 10000);
+                
+                return allDbMatches;
+                
+            } catch (error) {
+                console.error('Debug error:', error);
+                showResult(`Debug error: ${error.message}`, 'error');
+            }
+        }
+        
         // Form submission
         scheduleForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             // Get form values
-            const player1Id = document.getElementById('player1').value;
-            const player2Id = document.getElementById('player2').value;
-            const round = document.getElementById('round').value;
-            const matchDate = document.getElementById('matchDate').value;
-            const matchTime = document.getElementById('matchTime').value;
-            const status = document.getElementById('matchStatus').value;
+            const matchId = matchIdInput.value;
+            const player1Id = player1Select.value;
+            const player2Id = player2Select.value;
+            const round = roundSelect.value;
+            const bracketPosition = bracketPositionInput.value;
+            const matchDate = matchDateInput.value;
+            const matchTime = matchTimeInput.value;
+            const status = matchStatusSelect.value;
             
             // Validation
             if (!player1Id || !player2Id) {
@@ -862,74 +2071,109 @@
                 const dateTime = new Date(`${matchDate}T${matchTime}`);
                 const timeString = `${dateTime.getHours() % 12 || 12}:${dateTime.getMinutes().toString().padStart(2, '0')} ${dateTime.getHours() >= 12 ? 'PM' : 'AM'} CET`;
                 
-                // Generate match ID
-                const matchId = crypto.randomUUID();
-                
                 // Prepare match data
                 const matchData = {
-                    id: matchId,
                     player1_id: player1Id,
                     player2_id: player2Id,
                     round: round,
                     match_date: dateTime.toISOString(),
                     match_time: timeString,
                     status: status,
-                    layout_url: `${window.location.origin}/TK.html?match_id=${matchId}`
+                    updated_at: new Date().toISOString()
                 };
                 
-                console.log('Creating match:', matchData);
-                
-                // Insert match into Supabase
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=representation'
-                    },
-                    body: JSON.stringify(matchData)
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `HTTP ${response.status}`);
+                // Add bracket position if provided
+                if (bracketPosition) {
+                    matchData.bracket_position = parseInt(bracketPosition);
                 }
                 
-                const result = await response.json();
-                console.log('Match created:', result);
+                let response;
                 
-                // Success message with URL
-                const player1 = allPlayers.find(p => p.id === player1Id);
-                const player2 = allPlayers.find(p => p.id === player2Id);
-                const tournamentUrl = `${window.location.origin}/TK.html?match_id=${matchId}`;
+                if (isEditMode && matchId) {
+                    // UPDATE existing match
+                    console.log('Updating match:', matchId, matchData);
+                    
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${matchId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(matchData)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || `HTTP ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Match updated:', result);
+                    
+                    // Success message
+                    const player1 = allPlayers.find(p => p.id === player1Id);
+                    const player2 = allPlayers.find(p => p.id === player2Id);
+                    
+                    showResult(
+                        `✅ Match updated successfully!<br>
+                        <strong>${player1?.display_name || player1?.name} vs ${player2?.display_name || player2?.name}</strong><br>
+                        ${round} on ${dateTime.toLocaleDateString()} at ${timeString}<br>
+                        Status: ${status}`,
+                        'success'
+                    );
+                    
+                } else {
+                    // CREATE new match
+                    const newMatchId = crypto.randomUUID();
+                    matchData.id = newMatchId;
+                    matchData.layout_url = `${window.location.origin}/TK.html?match_id=${newMatchId}`;
+                    
+                    console.log('Creating match:', matchData);
+                    
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/matches`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(matchData)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || `HTTP ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Match created:', result);
+                    
+                    // Success message
+                    const player1 = allPlayers.find(p => p.id === player1Id);
+                    const player2 = allPlayers.find(p => p.id === player2Id);
+                    const tournamentUrl = `${window.location.origin}/index.html`;
+                    
+                    showResult(
+                        `✅ Match scheduled!<br>
+                        <strong>${player1?.display_name || player1?.name} vs ${player2?.display_name || player2?.name}</strong><br>
+                        ${round} on ${dateTime.toLocaleDateString()} at ${timeString}<br>
+                        Status: ${status}<br><br>
+                        <a href="${tournamentUrl}" target="_blank" style="color: #9146FF; text-decoration: none;">
+                            <i class="fas fa-external-link-alt"></i> Open Tournament Bracket
+                        </a>`,
+                        'success'
+                    );
+                }
                 
-                showResult(
-                    `✅ Match scheduled!<br>
-                    <strong>${player1?.name} vs ${player2?.name}</strong><br>
-                    ${round} on ${dateTime.toLocaleDateString()} at ${timeString}<br>
-                    Status: ${status}<br><br>
-                    <a href="${tournamentUrl}" target="_blank" style="color: #9146FF; text-decoration: none;">
-                        <i class="fas fa-external-link-alt"></i> Open Tournament Page
-                    </a>`,
-                    'success'
-                );
-                
-                // Clear form
-                scheduleForm.reset();
-                
-                // Reset to defaults
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                document.getElementById('matchDate').value = tomorrow.toISOString().split('T')[0];
-                document.getElementById('matchTime').value = '20:00';
-                document.getElementById('matchStatus').value = 'scheduled';
-                
-                // Reload matches
+                // Reset form and reload matches
+                resetForm();
                 await loadMatches();
                 
             } catch (error) {
-                console.error('Error scheduling match:', error);
+                console.error('Error saving match:', error);
                 
                 // Check for duplicate match
                 if (error.message.includes('duplicate') || error.message.includes('already exists')) {

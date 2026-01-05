@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Debug Supabase Matches</title>
+</head>
+
+<body style="background:#000; color:#0f0; font-family:monospace; padding:20px;">
+    <h2>Match Debugger</h2>
+    <div id="output">Loading...</div>
+
+    <script>
+        const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x';
+
+        async function debug() {
+            const out = document.getElementById('output');
+            try {
+                out.innerHTML = 'Fetching...<br>';
+
+                // 1. Fetch raw matches
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+
+                if (!res.ok) throw new Error(res.statusText);
+
+                const matches = await res.json();
+
+                out.innerHTML += `Total Matches Found: ${matches.length}<br><br>`;
+
+                matches.forEach(m => {
+                    out.innerHTML += `ID: ${m.id}<br>`;
+                    out.innerHTML += `Round: ${m.round} (${m.bracket_position})<br>`;
+                    out.innerHTML += `Status: <strong>${m.status}</strong><br>`; // Checking exact string value
+                    out.innerHTML += `Date: ${m.match_date}<br>`;
+                    out.innerHTML += `P1: ${m.player1_id}<br>`;
+                    out.innerHTML += `P2: ${m.player2_id}<br>`;
+                    out.innerHTML += '---------------------------------<br>';
+                });
+
+            } catch (e) {
+                out.innerHTML += `<span style="color:red">Error: ${e.message}</span>`;
+            }
+        }
+        debug();
+    </script>
+</body>
+
+</html>

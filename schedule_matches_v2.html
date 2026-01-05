@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Manager V2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-image: url('./Assets/BG.png');
+            background-size: cover;
+            background-attachment: fixed;
+            color: #fff;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .tournament-header {
+            padding: 15px 30px;
+            text-align: center;
+            border-bottom: 3px solid #9146FF;
+            background: rgba(0, 0, 0, 0.9);
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow:
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #fff,
+                0 0 40px #0ff,
+                0 0 80px #0ff,
+                0 0 90px #0ff,
+                0 0 100px #0ff,
+                0 0 150px #0ff;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .header-subtitle {
+            color: #aaa;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #444;
+            border-radius: 10px;
+            padding: 20px;
+            padding: 20px;
+            height: calc(100vh - 200px);
+            /* Adjusted for header */
+            overflow-y: auto;
+        }
+
+        .panel-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #9146FF;
+            position: sticky;
+            top: 0;
+            background: #000;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Cards */
+        .match-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #444;
+            border-left: 4px solid #666;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .match-card:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-scheduled {
+            border-left-color: #00ff1a;
+        }
+
+        .status-live {
+            border-left-color: #ff008c;
+            animation: pulse 2s infinite;
+        }
+
+        .status-completed {
+            border-left-color: #9146FF;
+            opacity: 0.7;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 5px #ff008c;
+            }
+
+            50% {
+                box-shadow: 0 0 15px #ff008c;
+            }
+
+            100% {
+                box-shadow: 0 0 5px #ff008c;
+            }
+        }
+
+        /* Typography */
+        .match-round {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #9146FF;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .match-players {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vs {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0 10px;
+        }
+
+        .match-time {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Actions */
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: 0.2s;
+        }
+
+        .btn-schedule {
+            background: #4299e1;
+        }
+
+        .btn-schedule:hover {
+            background: #3182ce;
+        }
+
+        .btn-live {
+            background: #ff008c;
+        }
+
+        .btn-live:hover {
+            background: #d60076;
+        }
+
+        .btn-complete {
+            background: #9146FF;
+        }
+
+        .btn-complete:hover {
+            background: #805da0;
+        }
+
+        .btn-overlay {
+            background: #333;
+            grid-column: span 2;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-box {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #9146FF;
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .close {
+            float: right;
+            cursor: pointer;
+            color: #aaa;
+            font-size: 1.5rem;
+        }
+
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 5px;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            background: #333;
+            border-left: 4px solid #9146FF;
+            color: white;
+            display: none;
+            z-index: 2000;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="tournament-header">
+        <div class="header-title">CASINO SPEEDRUN CHAMPIONSHIP</div>
+        <div class="header-subtitle">Match Scheduler</div>
+    </div>
+
+    <div class="container">
+        <!-- Unscheduled / Pending Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span><i class="fas fa-clock"></i> Pending Matches</span>
+                <button class="btn btn-schedule" onclick="loadMatches()" style="font-size:0.8rem"><i
+                        class="fas fa-sync"></i></button>
+            </div>
+            <div id="pendingList">
+                <div style="text-align:center; padding: 20px; color: #666;">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Active / Scheduled Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span><i class="fas fa-broadcast-tower"></i> Active Schedule</span>
+            </div>
+            <div id="activeList"></div>
+        </div>
+    </div>
+
+    <!-- Scheduling Modal -->
+    <div class="modal" id="scheduleModal">
+        <div class="modal-box">
+            <span class="close" onclick="closeModal('scheduleModal')">&times;</span>
+            <h2>Schedule Match</h2>
+            <p id="scheduleMatchInfo" style="color:#aaa; margin-bottom:10px"></p>
+            <input type="datetime-local" id="scheduleTime">
+            <button class="btn btn-schedule" style="width:100%" onclick="saveSchedule()">Save Schedule</button>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div class="modal" id="resultModal">
+        <div class="modal-box">
+            <span class="close" onclick="closeModal('resultModal')">&times;</span>
+            <h2>Set Winner</h2>
+            <p style="color:#aaa; margin-bottom:20px">Winner will advance automatically.</p>
+            <div class="actions">
+                <button class="btn btn-complete" id="winP1">Player 1</button>
+                <button class="btn btn-complete" id="winP2">Player 2</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x';
+
+        // Copying the Logic Map from bracket_v2 to ensure consistency
+        const PROGRESSION_MAP = {
+            'ROUND 1': {
+                1: { w: { r: 'WINNERS SEMI-FINAL', p: 1, s: 'p1' }, l: { r: 'LOSERS ROUND 1', p: 1, s: 'p1' } },
+                2: { w: { r: 'WINNERS SEMI-FINAL', p: 1, s: 'p2' }, l: { r: 'LOSERS ROUND 1', p: 1, s: 'p2' } },
+                3: { w: { r: 'WINNERS SEMI-FINAL', p: 2, s: 'p1' }, l: { r: 'LOSERS ROUND 1', p: 2, s: 'p1' } },
+                4: { w: { r: 'WINNERS SEMI-FINAL', p: 2, s: 'p2' }, l: { r: 'LOSERS ROUND 1', p: 2, s: 'p2' } }
+            },
+            'WINNERS SEMI-FINAL': {
+                1: { w: { r: 'WINNERS FINAL', p: 1, s: 'p1' }, l: { r: 'LOSERS ROUND 2', p: 2, s: 'p2' } },
+                2: { w: { r: 'WINNERS FINAL', p: 1, s: 'p2' }, l: { r: 'LOSERS ROUND 2', p: 1, s: 'p2' } }
+            },
+            'WINNERS FINAL': {
+                1: { w: { r: 'GRAND FINAL', p: 1, s: 'p1' }, l: { r: 'LOSERS FINAL', p: 1, s: 'p1' } }
+            },
+            'LOSERS ROUND 1': {
+                1: { w: { r: 'LOSERS ROUND 2', p: 1, s: 'p1' } },
+                2: { w: { r: 'LOSERS ROUND 2', p: 2, s: 'p1' } }
+            },
+            'LOSERS ROUND 2': {
+                1: { w: { r: 'LOSERS ROUND 3', p: 1, s: 'p1' } },
+                2: { w: { r: 'LOSERS ROUND 3', p: 1, s: 'p2' } }
+            },
+            'LOSERS ROUND 3': {
+                1: { w: { r: 'LOSERS FINAL', p: 1, s: 'p2' } }
+            },
+            'LOSERS FINAL': {
+                1: { w: { r: 'GRAND FINAL', p: 1, s: 'p2' } }
+            }
+        };
+
+        let matches = [];
+        let selectedMatchId = null;
+
+        document.addEventListener('DOMContentLoaded', loadMatches);
+
+        async function loadMatches() {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&order=round.asc`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+                matches = await res.json();
+                renderLists();
+            } catch (e) { console.error(e); notify('Error loading matches', 'error'); }
+        }
+
+        function renderLists() {
+            const pendingDiv = document.getElementById('pendingList');
+            const activeDiv = document.getElementById('activeList');
+            pendingDiv.innerHTML = '';
+            activeDiv.innerHTML = '';
+
+            // Sort: Active first, then by date
+            const activeMatches = matches.filter(m => ['scheduled', 'live', 'completed'].includes(m.status));
+            const pendingMatches = matches.filter(m => m.status === 'unscheduled' || !m.status);
+
+            if (pendingMatches.length === 0) pendingDiv.innerHTML = '<div style="text-align:center; color:#444; padding:20px">No pending matches. Generate bracket first?</div>';
+
+            // Render Pending (Only if Players are assigned)
+            pendingMatches.forEach(m => {
+                // Only show if players are ready or its Round 1
+                if (m.player1 && m.player2) {
+                    pendingDiv.appendChild(createCard(m));
+                }
+            });
+
+            // Render Active
+            activeMatches.sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+            activeMatches.forEach(m => activeDiv.appendChild(createCard(m)));
+        }
+
+        function createCard(m) {
+            const div = document.createElement('div');
+            div.className = `match-card status-${m.status || 'unscheduled'}`;
+
+            const p1Name = m.player1 ? m.player1.name : 'TBD';
+            const p2Name = m.player2 ? m.player2.name : 'TBD';
+
+            const timeDisplay = m.match_date ? new Date(m.match_date).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' }) : 'No time set';
+
+            let actions = '';
+            if (m.status === 'completed') {
+                actions = `<div style="text-align:center; color:#00ff1a; font-weight:bold"><i class="fas fa-check"></i> Completed</div>`;
+            } else {
+                actions = `
+                <div class="actions">
+                    <button class="btn btn-schedule" onclick="openSchedule('${m.id}')"><i class="fas fa-calendar"></i> ${m.match_date ? 'Resched' : 'Schedule'}</button>
+                    ${m.status === 'live' ?
+                        `<button class="btn btn-complete" onclick="openResult('${m.id}')"><i class="fas fa-flag-checkered"></i> End</button>` :
+                        `<button class="btn btn-live" onclick="setStatus('${m.id}', 'live')"><i class="fas fa-broadcast-tower"></i> Live</button>`
+                    }
+                    <button class="btn btn-overlay" onclick="window.open('TK.html?match_id=${m.id}', '_blank')"><i class="fas fa-desktop"></i> Overlay</button>
+                </div>
+            `;
+            }
+
+            div.innerHTML = `
+            <div class="match-round">${m.round} (M${m.bracket_position})</div>
+            <div class="match-players">
+                <span>${p1Name}</span>
+                <span class="vs">vs</span>
+                <span>${p2Name}</span>
+            </div>
+            <div class="match-time"><i class="far fa-clock"></i> ${timeDisplay}</div>
+            ${actions}
+        `;
+            return div;
+        }
+
+        // --- ACTIONS ---
+
+        window.openSchedule = (id) => {
+            selectedMatchId = id;
+            const m = matches.find(x => x.id === id);
+            document.getElementById('scheduleMatchInfo').textContent = `${m.round}: ${m.player1.name} vs ${m.player2.name}`;
+
+            // Format for datetime-local
+            if (m.match_date) {
+                const date = new Date(m.match_date);
+                // Adjust to local ISO string somewhat hacky but works for inputs
+                const pad = (n) => n < 10 ? '0' + n : n;
+                const localIso = date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+                document.getElementById('scheduleTime').value = localIso;
+            } else {
+                document.getElementById('scheduleTime').value = '';
+            }
+
+            document.getElementById('scheduleModal').style.display = 'flex';
+        };
+
+        window.saveSchedule = async () => {
+            const time = document.getElementById('scheduleTime').value;
+            if (!time) return alert('Select time');
+
+            const dateObj = new Date(time);
+
+            await updateMatch(selectedMatchId, {
+                match_date: dateObj.toISOString(),
+                status: 'scheduled'
+            });
+
+            closeModal('scheduleModal');
+            loadMatches();
+            notify('Match Scheduled!');
+        };
+
+        window.setStatus = async (id, status) => {
+            if (confirm(`Set match to ${status}?`)) {
+                await updateMatch(id, { status: status });
+                loadMatches();
+                notify(`Match is now ${status}`);
+            }
+        };
+
+        window.openResult = (id) => {
+            selectedMatchId = id;
+            const m = matches.find(x => x.id === id);
+            document.getElementById('winP1').textContent = `Winner: ${m.player1.name}`;
+            document.getElementById('winP2').textContent = `Winner: ${m.player2.name}`;
+
+            document.getElementById('winP1').onclick = () => confirmWin(1);
+            document.getElementById('winP2').onclick = () => confirmWin(2);
+
+            document.getElementById('resultModal').style.display = 'flex';
+        };
+
+        async function confirmWin(playerNum) {
+            if (!confirm('Confirm winner? This advances the bracket.')) return;
+
+            const m = matches.find(x => x.id === selectedMatchId);
+            const winnerId = playerNum === 1 ? m.player1_id : m.player2_id;
+            const loserId = playerNum === 1 ? m.player2_id : m.player1_id;
+
+            // 1. Update Match
+            await updateMatch(m.id, {
+                winner_id: winnerId,
+                status: 'completed'
+            });
+
+            // 2. Advance Logic (Duplicated from bracket_v2 for standalone capability)
+            if (PROGRESSION_MAP[m.round] && PROGRESSION_MAP[m.round][m.bracket_position]) {
+                const prog = PROGRESSION_MAP[m.round][m.bracket_position];
+                if (prog.w) await advancePlayer(winnerId, prog.w);
+                if (prog.l) await advancePlayer(loserId, prog.l);
+            }
+
+            closeModal('resultModal');
+            loadMatches();
+            notify('Winner Set & Bracket Advanced!');
+        }
+
+        async function advancePlayer(pid, dest) {
+            const destMatch = matches.find(x => x.round === dest.r && x.bracket_position === dest.p);
+            if (!destMatch) return; // Should likely create if missing but for fixed bracket structure we expect it exists
+
+            const update = {};
+            if (dest.s === 'p1' || !destMatch.player1_id) update.player1_id = pid;
+            else if (dest.s === 'p2' || !destMatch.player2_id) update.player2_id = pid;
+
+            // Auto-schedule if both ready
+            if ((update.player1_id || destMatch.player1_id) && (update.player2_id || destMatch.player2_id)) {
+                update.status = 'scheduled';
+            }
+
+            await updateMatch(destMatch.id, update);
+        }
+
+        async function updateMatch(id, data) {
+            await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${id}`, {
+                method: 'PATCH',
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...data, updated_at: new Date() })
+            });
+        }
+
+        window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+
+        function notify(msg, type = 'info') {
+            const n = document.getElementById('notification');
+            n.textContent = msg; n.style.display = 'block'; n.style.borderColor = type === 'error' ? '#ff4444' : '#9146FF';
+            setTimeout(() => n.style.display = 'none', 3000);
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upcoming Tournament Matches</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
             background-image: url('./Assets/BG.png');
             background-size: cover;
@@ -18,51 +24,43 @@
             overflow-y: auto;
             max-height: 1080px;
         }
-        
+
         .obs-scroll-container {
             max-height: 1000px;
             overflow-y: auto;
             padding-right: 5px;
         }
-        
+
         .obs-scroll-container::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         .obs-scroll-container::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 4px;
         }
-        
+
         .obs-scroll-container::-webkit-scrollbar-thumb {
             background: #9146FF;
             border-radius: 4px;
         }
-        
+
         .obs-scroll-container::-webkit-scrollbar-thumb:hover {
             background: #a35cff;
         }
-        
+
         .tournament-header {
             padding: 15px 30px;
             text-align: center;
-            border-bottom: 3px solid #9146FF;
-            background: rgba(0, 0, 0, 0.9);
             margin-bottom: 30px;
-            border-radius: 10px;
-            animation: glow 2s ease-in-out infinite alternate;
-            position: sticky;
             top: 0;
             z-index: 100;
         }
-        
-        @keyframes glow {
-            from { box-shadow: 0 0 10px #9146FF; }
-            to { box-shadow: 0 0 30px #9146FF, 0 0 40px #9146FF; }
-        }
-        
+
+
+
         .header-title {
-            font-size: 2.8rem;
+            font-size: 3rem;
             color: #fff;
             text-shadow:
                 0 0 5px #fff,
@@ -75,24 +73,24 @@
                 0 0 150px #0ff;
             margin-bottom: 10px;
         }
-        
+
         .header-subtitle {
             color: #aaa;
             font-size: 1.2rem;
         }
-        
+
         .timezone-info {
             color: #00ff1a;
             font-size: 1rem;
             margin-top: 5px;
             text-shadow: 0 0 5px #00ff1a;
         }
-        
+
         .matches-container {
             max-width: 1200px;
             margin: 0 auto;
         }
-        
+
         .section-title {
             text-align: center;
             font-size: 2rem;
@@ -105,7 +103,7 @@
             border-radius: 10px;
             border: 2px solid #9146FF;
         }
-        
+
         .section-title::after {
             content: '';
             display: block;
@@ -114,14 +112,15 @@
             background: linear-gradient(90deg, transparent, #9146FF, transparent);
             margin: 10px auto;
         }
-        
-        .upcoming-matches, .live-matches {
+
+        .upcoming-matches,
+        .live-matches {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 25px;
             margin-bottom: 50px;
         }
-        
+
         .match-card {
             background: rgba(0, 0, 0, 0.85);
             border: 3px solid;
@@ -132,29 +131,37 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .match-card.upcoming {
             border-color: #9146FF;
             box-shadow: 0 0 20px rgba(145, 70, 255, 0.3);
         }
-        
+
         .match-card.live {
             border-color: #ff008c;
             box-shadow: 0 0 20px rgba(255, 0, 140, 0.3);
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
-            0% { box-shadow: 0 0 20px rgba(255, 0, 140, 0.3); }
-            50% { box-shadow: 0 0 30px rgba(255, 0, 140, 0.6); }
-            100% { box-shadow: 0 0 20px rgba(255, 0, 140, 0.3); }
+            0% {
+                box-shadow: 0 0 20px rgba(255, 0, 140, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(255, 0, 140, 0.6);
+            }
+
+            100% {
+                box-shadow: 0 0 20px rgba(255, 0, 140, 0.3);
+            }
         }
-        
+
         .match-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(145, 70, 255, 0.4);
         }
-        
+
         .match-header {
             display: flex;
             justify-content: space-between;
@@ -163,7 +170,7 @@
             padding-bottom: 15px;
             border-bottom: 2px solid #333;
         }
-        
+
         .match-round {
             background: linear-gradient(135deg, #9146FF, #6441a5);
             color: white;
@@ -172,7 +179,7 @@
             font-weight: bold;
             font-size: 0.9rem;
         }
-        
+
         .match-status {
             background: #333;
             color: #aaa;
@@ -180,18 +187,25 @@
             border-radius: 20px;
             font-size: 0.8rem;
         }
-        
+
         .status-live {
             background: linear-gradient(135deg, #ff008c, #cc006f);
             color: white;
             animation: blink 1.5s infinite;
         }
-        
+
         @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
         }
-        
+
         .match-players {
             display: flex;
             justify-content: space-between;
@@ -202,33 +216,33 @@
             border-radius: 10px;
             position: relative;
         }
-        
+
         .player {
             text-align: center;
             flex: 1;
             position: relative;
             z-index: 1;
         }
-        
+
         .player-icon {
             font-size: 2.5rem;
             margin-bottom: 10px;
             color: #9146FF;
         }
-        
+
         .player-name {
             font-size: 1.4rem;
             font-weight: bold;
             color: #fff;
             margin-bottom: 5px;
         }
-        
+
         .player-twitch {
             color: #9146FF;
             font-size: 1rem;
             margin-bottom: 10px;
         }
-        
+
         .vs {
             position: absolute;
             left: 50%;
@@ -247,14 +261,14 @@
             border: 3px solid #9146FF;
             z-index: 2;
         }
-        
+
         .match-info {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
             padding: 20px;
             margin-top: 20px;
         }
-        
+
         .info-row {
             display: flex;
             justify-content: space-between;
@@ -262,23 +276,23 @@
             padding-bottom: 10px;
             border-bottom: 1px solid #333;
         }
-        
+
         .info-row:last-child {
             margin-bottom: 0;
             padding-bottom: 0;
             border-bottom: none;
         }
-        
+
         .info-label {
             color: #aaa;
             font-weight: 600;
         }
-        
+
         .info-value {
             color: #fff;
             font-weight: bold;
         }
-        
+
         .countdown {
             background: rgba(145, 70, 255, 0.2);
             border-radius: 10px;
@@ -286,24 +300,24 @@
             margin-top: 20px;
             text-align: center;
         }
-        
+
         .countdown-title {
             color: #aaa;
             font-size: 0.9rem;
             margin-bottom: 10px;
         }
-        
+
         .countdown-timer {
             display: flex;
             justify-content: center;
             gap: 15px;
         }
-        
+
         .time-unit {
             text-align: center;
             min-width: 70px;
         }
-        
+
         .time-value {
             font-size: 2.2rem;
             font-weight: bold;
@@ -314,13 +328,13 @@
             padding: 10px;
             margin-bottom: 5px;
         }
-        
+
         .time-label {
             color: #aaa;
             font-size: 0.9rem;
             text-transform: uppercase;
         }
-        
+
         .match-started {
             text-align: center;
             padding: 15px;
@@ -329,7 +343,7 @@
             border-radius: 10px;
             margin-top: 20px;
         }
-        
+
         .match-started a {
             color: #00ff1a;
             text-decoration: none;
@@ -341,12 +355,12 @@
             border-radius: 5px;
             transition: all 0.3s ease;
         }
-        
+
         .match-started a:hover {
             background: rgba(0, 255, 26, 0.4);
             transform: scale(1.05);
         }
-        
+
         .no-matches {
             text-align: center;
             padding: 60px 40px;
@@ -355,48 +369,53 @@
             border: 2px dashed #9146FF;
             grid-column: 1 / -1;
         }
-        
+
         .no-matches-icon {
             font-size: 4rem;
             color: #9146FF;
             opacity: 0.5;
             margin-bottom: 20px;
         }
-        
+
         .no-matches h3 {
             color: #fff;
             font-size: 1.8rem;
             margin-bottom: 10px;
         }
-        
+
         .no-matches p {
             color: #aaa;
             font-size: 1.1rem;
         }
-        
+
         .loading {
             text-align: center;
             padding: 60px;
             grid-column: 1 / -1;
         }
-        
+
         .loading i {
             font-size: 3rem;
             color: #9146FF;
             margin-bottom: 20px;
             animation: spin 1s linear infinite;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         .loading p {
             color: #aaa;
             font-size: 1.2rem;
         }
-        
+
         .footer-note {
             text-align: center;
             padding: 20px;
@@ -404,34 +423,35 @@
             margin-top: 40px;
             border-top: 1px solid #333;
         }
-        
+
         .local-time-display {
             text-align: center;
             color: #aaa;
             font-size: 0.9rem;
             margin-top: 5px;
         }
-        
+
         @media (max-width: 768px) {
             .header-title {
                 font-size: 2rem;
             }
-            
-            .upcoming-matches, .live-matches {
+
+            .upcoming-matches,
+            .live-matches {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            
+
             .match-card {
                 padding: 20px;
             }
-            
+
             .match-players {
                 flex-direction: column;
                 gap: 20px;
                 padding: 30px 20px;
             }
-            
+
             .vs {
                 position: relative;
                 left: auto;
@@ -440,22 +460,43 @@
                 margin: 10px 0;
                 order: 2;
             }
-            
+
             .countdown-timer {
                 flex-wrap: wrap;
                 gap: 10px;
             }
-            
+
             .time-unit {
                 min-width: 60px;
             }
-            
+
             .time-value {
                 font-size: 1.8rem;
             }
         }
+
+        /* Overlay Link Button */
+        .overlay-link-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #9146FF, #6441a5);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .overlay-link-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(145, 70, 255, 0.4);
+        }
     </style>
 </head>
+
 <body>
     <!-- Tournament Header -->
     <div class="tournament-header">
@@ -465,7 +506,7 @@
             <i class="fas fa-clock"></i> All times displayed in CET | Your local time: <span id="localTime"></span>
         </div>
     </div>
-    
+
     <!-- Scrollable Container for OBS -->
     <div class="obs-scroll-container" id="scrollContainer">
         <!-- Matches Container -->
@@ -478,7 +519,7 @@
                     <p>Loading live matches...</p>
                 </div>
             </div>
-            
+
             <!-- Upcoming Matches Section -->
             <h2 class="section-title"><i class="fas fa-clock"></i> UPCOMING MATCHES</h2>
             <div class="upcoming-matches" id="upcomingMatches">
@@ -487,14 +528,14 @@
                     <p>Loading upcoming matches...</p>
                 </div>
             </div>
-            
+
             <!-- No Matches Message -->
             <div class="no-matches" id="noMatches" style="display: none;">
                 <i class="fas fa-calendar-times no-matches-icon"></i>
                 <h3>No Scheduled Matches</h3>
                 <p>Check back later for upcoming tournament matches!</p>
             </div>
-            
+
             <!-- Footer -->
             <div class="footer-note">
                 Tournament Schedule | All times in CET (Central European Time) | Auto-refreshes every 30 seconds
@@ -504,36 +545,36 @@
 
     <script>
         // Supabase Configuration
-    const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x'; // Your publishable key
-        
+        const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x'; // Your publishable key
+
         // Global variables
         let matches = [];
         let countdownIntervals = new Map();
-        
+
         // Timezone configuration - CET (Central European Time)
         const TOURNAMENT_TIMEZONE = 'Europe/Paris'; // CET
-        
+
         // Initialize page
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async function () {
             console.log('Page loaded, initializing...');
-            
+
             // Update local time display
             updateLocalTimeDisplay();
             setInterval(updateLocalTimeDisplay, 1000);
-            
+
             // Load matches immediately
             await loadMatches();
-            
+
             // Auto-refresh every 30 seconds
             setInterval(loadMatches, 30000);
         });
-        
+
         // Update local time display
         function updateLocalTimeDisplay() {
             const localTimeElement = document.getElementById('localTime');
             if (!localTimeElement) return;
-            
+
             const now = new Date();
             const localTime = now.toLocaleTimeString('en-US', {
                 hour: '2-digit',
@@ -543,62 +584,62 @@
             });
             localTimeElement.textContent = localTime;
         }
-        
+
         // Parse match time - SIMPLE VERSION (database times are already in CET)
         function parseMatchTime(match) {
             if (!match.match_date) {
                 console.log('No match_date for match:', match.id);
                 return null;
             }
-            
+
             try {
                 // Database times are already in CET, so we can use them directly
                 // But JavaScript Date objects interpret ISO strings as UTC
                 // So we need to adjust for the CET timezone
-                
+
                 const dateTime = new Date(match.match_date);
                 console.log('Parsing match time for', match.round, ':', {
                     rawDate: match.match_date,
                     jsDate: dateTime.toISOString(),
                     matchTime: match.match_time
                 });
-                
+
                 // If the date has no time component (midnight UTC), 
                 // and we have a match_time, we need to apply it
-                if (dateTime.getUTCHours() === 0 && dateTime.getUTCMinutes() === 0 && 
+                if (dateTime.getUTCHours() === 0 && dateTime.getUTCMinutes() === 0 &&
                     dateTime.getUTCSeconds() === 0 && match.match_time) {
-                    
+
                     // Parse time from match_time (e.g., "20:00" or "8:00 PM")
                     const timeMatch = match.match_time.match(/(\d{1,2}):(\d{2})\s*([AP]M)?/i);
                     if (timeMatch) {
                         let hours = parseInt(timeMatch[1]);
                         const minutes = parseInt(timeMatch[2]);
                         const period = timeMatch[3];
-                        
+
                         // Convert 12-hour format to 24-hour
                         if (period) {
                             if (period.toUpperCase() === 'PM' && hours < 12) hours += 12;
                             if (period.toUpperCase() === 'AM' && hours === 12) hours = 0;
                         }
-                        
+
                         // CET is UTC+1, so subtract 1 hour to store correctly
                         dateTime.setUTCHours(hours - 1, minutes, 0, 0);
                         console.log('Applied time from match_time:', hours + ':' + minutes + ' CET');
                     }
                 }
-                
+
                 return dateTime;
-                
+
             } catch (error) {
                 console.error('Error parsing match time:', error, match);
                 return null;
             }
         }
-        
+
         // Format CET time for display
         function formatCETTime(utcTime) {
             if (!utcTime) return 'Time not set';
-            
+
             try {
                 // Convert UTC to CET for display
                 const date = new Date(utcTime);
@@ -613,11 +654,11 @@
                 return 'Time error';
             }
         }
-        
+
         // Format CET date for display
         function formatCETDate(utcTime) {
             if (!utcTime) return 'Date not set';
-            
+
             try {
                 const date = new Date(utcTime);
                 return date.toLocaleDateString('en-US', {
@@ -632,11 +673,11 @@
                 return 'Date error';
             }
         }
-        
+
         // Format local time for viewer
         function formatLocalTime(utcTime) {
             if (!utcTime) return 'Time not set';
-            
+
             try {
                 const date = new Date(utcTime);
                 return date.toLocaleTimeString('en-US', {
@@ -649,7 +690,7 @@
                 return 'Time error';
             }
         }
-        
+
         // Calculate time until match (treating database times as CET)
         function calculateTimeUntilMatch(match) {
             const matchTime = parseMatchTime(match);
@@ -657,16 +698,16 @@
                 console.log('No valid match time for:', match.id);
                 return null;
             }
-            
+
             const now = new Date();
-            
+
             // IMPORTANT: matchTime is in UTC but represents CET time
             // So when we compare with "now" (which is local/UTC), 
             // we're effectively comparing CET time with local time
             // This is correct because we want the countdown to match time in CET
-            
+
             const timeDiff = matchTime - now;
-            
+
             console.log('Time calculation for', match.round, ':', {
                 matchTimeUTC: matchTime.toISOString(),
                 matchTimeCET: formatCETTime(matchTime),
@@ -675,7 +716,7 @@
                 timeDiff: timeDiff,
                 isFuture: timeDiff > 0
             });
-            
+
             if (timeDiff <= 0) {
                 return {
                     hasStarted: true,
@@ -685,12 +726,12 @@
                     seconds: 0
                 };
             }
-            
+
             const seconds = Math.floor(timeDiff / 1000);
             const minutes = Math.floor(seconds / 60);
             const hours = Math.floor(minutes / 60);
             const days = Math.floor(hours / 24);
-            
+
             return {
                 hasStarted: false,
                 days: days,
@@ -699,19 +740,19 @@
                 seconds: seconds % 60
             };
         }
-        
+
         // Load matches from database
         async function loadMatches() {
             try {
                 // Show loading states
                 const liveLoading = document.getElementById('liveLoading');
                 const upcomingLoading = document.getElementById('upcomingLoading');
-                
+
                 if (liveLoading) liveLoading.style.display = 'block';
                 if (upcomingLoading) upcomingLoading.style.display = 'block';
-                
+
                 console.log('Loading matches from database...');
-                
+
                 // Fetch ALL matches with player data
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&order=match_date.asc`,
@@ -722,36 +763,36 @@
                         }
                     }
                 );
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const allMatches = await response.json();
                 console.log('All matches from database:', allMatches.length, 'matches');
-                
+
                 // Show ALL scheduled and live matches
                 matches = allMatches.filter(match => {
                     const isScheduledOrLive = match.status === 'scheduled' || match.status === 'live';
                     console.log(`Match ${match.id} (${match.round}): status=${match.status}, included=${isScheduledOrLive}`);
                     return isScheduledOrLive;
                 });
-                
+
                 console.log('Filtered matches (scheduled/live):', matches.length, 'matches');
-                
+
                 // Sort by date
                 matches.sort((a, b) => {
                     const timeA = parseMatchTime(a) || new Date(0);
                     const timeB = parseMatchTime(b) || new Date(0);
                     return timeA - timeB;
                 });
-                
+
                 // Render matches
                 renderMatches();
-                
+
                 // Start countdown timers
                 startCountdowns();
-                
+
             } catch (error) {
                 console.error('Error loading matches:', error);
                 showErrorMessage();
@@ -759,41 +800,42 @@
                 // Hide loading states
                 const liveLoading = document.getElementById('liveLoading');
                 const upcomingLoading = document.getElementById('upcomingLoading');
-                
+
                 if (liveLoading) liveLoading.style.display = 'none';
                 if (upcomingLoading) upcomingLoading.style.display = 'none';
             }
         }
-        
+
         // Render matches
         function renderMatches() {
             const liveContainer = document.getElementById('liveMatches');
             const upcomingContainer = document.getElementById('upcomingMatches');
             const noMatchesDiv = document.getElementById('noMatches');
-            
+
             // Check for elements
             if (!liveContainer || !upcomingContainer || !noMatchesDiv) {
                 console.error('Missing container elements!');
                 return;
             }
-            
+
             console.log('Rendering matches. Total:', matches.length);
-            
+
             // Clear previous content
             liveContainer.innerHTML = '';
             upcomingContainer.innerHTML = '';
-            
+
             // Separate live and upcoming matches
             const liveMatches = matches.filter(match => match.status === 'live');
-            const upcomingMatches = matches.filter(match => match.status === 'scheduled');
-            
+            // Only show upcoming matches that have a date set
+            const upcomingMatches = matches.filter(match => match.status === 'scheduled' && match.match_date);
+
             console.log('Live matches:', liveMatches.length);
             console.log('Upcoming matches:', upcomingMatches.length);
-            
+
             // Clear existing countdown intervals
             countdownIntervals.forEach(interval => clearInterval(interval));
             countdownIntervals.clear();
-            
+
             // Show/hide no matches message
             if (liveMatches.length === 0 && upcomingMatches.length === 0) {
                 console.log('No matches to display');
@@ -802,7 +844,7 @@
             } else {
                 noMatchesDiv.style.display = 'none';
             }
-            
+
             // Render live matches
             if (liveMatches.length > 0) {
                 console.log('Rendering live matches');
@@ -819,7 +861,7 @@
                     </div>
                 `;
             }
-            
+
             // Render upcoming matches
             if (upcomingMatches.length > 0) {
                 console.log('Rendering upcoming matches');
@@ -837,24 +879,24 @@
                 `;
             }
         }
-        
+
         // Create match card element
         function createMatchCard(match, isLive) {
             const player1 = match.player1 || { name: 'Player 1', twitch_username: 'unknown' };
             const player2 = match.player2 || { name: 'Player 2', twitch_username: 'unknown' };
-            
+
             const card = document.createElement('div');
             card.className = `match-card ${isLive ? 'live' : 'upcoming'}`;
             card.dataset.matchId = match.id;
-            
+
             // Get match time
             const matchTime = parseMatchTime(match);
-            
+
             // Format display strings
             let cetTimeString = 'Time not set';
             let cetDateString = 'Date not set';
             let localTimeString = 'Time not set';
-            
+
             if (matchTime) {
                 // Format in CET
                 cetTimeString = formatCETTime(matchTime);
@@ -865,9 +907,9 @@
                 cetTimeString = match.match_time + ' CET';
                 cetDateString = match.match_date ? new Date(match.match_date).toLocaleDateString() : 'Date not set';
             }
-            
+
             console.log('Creating card for match:', match.round, 'CET:', cetTimeString);
-            
+
             // Create card content
             card.innerHTML = `
                 <div class="match-header">
@@ -939,51 +981,54 @@
                                 <div class="time-label">Seconds</div>
                             </div>
                         </div>
+                        <a href="TK.html?match_id=${match.id}" target="_blank" class="overlay-link-btn">
+                            <i class="fas fa-desktop"></i> Open Overlay
+                        </a>
                     </div>
                 `}
             `;
-            
+
             return card;
         }
-        
+
         // Start countdown timers for all upcoming matches
         function startCountdowns() {
             console.log('Starting countdowns for', matches.filter(m => m.status !== 'live').length, 'matches');
-            
+
             matches.forEach(match => {
                 if (match.status !== 'live') {
                     startCountdownTimer(match.id);
                 }
             });
         }
-        
+
         // Start individual countdown timer
         function startCountdownTimer(matchId) {
             // Clear existing interval
             if (countdownIntervals.has(matchId)) {
                 clearInterval(countdownIntervals.get(matchId));
             }
-            
+
             // Get countdown element
             const countdownEl = document.getElementById(`countdown-${matchId}`);
             if (!countdownEl) {
                 console.log('No countdown element for match:', matchId);
                 return;
             }
-            
+
             // Time units elements
             const daysEl = countdownEl.querySelector('.time-unit:nth-child(1) .time-value');
             const hoursEl = countdownEl.querySelector('.time-unit:nth-child(2) .time-value');
             const minutesEl = countdownEl.querySelector('.time-unit:nth-child(3) .time-value');
             const secondsEl = countdownEl.querySelector('.time-unit:nth-child(4) .time-value');
-            
+
             // Update countdown immediately
             updateCountdown();
-            
+
             // Set interval to update every second
             const interval = setInterval(updateCountdown, 1000);
             countdownIntervals.set(matchId, interval);
-            
+
             function updateCountdown() {
                 const match = matches.find(m => m.id === matchId);
                 if (!match) {
@@ -992,16 +1037,16 @@
                     countdownIntervals.delete(matchId);
                     return;
                 }
-                
+
                 const timeUntil = calculateTimeUntilMatch(match);
-                
+
                 if (!timeUntil || timeUntil.hasStarted) {
                     // Match time has arrived
                     daysEl.textContent = '00';
                     hoursEl.textContent = '00';
                     minutesEl.textContent = '00';
                     secondsEl.textContent = '00';
-                    
+
                     // Change to "Match Starting" message
                     if (timeUntil && timeUntil.hasStarted && countdownEl.parentElement) {
                         countdownEl.parentElement.innerHTML = `
@@ -1013,13 +1058,13 @@
                             </div>
                         `;
                     }
-                    
+
                     // Clear interval
                     clearInterval(interval);
                     countdownIntervals.delete(matchId);
                     return;
                 }
-                
+
                 // Update display
                 daysEl.textContent = timeUntil.days.toString().padStart(2, '0');
                 hoursEl.textContent = timeUntil.hours.toString().padStart(2, '0');
@@ -1027,15 +1072,15 @@
                 secondsEl.textContent = timeUntil.seconds.toString().padStart(2, '0');
             }
         }
-        
+
         // Show error message
         function showErrorMessage() {
             const upcomingContainer = document.getElementById('upcomingMatches');
             const liveContainer = document.getElementById('liveMatches');
-            
+
             // Check for containers
             if (!upcomingContainer || !liveContainer) return;
-            
+
             const errorHtml = `
                 <div class="no-matches">
                     <i class="fas fa-exclamation-triangle no-matches-icon"></i>
@@ -1043,17 +1088,18 @@
                     <p>Please check your connection and try again.</p>
                 </div>
             `;
-            
+
             upcomingContainer.innerHTML = errorHtml;
             liveContainer.innerHTML = errorHtml;
-            
+
             // Hide loading states
             const liveLoading = document.getElementById('liveLoading');
             const upcomingLoading = document.getElementById('upcomingLoading');
-            
+
             if (liveLoading) liveLoading.style.display = 'none';
             if (upcomingLoading) upcomingLoading.style.display = 'none';
         }
     </script>
 </body>
+
 </html>

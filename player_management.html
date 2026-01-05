@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Tournament Players</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
             background-image: url('./Assets/BG.png');
             background-size: cover;
             background-attachment: fixed;
-            color: white;
+            color: #ccc;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
-        
+
         .tournament-header {
             position: absolute;
             top: 0;
             width: 100%;
-            padding: 15px 30px;
+            padding: 20px;
             text-align: center;
-            border-bottom: 3px solid #9146FF;
-            background: rgba(0, 0, 0, 0.8);
         }
-        
+
         .header-title {
-            font-size: 2.5rem;
+            font-size: 3rem;
             color: #fff;
             text-shadow:
                 0 0 5px #fff,
@@ -42,400 +46,445 @@
                 0 0 90px #0ff,
                 0 0 100px #0ff,
                 0 0 150px #0ff;
+            margin-bottom: 5px;
+            text-transform: uppercase;
         }
-        
+
+        .header-subtitle {
+            color: #aaa;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
         .player-form-container {
-            margin-top: 100px;
-            background: rgba(0, 0, 0, 0.85);
-            border: 3px solid #9146FF;
-            border-radius: 15px;
+            margin-top: 80px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid #9146FF;
+            border-radius: 8px;
             padding: 30px;
             width: 100%;
-            max-width: 500px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 30px rgba(145, 70, 255, 0.4);
+            max-width: 600px;
+            box-shadow: 0 0 30px rgba(145, 70, 255, 0.2);
         }
-        
+
         .form-title {
             text-align: center;
             margin-bottom: 25px;
             color: #fff;
-            font-size: 1.8rem;
-            text-shadow: 0 0 10px #9146FF;
+            font-size: 1.5rem;
+            text-shadow: 0 0 5px rgba(145, 70, 255, 0.5);
         }
-        
+
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-        
+
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             color: #aaa;
+            font-size: 0.9rem;
             font-weight: 600;
         }
-        
+
         input {
             width: 100%;
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #444;
-            border-radius: 8px;
+            padding: 10px;
+            background: #111;
+            border: 1px solid #444;
+            border-radius: 4px;
             color: white;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
-        
+
         input:focus {
             outline: none;
             border-color: #9146FF;
-            box-shadow: 0 0 15px rgba(145, 70, 255, 0.5);
+            box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
         }
-        
+
         .submit-btn {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #9146FF, #6441a5);
+            padding: 12px;
+            background: #9146FF;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
+            border-radius: 4px;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             margin-top: 10px;
+            box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
         }
-        
+
         .submit-btn:hover {
-            background: linear-gradient(135deg, #a35cff, #7551c7);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(145, 70, 255, 0.4);
+            background: #8234ea;
+            box-shadow: 0 0 15px rgba(145, 70, 255, 0.5);
         }
-        
-        .submit-btn:active {
-            transform: translateY(0);
+
+        .submit-btn.updating {
+            background: #ff7324;
+            box-shadow: 0 0 10px rgba(255, 115, 36, 0.3);
         }
-        
+
+        .cancel-btn {
+            width: 100%;
+            padding: 10px;
+            background: #333;
+            color: #ccc;
+            border: 1px solid #555;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .cancel-btn:hover {
+            background: #444;
+        }
+
         .result-message {
             margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 4px;
             text-align: center;
             display: none;
-            animation: fadeIn 0.5s ease;
         }
-        
+
         .success {
             background: rgba(0, 255, 0, 0.1);
-            border: 2px solid #00ff1a;
+            border: 1px solid #00ff1a;
             color: #00ff1a;
         }
-        
+
         .error {
             background: rgba(255, 0, 0, 0.1);
-            border: 2px solid #ff008c;
-            color: #ff008c;
+            border: 1px solid #ff4444;
+            color: #ff4444;
         }
-        
+
+        /* Player List */
         .player-list {
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid #333;
         }
-        
+
         .player-list h3 {
-            color: #fff;
+            color: #aaa;
             margin-bottom: 15px;
             text-align: center;
+            font-size: 1rem;
+            text-transform: uppercase;
         }
-        
+
         .player-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px 15px;
             margin-bottom: 10px;
-            border-radius: 6px;
-            border-left: 4px solid #9146FF;
+            border-radius: 4px;
+            border-left: 3px solid #9146FF;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
-        .player-name {
-            font-weight: bold;
-            color: #fff;
+
+        .player-info div {
+            font-size: 0.9rem;
         }
-        
+
         .player-twitch {
             color: #9146FF;
-            font-family: monospace;
+            font-size: 0.8rem !important;
         }
-        
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.2s;
+        }
+
+        .edit-btn:hover {
+            color: #ffca28;
+        }
+
+        .delete-btn:hover {
+            color: #ff4444;
+        }
+
         .loading {
             text-align: center;
             margin-top: 20px;
             color: #aaa;
-        }
-        
-        .loading i {
-            margin-right: 10px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @media (max-width: 600px) {
-            .header-title {
-                font-size: 2rem;
-            }
-            
-            .player-form-container {
-                padding: 20px;
-                margin-top: 60px;
-            }
+            font-size: 0.9rem;
         }
     </style>
 </head>
+
 <body>
     <!-- Tournament Header -->
     <div class="tournament-header">
-        <div class="header-title">CASINO SPEEDRUN CHAMPIONSHIP | PLAYER MANAGEMENT</div>
+        <div class="header-title">CASINO SPEEDRUN CHAMPIONSHIP</div>
+        <div class="header-subtitle">Player Management Console</div>
     </div>
-    
+
     <!-- Player Form Container -->
     <div class="player-form-container">
         <h2 class="form-title"><i class="fas fa-user-plus"></i> Add New Player</h2>
-        
+
         <form id="playerForm">
             <div class="input-group">
                 <label for="playerName"><i class="fas fa-user"></i> Player Name</label>
                 <input type="text" id="playerName" placeholder="e.g., KolaPro" required>
             </div>
-            
+
             <div class="input-group">
                 <label for="twitchUsername"><i class="fab fa-twitch"></i> Twitch Username</label>
                 <input type="text" id="twitchUsername" placeholder="e.g., kolacomp" required>
             </div>
-            
+
             <div class="input-group">
                 <label for="displayName"><i class="fas fa-id-card"></i> Display Name (Optional)</label>
                 <input type="text" id="displayName" placeholder="e.g., KOLAPRO">
             </div>
-            
+
             <div class="input-group">
                 <label for="timezone"><i class="fas fa-clock"></i> Timezone</label>
                 <input type="text" id="timezone" placeholder="e.g., EST" required>
             </div>
-            
+
+            <input type="hidden" id="editingId" value="">
             <button type="submit" class="submit-btn" id="submitBtn">
-                <i class="fas fa-plus-circle"></i> Add Player to Database
+                <i class="fas fa-plus-circle"></i> Add Player
+            </button>
+            <button type="button" class="cancel-btn" id="cancelBtn" onclick="resetForm()">
+                Cancel Edit
             </button>
         </form>
-        
-        <!-- Result Message -->
+
         <div class="result-message" id="resultMessage"></div>
-        
-        <!-- Loading Indicator -->
+
         <div class="loading" id="loading" style="display: none;">
-            <i class="fas fa-spinner fa-spin"></i> Adding player to database...
+            <i class="fas fa-spinner fa-spin"></i> Processing...
         </div>
-        
-        <!-- Player List -->
+
         <div class="player-list" id="playerListContainer">
-            <h3><i class="fas fa-users"></i> Recent Players</h3>
+            <h3>Recent Players</h3>
             <div id="playerList"></div>
             <div class="loading" id="playersLoading">
-                <i class="fas fa-spinner fa-spin"></i> Loading players...
+                <i class="fas fa-spinner fa-spin"></i> Loading...
             </div>
         </div>
     </div>
 
     <script>
-        // Supabase Configuration - Replace with your actual credentials
-    const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x'; // Your publishable key
-         
-        // DOM Elements
+        const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x'; // Your publishable key
+
+        // Elements
         const playerForm = document.getElementById('playerForm');
         const submitBtn = document.getElementById('submitBtn');
-        const resultMessage = document.getElementById('resultMessage');
-        const loading = document.getElementById('loading');
-        const playerList = document.getElementById('playerList');
-        const playersLoading = document.getElementById('playersLoading');
-        
-        // Load existing players when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadPlayers();
-        });
-        
-        // Form submission handler
-        playerForm.addEventListener('submit', async function(e) {
+        const cancelBtn = document.getElementById('cancelBtn');
+        const editingIdInput = document.getElementById('editingId');
+
+        document.addEventListener('DOMContentLoaded', loadPlayers);
+
+        // --- SUBMIT (CREATE or UPDATE) ---
+        playerForm.addEventListener('submit', async function (e) {
             e.preventDefault();
-            
-            // Get form values
-            const playerName = document.getElementById('playerName').value.trim();
-            const twitchUsername = document.getElementById('twitchUsername').value.trim().toLowerCase();
-            const displayName = document.getElementById('displayName').value.trim() || playerName;
-            const timezone = document.getElementById('timezone').value.trim();
-            
-            // Basic validation
-            if (!playerName || !twitchUsername || !timezone) {
-                showResult('Please fill in all required fields', 'error');
-                return;
-            }
-            
-            // Show loading
-            submitBtn.disabled = true;
-            loading.style.display = 'block';
-            resultMessage.style.display = 'none';
-            
+
+            const id = editingIdInput.value;
+            const data = {
+                name: document.getElementById('playerName').value.trim(),
+                twitch_username: document.getElementById('twitchUsername').value.trim().toLowerCase(),
+                display_name: document.getElementById('displayName').value.trim() || document.getElementById('playerName').value.trim(),
+                timezone: document.getElementById('timezone').value.trim()
+            };
+
+            if (!data.name) return showResult('Name required', 'error');
+
+            setLoading(true);
+
             try {
-                // Prepare player data
-                const playerData = {
-                    name: playerName,
-                    twitch_username: twitchUsername,
-                    display_name: displayName,
-                    timezone: timezone
-                };
-                
-                console.log('Adding player:', playerData);
-                
-                // Insert player into Supabase
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/players`, {
-                    method: 'POST',
+                const method = id ? 'PATCH' : 'POST';
+                const url = id ? `${SUPABASE_URL}/rest/v1/players?id=eq.${id}` : `${SUPABASE_URL}/rest/v1/players`;
+
+                const res = await fetch(url, {
+                    method: method,
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                         'Content-Type': 'application/json',
                         'Prefer': 'return=representation'
                     },
-                    body: JSON.stringify(playerData)
+                    body: JSON.stringify(data)
                 });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `HTTP ${response.status}`);
-                }
-                
-                const result = await response.json();
-                console.log('Player added:', result);
-                
-                // Success message
-                showResult(
-                    `✅ Player "${playerName}" added successfully! Twitch: ${twitchUsername}`,
-                    'success'
-                );
-                
-                // Clear form
-                playerForm.reset();
-                
-                // Reload player list
+
+                if (!res.ok) throw new Error('API Error');
+
+                showResult(id ? 'Player updated!' : 'Player added!', 'success');
+                resetForm();
                 loadPlayers();
-                
-            } catch (error) {
-                console.error('Error adding player:', error);
-                
-                // Check if it's a duplicate error
-                if (error.message.includes('duplicate key') || error.message.includes('already exists')) {
-                    showResult(
-                        `⚠️ Player with Twitch username "${twitchUsername}" already exists in database.`,
-                        'error'
-                    );
-                } else {
-                    showResult(
-                        `❌ Error: ${error.message}`,
-                        'error'
-                    );
-                }
-                
+
+            } catch (e) {
+                console.error(e);
+                showResult('Error saving player', 'error');
             } finally {
-                // Hide loading
-                submitBtn.disabled = false;
-                loading.style.display = 'none';
+                setLoading(false);
             }
         });
-        
-        // Function to load players from database
+
+        // --- LIST ---
         async function loadPlayers() {
+            const list = document.getElementById('playerList');
+            const spinner = document.getElementById('playersLoading');
+            if (spinner) spinner.style.display = 'block';
+            list.innerHTML = '';
+
             try {
-                playersLoading.style.display = 'block';
-                
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/players?select=name,twitch_username,display_name,timezone&order=created_at.desc&limit=10`, {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/players?select=*&order=created_at.desc&limit=20`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+                const players = await res.json();
+
+                if (players.length === 0) {
+                    list.innerHTML = '<div style="text-align:center; color:#555">No players found</div>';
+                } else {
+                    players.forEach(p => {
+                        // Safe escape for HTML content to prevent XSS (basic)
+                        const safeName = p.name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                        const safeDisplay = (p.display_name || p.name).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                        const safeTwitch = p.twitch_username.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                        const safeTimezone = (p.timezone || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+                        const item = document.createElement('div');
+                        item.className = 'player-item';
+                        item.innerHTML = `
+                            <div class="player-info">
+                                <div class="player-name">${safeName} (${safeDisplay})</div>
+                                <div class="player-twitch">@${safeTwitch} • ${safeTimezone}</div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="action-btn edit-btn" onclick='editPlayer(${JSON.stringify(p).replace(/'/g, "&#39;")})'>
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deletePlayer('${p.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        list.appendChild(item);
+                    });
+                }
+
+            } catch (err) {
+                console.error("Error loading players:", err);
+                list.innerHTML = '<div style="text-align:center; color:#ff4444">Error loading players</div>';
+            } finally {
+                if (spinner) spinner.style.display = 'none';
+            }
+        }
+
+        // --- HELPER FUNCTIONS ---
+
+        function showResult(text, type) {
+            const msg = document.getElementById('resultMessage');
+            msg.textContent = text;
+            msg.className = 'result-message ' + type;
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+
+        function setLoading(loading) {
+            const btn = document.getElementById('submitBtn');
+            const loadingDiv = document.getElementById('loading');
+
+            if (loading) {
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+                loadingDiv.style.display = 'block';
+            } else {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('playerForm').reset();
+            document.getElementById('editingId').value = '';
+
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = '<i class="fas fa-plus-circle"></i> Add Player';
+            btn.classList.remove('updating');
+
+            document.getElementById('cancelBtn').style.display = 'none';
+            document.querySelector('.form-title').innerHTML = '<i class="fas fa-user-plus"></i> Add New Player';
+        }
+
+        function editPlayer(player) {
+            document.getElementById('playerName').value = player.name;
+            document.getElementById('twitchUsername').value = player.twitch_username;
+            document.getElementById('displayName').value = player.display_name || player.name;
+            document.getElementById('timezone').value = player.timezone || '';
+            document.getElementById('editingId').value = player.id;
+
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = '<i class="fas fa-save"></i> Update Player';
+            btn.classList.add('updating');
+
+            document.getElementById('cancelBtn').style.display = 'inline-block';
+            document.querySelector('.form-title').innerHTML = '<i class="fas fa-edit"></i> Edit Player';
+
+            // Scroll to form
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function deletePlayer(id) {
+            if (!confirm('Are you sure you want to delete this player?')) return;
+
+            setLoading(true);
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/players?id=eq.${id}`, {
+                    method: 'DELETE',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                     }
                 });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const players = await response.json();
-                
-                // Clear previous list
-                playerList.innerHTML = '';
-                
-                if (players.length === 0) {
-                    playerList.innerHTML = '<p style="text-align: center; color: #aaa;">No players found in database</p>';
-                } else {
-                    // Display players
-                    players.forEach(player => {
-                        const playerElement = document.createElement('div');
-                        playerElement.className = 'player-item';
-                        
-                        playerElement.innerHTML = `
-                            <div>
-                                <div class="player-name">${player.name}</div>
-                                <div class="player-twitch">@${player.twitch_username}</div>
-                            </div>
-                            <div style="color: #aaa; font-size: 0.9rem;">
-                                ${player.timezone}
-                            </div>
-                        `;
-                        
-                        playerList.appendChild(playerElement);
-                    });
-                }
-                
-            } catch (error) {
-                console.error('Error loading players:', error);
-                playerList.innerHTML = `<p style="color: #ff008c; text-align: center;">Error loading players: ${error.message}</p>`;
+
+                if (!res.ok) throw new Error('Delete failed');
+
+                showResult('Player deleted', 'success');
+                loadPlayers();
+            } catch (e) {
+                console.error(e);
+                showResult('Error deleting player', 'error');
             } finally {
-                playersLoading.style.display = 'none';
+                setLoading(false);
             }
         }
-        
-        // Function to show result messages
-        function showResult(message, type) {
-            resultMessage.textContent = message;
-            resultMessage.className = `result-message ${type}`;
-            resultMessage.style.display = 'block';
-            
-            // Auto-hide success messages after 5 seconds
-            if (type === 'success') {
-                setTimeout(() => {
-                    resultMessage.style.display = 'none';
-                }, 5000);
-            }
-        }
-        
-        // Quick add buttons for common players (optional)
+
+        // Quick add buttons for common players
         function quickAddPlayer(name, twitch, display, timezone) {
             document.getElementById('playerName').value = name;
             document.getElementById('twitchUsername').value = twitch;
             document.getElementById('displayName').value = display || name;
             document.getElementById('timezone').value = timezone;
         }
-        
-        // Add quick buttons (uncomment if you want them)
+
         /*
         <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
             <button type="button" onclick="quickAddPlayer('KolaPro', 'kolacomp', 'KOLAPRO', 'EST')" 
@@ -458,4 +507,5 @@
         */
     </script>
 </body>
+
 </html>
