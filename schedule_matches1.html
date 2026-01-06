@@ -621,7 +621,7 @@
         // Load players from database
         async function loadPlayers() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/players?select=id,name,twitch_username,display_name&order=name.asc`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/players?select=id,name,twitch_username,display_name,discord_id&order=name.asc`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
@@ -966,11 +966,12 @@
                 // Send Discord Notification
                 const webhookUrl = document.getElementById('discordWebhook').value;
                 if (webhookUrl && status === 'scheduled') {
-                    // Ensure we have player objects (from selected IDs)
-                    const p1 = allPlayers.find(p => p.id === player1Id);
-                    const p2 = allPlayers.find(p => p.id === player2Id);
-                    await sendDiscordNotification(webhookUrl, p1, p2, round, dateTime, matchIdToEdit ? 'Updated' : 'New');
-                    showResult('Match saved & Discord notification sent!', 'success');
+                    // Find the freshly loaded match to get the latest player data (including discord_id)
+                    const updatedMatch = allMatches.find(m => m.id === (matchIdToEdit || matchData.id));
+                    if (updatedMatch) {
+                        await sendDiscordNotification(webhookUrl, updatedMatch.player1, updatedMatch.player2, round, dateTime, matchIdToEdit ? 'Updated' : 'New');
+                        showResult('Match saved & Discord notification sent!', 'success');
+                    }
                 }
 
             } catch (error) {
@@ -1075,6 +1076,7 @@
         }
 
         async function sendDiscordNotification(webhookUrl, p1, p2, round, dateObj, actionType) {
+            console.log("Sending Discord Notification for:", p1.name, "(ID:", p1.discord_id, ") vs", p2.name, "(ID:", p2.discord_id, ")");
             try {
                 const unixTime = Math.floor(dateObj.getTime() / 1000);
 

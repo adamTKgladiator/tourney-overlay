@@ -613,6 +613,7 @@
         }
 
         async function sendDiscordNotification(webhookUrl, p1, p2, round, dateObj, actionType) {
+            console.log("Sending Discord Notification for:", p1.name, "(ID:", p1.discord_id, ") vs", p2.name, "(ID:", p2.discord_id, ")");
             try {
                 const unixTime = Math.floor(dateObj.getTime() / 1000);
                 const color = 5763719; // Green
