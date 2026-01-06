@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Casino Speedrun Championship Overlay</title>
+    <title>Casino Speedrun Championship - Roulette</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -41,7 +41,7 @@
 
         /* Header Marquee */
         .casino-header {
-            height: 160px;
+            height: 120px;
             background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.8) 20%, rgba(0, 0, 0, 0.8) 80%, transparent);
             border-bottom: 2px solid var(--gold);
             display: flex;
@@ -52,7 +52,7 @@
         }
 
         .header-title {
-            font-size: 4.5rem;
+            font-size: 4rem;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 6px;
@@ -111,8 +111,8 @@
             justify-content: center;
             gap: 20px;
             padding: 20px;
-            margin-top: 0px;
-            /* Drag screens up */
+            margin-top: -150px;
+            /* Drag screens up to leave space for Roulette board capture */
         }
 
         .player-column {
@@ -121,7 +121,6 @@
             flex-direction: column;
             align-items: center;
             max-width: 48%;
-            /* Ensure they don't overlap */
         }
 
         .stream-container {
@@ -155,7 +154,7 @@
 
         /* Player Cards (Names) */
         .player-nameplate {
-            margin-top: 30px;
+            margin-top: 130px;
             width: 70%;
             height: 70px;
             border-radius: 8px;
@@ -196,10 +195,15 @@
             transform: rotate(180deg);
         }
 
+        .p1-side {
+            align-items: flex-start;
+        }
+
         .p1-side .player-nameplate {
             background: linear-gradient(135deg, #fff 0%, #fff0f0 100%);
             border: 2px solid var(--suit-red);
             border-bottom: 5px solid var(--suit-red);
+            margin-left: 50px;
         }
 
         .p1-side .player-name {
@@ -212,10 +216,15 @@
             opacity: 0.8;
         }
 
+        .p2-side {
+            align-items: flex-end;
+        }
+
         .p2-side .player-nameplate {
             background: linear-gradient(135deg, #fff 0%, #eef6ff 100%);
             border: 2px solid var(--suit-blue);
             border-bottom: 5px solid var(--suit-blue);
+            margin-right: 50px;
         }
 
         .p2-side .player-name {
@@ -289,8 +298,8 @@
 
     <!-- Loading State -->
     <div id="loadingOverlay" class="overlay-screen">
-        <i class="fas fa-dice-d20 fa-spin spinner"></i>
-        <span>Dealing the cards...</span>
+        <i class="fas fa-dice fa-spin spinner"></i>
+        <span>Spinning the wheel...</span>
     </div>
 
     <!-- Error State -->
@@ -307,10 +316,8 @@
     <!-- Casino Header -->
     <header class="casino-header">
         <div class="header-title" id="tournamentTitle">CASINO SPEEDRUN CHAMPIONSHIP</div>
-        <div class="round-info" id="roundName">LUNAR DIVISION</div>
+        <div class="round-info" id="roundName">ROULETTE SPECIAL</div>
     </header>
-
-
 
     <!-- Main Content (Streams) -->
     <main class="streams-wrapper">

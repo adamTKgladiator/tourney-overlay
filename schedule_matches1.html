@@ -508,6 +508,21 @@
                 </div>
 
                 <div class="form-group">
+                    <label><i class="fas fa-dice"></i> Match Type</label>
+                    <div style="display: flex; gap: 20px; margin-top: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" name="matchType" value="normal" checked style="width: auto;"> Normal
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" name="matchType" value="bingo" style="width: auto;"> Bingo
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" name="matchType" value="roulette" style="width: auto;"> Roulette
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label><i class="fas fa-clock"></i> Match Date & Time</label>
                     <div class="time-inputs">
                         <div>
@@ -547,7 +562,14 @@
                         <label for="discordWebhook" style="font-size:0.9rem;">Webhook URL</label>
                         <input type="password" id="discordWebhook" placeholder="https://discord.com/api/webhooks/..."
                             style="font-size:0.9rem; padding:8px;">
-                        <div style="font-size:0.8rem; color:#666; margin-top:5px;">Saved to browser storage</div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:10px;">
+                        <label for="baseUrl" style="font-size:0.9rem;">Base URL (e.g.,
+                            https://name.github.io/repo)</label>
+                        <input type="text" id="baseUrl" placeholder="https://..."
+                            style="font-size:0.9rem; padding:8px;">
+                        <div style="font-size:0.8rem; color:#666; margin-top:5px;">Shared with V2 scheduler via browser
+                            storage (No trailing slash)</div>
                     </div>
                 </div>
             </div>
@@ -731,7 +753,7 @@
                 html += `
                     <div class="${cardClass}" data-match-id="${match.id}">
                         <div class="match-header">
-                            <span class="match-round">${match.round || 'UNKNOWN ROUND'}</span>
+                            <span class="match-round">${match.round || 'UNKNOWN ROUND'} ${match.match_type && match.match_type !== 'normal' ? `(${match.match_type.toUpperCase()})` : ''}</span>
                             <span class="${statusClass}">${match.status ? match.status.toUpperCase() : 'UNSCHEDULED'}</span>
                         </div>
                         
@@ -828,9 +850,12 @@
             showResult('Form pre-filled! Set date/time and click Schedule Match', 'success');
         }
 
-        // View match in tournament page
         function viewMatch(matchId) {
-            const url = `TK.html?match_id=${matchId}`;
+            const match = allMatches.find(m => m.id === matchId);
+            const overlayFile = match?.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
+                (match?.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+
+            const url = new URL(overlayFile + '?match_id=' + matchId, window.location.href).href;
             window.open(url, '_blank');
         }
 
@@ -912,6 +937,7 @@
             const matchDate = document.getElementById('matchDate').value;
             const matchTime = document.getElementById('matchTime').value;
             const status = document.getElementById('matchStatus').value;
+            const matchType = document.querySelector('input[name="matchType"]:checked')?.value || 'normal';
 
             // ... validation ...
             if (!player1Id || !player2Id) return showResult('Please select both players', 'error');
@@ -934,7 +960,8 @@
                     goal: goal,
                     match_date: dateTime.toISOString(),
                     match_time: timeString,
-                    status: status
+                    status: status,
+                    match_type: matchType
                 };
 
                 let method = 'POST';
@@ -948,7 +975,10 @@
                 } else {
                     // CREATE MODE
                     matchData.id = crypto.randomUUID();
-                    matchData.layout_url = `${window.location.origin}/TK.html?match_id=${matchData.id}`;
+                    const overlayFile = matchType === 'bingo' ? 'casino_overlay_bingo.html' :
+                        (matchType === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+
+                    matchData.layout_url = new URL(overlayFile + '?match_id=' + matchData.id, window.location.href).href;
                 }
 
                 // API Call
@@ -1034,6 +1064,11 @@
 
             document.getElementById('matchStatus').value = match.status || 'scheduled';
 
+            // Set match type
+            const type = match.match_type || 'normal';
+            const radio = document.querySelector(`input[name="matchType"][value="${type}"]`);
+            if (radio) radio.checked = true;
+
             // Change button text
             submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Match';
             submitBtn.classList.remove('submit-btn');
@@ -1083,9 +1118,20 @@
             if (el.style.display === 'none') {
                 el.style.display = 'block';
                 chevron.style.transform = 'rotate(180deg)';
+
+                // Load settings
+                const savedWebhook = localStorage.getItem('tourney_discord_webhook');
+                if (savedWebhook) document.getElementById('discordWebhook').value = savedWebhook;
+                const savedBaseUrl = localStorage.getItem('tourney_base_url');
+                if (savedBaseUrl) document.getElementById('baseUrl').value = savedBaseUrl;
+
                 // Save webhook on blur
                 document.getElementById('discordWebhook').addEventListener('blur', function () {
                     localStorage.setItem('tourney_discord_webhook', this.value);
+                });
+                // Save base URL on blur
+                document.getElementById('baseUrl').addEventListener('blur', function () {
+                    localStorage.setItem('tourney_base_url', this.value);
                 });
             } else {
                 el.style.display = 'none';
@@ -1096,8 +1142,13 @@
         async function sendDiscordNotification(webhookUrl, p1, p2, round, dateObj, actionType, matchId, game, goal) {
             console.log("Sending Discord Notification for:", p1.name, "(ID:", p1.discord_id, ") vs", p2.name, "(ID:", p2.discord_id, ")");
             try {
+                const m = allMatches.find(x => x.id === matchId);
+                const overlayFile = m?.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
+                    (m?.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+
                 const unixTime = Math.floor(dateObj.getTime() / 1000);
-                const overlayUrl = `${window.location.origin}/TK.html?match_id=${matchId}`;
+                const overlayUrl = new URL(overlayFile + '?match_id=' + matchId, window.location.href).href;
+                const avatarUrl = new URL('KSC.png', window.location.href).href;
 
                 // Embed Color: Green for New, Orange for Update
                 const color = actionType === 'New' ? 5763719 : 16753920;
@@ -1108,7 +1159,7 @@
 
                 const payload = {
                     username: "Kolizzian", // Updated name as well
-                    avatar_url: window.location.origin.startsWith('http') ? `${window.location.origin}/KSC.png` : "https://i.imgur.com/4M34hi2.png",
+                    avatar_url: avatarUrl.startsWith('file') ? "https://i.imgur.com/4M34hi2.png" : avatarUrl,
                     content: `${p1Ping} vs ${p2Ping}`,
                     embeds: [
                         {

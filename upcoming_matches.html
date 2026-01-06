@@ -911,6 +911,9 @@
             console.log('Creating card for match:', match.round, 'CET:', cetTimeString);
 
             // Create card content
+            const overlayFile = match.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
+                (match.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+
             card.innerHTML = `
                 <div class="match-header">
                     <span class="match-round">${match.round || 'TOURNAMENT MATCH'}</span>
@@ -956,7 +959,7 @@
                 ${isLive ? `
                     <div class="match-started">
                         <strong>🎮 MATCH IS LIVE!</strong>
-                        <a href="TK.html?match_id=${match.id}" target="_blank">
+                        <a href="${overlayFile}?match_id=${match.id}" target="_blank">
                             <i class="fas fa-external-link-alt"></i> Watch Live Stream
                         </a>
                     </div>
@@ -981,7 +984,7 @@
                                 <div class="time-label">Seconds</div>
                             </div>
                         </div>
-                        <a href="TK.html?match_id=${match.id}" target="_blank" class="overlay-link-btn">
+                        <a href="${overlayFile}?match_id=${match.id}" target="_blank" class="overlay-link-btn">
                             <i class="fas fa-desktop"></i> Open Overlay
                         </a>
                     </div>
@@ -1049,10 +1052,12 @@
 
                     // Change to "Match Starting" message
                     if (timeUntil && timeUntil.hasStarted && countdownEl.parentElement) {
+                        const overlayFile = match.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
+                            (match.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
                         countdownEl.parentElement.innerHTML = `
                             <div class="match-started">
                                 <strong>🎮 MATCH STARTING!</strong>
-                                <a href="TK.html?match_id=${matchId}" target="_blank">
+                                <a href="${overlayFile}?match_id=${matchId}" target="_blank">
                                     <i class="fas fa-external-link-alt"></i> Watch Live Stream
                                 </a>
                             </div>

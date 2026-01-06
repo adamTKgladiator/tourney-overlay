@@ -7,6 +7,12 @@
     <title>Tournament Manager V2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-bright: #FBF5B7;
+            --purple: #9146FF;
+        }
+
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', sans-serif;
@@ -314,8 +320,13 @@
                     <label style="color: #aaa; font-size: 0.9rem;">Webhook URL</label>
                     <input type="password" id="discordWebhook" placeholder="https://discord.com/api/webhooks/..."
                         style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; margin-top: 5px;">
-                    <div style="font-size:0.8rem; color:#666; margin-top:5px;">Shared with V1 scheduler via browser
-                        storage</div>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label style="color: #aaa; font-size: 0.9rem;">Base URL (e.g., https://name.github.io/repo)</label>
+                    <input type="text" id="baseUrl" placeholder="https://..."
+                        style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; margin-top: 5px;">
+                    <div style="font-size:0.8rem; color:#666; margin-top:5px;">Used for Discord buttons and Copy Link
+                        (No trailing slash)</div>
                 </div>
             </div>
         </div>
@@ -328,6 +339,20 @@
             <h2>Schedule Match</h2>
             <p id="scheduleMatchInfo" style="color:#aaa; margin-bottom:10px"></p>
             <input type="datetime-local" id="scheduleTime" style="margin-bottom:15px">
+            <div style="margin-bottom:15px;">
+                <label style="color: #aaa; font-size: 0.9rem; display: block; margin-bottom: 5px;">Match Type</label>
+                <div style="display: flex; gap: 15px;">
+                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <input type="radio" name="matchType" value="normal" checked> Normal
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <input type="radio" name="matchType" value="bingo"> Bingo
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <input type="radio" name="matchType" value="roulette"> Roulette
+                    </label>
+                </div>
+            </div>
             <div style="margin-bottom:10px;">
                 <label style="color: #aaa; font-size: 0.9rem;">Game</label>
                 <input type="text" id="scheduleGame" placeholder="e.g., Grand Theft Auto V"
@@ -394,20 +419,25 @@
         let selectedMatchId = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Load Discord Webhook from LocalStorage OR Default
+            // Load Discord Settings from LocalStorage
             const storedWebhook = localStorage.getItem('tourney_discord_webhook');
+            const storedBaseUrl = localStorage.getItem('tourney_base_url');
             const defaultWebhook = 'https://discord.com/api/webhooks/1458104991565742093/lNIdyc2rLQjHBiLhvM26Sxx0XMS0tiSJUSiW7Yi9OruCpfCuL-_QqA2Xj7lqqSDIGqNo';
 
-            if (storedWebhook) {
-                document.getElementById('discordWebhook').value = storedWebhook;
-            } else {
+            if (storedWebhook) document.getElementById('discordWebhook').value = storedWebhook;
+            else {
                 document.getElementById('discordWebhook').value = defaultWebhook;
                 localStorage.setItem('tourney_discord_webhook', defaultWebhook);
             }
 
-            // Save webhook on blur
+            if (storedBaseUrl) document.getElementById('baseUrl').value = storedBaseUrl;
+
+            // Save settings on blur
             document.getElementById('discordWebhook').addEventListener('blur', function () {
                 localStorage.setItem('tourney_discord_webhook', this.value);
+            });
+            document.getElementById('baseUrl').addEventListener('blur', function () {
+                localStorage.setItem('tourney_base_url', this.value);
             });
 
             loadMatches();
@@ -455,13 +485,18 @@
             const p1Name = m.player1 ? m.player1.name : 'TBD';
             const p2Name = m.player2 ? m.player2.name : 'TBD';
 
-            const gameGoal = m.game ? `<div style="font-size:0.8rem; color:#888; margin-bottom:5px"><strong>${m.game}</strong> - ${m.goal || 'N/A'}</div>` : '';
+            const typeLabel = m.match_type && m.match_type !== 'normal' ?
+                `<span style="background:rgba(212, 175, 55, 0.2); color:var(--gold); padding:2px 8px; border-radius:10px; font-size:0.7rem; margin-left:10px; border: 1px solid var(--gold)">${m.match_type.toUpperCase()}</span>` : '';
+
+            const gameGoal = m.game ? `<div style="font-size:0.8rem; color:#888; margin-bottom:5px"><strong>${m.game}</strong> - ${m.goal || 'N/A'} ${typeLabel}</div>` : '';
             const timeDisplay = m.match_date ? new Date(m.match_date).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' }) : 'No time set';
 
             let actions = '';
             if (m.status === 'completed') {
                 actions = `<div style="text-align:center; color:#00ff1a; font-weight:bold"><i class="fas fa-check"></i> Completed</div>`;
             } else {
+                const overlayFile = m.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
+                    (m.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
                 actions = `
                 <div class="actions">
                     <button class="btn btn-schedule" onclick="openSchedule('${m.id}')"><i class="fas fa-calendar"></i> ${m.match_date ? 'Resched' : 'Schedule'}</button>
@@ -469,7 +504,7 @@
                         `<button class="btn btn-complete" onclick="openResult('${m.id}')"><i class="fas fa-flag-checkered"></i> End</button>` :
                         `<button class="btn btn-live" onclick="setStatus('${m.id}', 'live')"><i class="fas fa-broadcast-tower"></i> Live</button>`
                     }
-                    <button class="btn btn-overlay" onclick="window.open('TK.html?match_id=${m.id}', '_blank')"><i class="fas fa-desktop"></i> Open</button>
+                    <button class="btn btn-overlay" onclick="window.open('${overlayFile}?match_id=${m.id}', '_blank')"><i class="fas fa-desktop"></i> Open</button>
                     <button class="btn" onclick="copyOverlayLink('${m.id}')" style="background:#444; color:white;"><i class="fas fa-copy"></i> Copy</button>
                 </div>
             `;
@@ -498,6 +533,10 @@
             document.getElementById('scheduleGame').value = m.game || '';
             document.getElementById('scheduleGoal').value = m.goal || '';
 
+            const type = m.match_type || 'normal';
+            const radio = document.querySelector(`input[name="matchType"][value="${type}"]`);
+            if (radio) radio.checked = true;
+
             // Format for datetime-local
             if (m.match_date) {
                 const date = new Date(m.match_date);
@@ -516,6 +555,7 @@
             const time = document.getElementById('scheduleTime').value;
             const game = document.getElementById('scheduleGame').value.trim();
             const goal = document.getElementById('scheduleGoal').value.trim();
+            const matchType = document.querySelector('input[name="matchType"]:checked')?.value || 'normal';
             if (!time) return alert('Select time');
 
             const dateObj = new Date(time);
@@ -524,7 +564,8 @@
                 match_date: dateObj.toISOString(),
                 status: 'scheduled',
                 game: game,
-                goal: goal
+                goal: goal,
+                match_type: matchType
             });
 
             closeModal('scheduleModal');
@@ -587,7 +628,11 @@
         }
 
         window.copyOverlayLink = async (matchId) => {
-            const url = `${window.location.origin}/TK.html?match_id=${matchId}`;
+            const m = matches.find(x => x.id === matchId);
+            const overlayFile = m?.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
+                (m?.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+
+            const url = new URL(overlayFile + '?match_id=' + matchId, window.location.href).href;
             try {
                 await navigator.clipboard.writeText(url);
                 notify('Overlay link copied!');
@@ -644,9 +689,14 @@
         async function sendDiscordNotification(webhookUrl, p1, p2, round, dateObj, actionType, matchId, game, goal) {
             console.log("Sending Discord Notification for:", p1.name, "(ID:", p1.discord_id, ") vs", p2.name, "(ID:", p2.discord_id, ")");
             try {
+                const m = matches.find(x => x.id === matchId);
+                const overlayFile = m?.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
+                    (m?.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+
                 const unixTime = Math.floor(dateObj.getTime() / 1000);
                 const color = 5763719; // Green
-                const overlayUrl = `${window.location.origin}/TK.html?match_id=${matchId}`;
+                const overlayUrl = new URL(overlayFile + '?match_id=' + matchId, window.location.href).href;
+                const avatarUrl = new URL('KSC.png', window.location.href).href;
 
                 // Format Pings
                 const p1Ping = p1.discord_id ? `<@${p1.discord_id}>` : `**${p1.name}**`;
@@ -654,7 +704,7 @@
 
                 const payload = {
                     username: "Kolizzian",
-                    avatar_url: window.location.origin.startsWith('http') ? `${window.location.origin}/KSC.png` : "https://i.imgur.com/4M34hi2.png",
+                    avatar_url: avatarUrl.startsWith('file') ? "https://i.imgur.com/4M34hi2.png" : avatarUrl,
                     content: `${p1Ping} vs ${p2Ping}`,
                     embeds: [
                         {
