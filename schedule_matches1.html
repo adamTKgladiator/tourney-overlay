@@ -525,6 +525,23 @@
                 </button>
             </form>
 
+            <!-- Discord Webhook Settings (Collapsible) -->
+            <div style="margin-top: 20px; border-top: 1px solid #444; padding-top: 15px;">
+                <button type="button" onclick="toggleDiscordSettings()"
+                    style="background:none; border:none; color:#9146FF; cursor:pointer; font-size:0.9rem; display:flex; align-items:center;">
+                    <i class="fab fa-discord" style="margin-right:5px;"></i> Discord Settings <i
+                        class="fas fa-chevron-down" id="discordChevron" style="margin-left:5px; transition:0.3s"></i>
+                </button>
+                <div id="discordSettings" style="display:none; margin-top:10px;">
+                    <div class="form-group" style="margin-bottom:10px;">
+                        <label for="discordWebhook" style="font-size:0.9rem;">Webhook URL</label>
+                        <input type="password" id="discordWebhook" placeholder="https://discord.com/api/webhooks/..."
+                            style="font-size:0.9rem; padding:8px;">
+                        <div style="font-size:0.8rem; color:#666; margin-top:5px;">Saved to browser storage</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Result Message -->
             <div class="result-message" id="resultMessage"></div>
 
@@ -577,6 +594,18 @@
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', async function () {
+            // Load Discord Webhook from LocalStorage OR Default
+            const storedWebhook = localStorage.getItem('tourney_discord_webhook');
+            const defaultWebhook = 'https://discord.com/api/webhooks/1458104991565742093/lNIdyc2rLQjHBiLhvM26Sxx0XMS0tiSJUSiW7Yi9OruCpfCuL-_QqA2Xj7lqqSDIGqNo';
+
+            if (storedWebhook) {
+                document.getElementById('discordWebhook').value = storedWebhook;
+            } else {
+                document.getElementById('discordWebhook').value = defaultWebhook;
+                // Auto-save default for next time
+                localStorage.setItem('tourney_discord_webhook', defaultWebhook);
+            }
+
             // Set default date to tomorrow
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
@@ -934,6 +963,16 @@
                 // Reload matches
                 await loadMatches();
 
+                // Send Discord Notification
+                const webhookUrl = document.getElementById('discordWebhook').value;
+                if (webhookUrl && status === 'scheduled') {
+                    // Ensure we have player objects (from selected IDs)
+                    const p1 = allPlayers.find(p => p.id === player1Id);
+                    const p2 = allPlayers.find(p => p.id === player2Id);
+                    await sendDiscordNotification(webhookUrl, p1, p2, round, dateTime, matchIdToEdit ? 'Updated' : 'New');
+                    showResult('Match saved & Discord notification sent!', 'success');
+                }
+
             } catch (error) {
                 console.error(error);
                 showResult('Error saving match: ' + error.message, 'error');
@@ -1015,6 +1054,78 @@
                 console.error(error);
                 showResult('Error deleting match', 'error');
                 if (matchElement) matchElement.style.opacity = '1';
+            }
+        }
+
+        // --- Discord Logic ---
+        function toggleDiscordSettings() {
+            const el = document.getElementById('discordSettings');
+            const chevron = document.getElementById('discordChevron');
+            if (el.style.display === 'none') {
+                el.style.display = 'block';
+                chevron.style.transform = 'rotate(180deg)';
+                // Save webhook on blur
+                document.getElementById('discordWebhook').addEventListener('blur', function () {
+                    localStorage.setItem('tourney_discord_webhook', this.value);
+                });
+            } else {
+                el.style.display = 'none';
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        async function sendDiscordNotification(webhookUrl, p1, p2, round, dateObj, actionType) {
+            try {
+                const unixTime = Math.floor(dateObj.getTime() / 1000);
+
+                // Embed Color: Green for New, Orange for Update
+                const color = actionType === 'New' ? 5763719 : 16753920;
+
+                const payload = {
+                    username: "Kolizzian", // Updated name as well
+                    avatar_url: window.location.origin.startsWith('http') ? `${window.location.origin}/KSC.png` : "https://i.imgur.com/4M34hi2.png",
+                    embeds: [
+                        {
+                            title: "⚔️ NEW MATCH SCHEDULED! ⚔️",
+                            description: `**${round}** has been scheduled!`,
+                            color: color,
+                            fields: [
+                                {
+                                    name: "Player 1",
+                                    value: `**${p1.name}**\n[Twitch](https://twitch.tv/${p1.twitch_username})`,
+                                    inline: true
+                                },
+                                {
+                                    name: "Player 2",
+                                    value: `**${p2.name}**\n[Twitch](https://twitch.tv/${p2.twitch_username})`,
+                                    inline: true
+                                },
+                                {
+                                    name: "📅 Date & Time",
+                                    value: `<t:${unixTime}:F>\n(<t:${unixTime}:R>)`, // Discord Dynamic Timestamp
+                                    inline: false
+                                }
+                            ],
+                            thumbnail: {
+                                url: "https://cdn-icons-png.flaticon.com/512/263/263068.png" // VS Icon
+                            },
+                            footer: {
+                                text: "Casino Speedrun Championship"
+                            },
+                            timestamp: new Date().toISOString()
+                        }
+                    ]
+                };
+
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+            } catch (err) {
+                console.error("Discord Webhook Failed", err);
+                showResult('Match saved, but Discord notification failed.', 'error');
             }
         }
 
