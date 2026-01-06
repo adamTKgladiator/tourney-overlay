@@ -644,6 +644,7 @@
                 const payload = {
                     username: "Kolizzian",
                     avatar_url: window.location.origin.startsWith('http') ? `${window.location.origin}/KSC.png` : "https://i.imgur.com/4M34hi2.png",
+                    content: `${p1Ping} vs ${p2Ping}`,
                     embeds: [
                         {
                             title: "⚔️ NEW MATCH SCHEDULED! ⚔️",
@@ -652,12 +653,12 @@
                             fields: [
                                 {
                                     name: "Player 1",
-                                    value: `${p1Ping}\n[Twitch](https://twitch.tv/${p1.twitch_username})`,
+                                    value: `**${p1.name}**\n[Twitch](https://twitch.tv/${p1.twitch_username})`,
                                     inline: true
                                 },
                                 {
                                     name: "Player 2",
-                                    value: `${p2Ping}\n[Twitch](https://twitch.tv/${p2.twitch_username})`,
+                                    value: `**${p2.name}**\n[Twitch](https://twitch.tv/${p2.twitch_username})`,
                                     inline: true
                                 },
                                 {

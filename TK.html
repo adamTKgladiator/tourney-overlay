@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Twitch Tournament Restream</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
             background-image: url('./Assets/BG.png');
             background-size: cover;
@@ -16,13 +22,13 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         .tournament-header {
             padding: 15px 30px;
             text-align: center;
             border-bottom: 3px solid #9146FF;
         }
-        
+
         .header-title {
             font-size: 3rem;
             background-clip: text;
@@ -38,7 +44,7 @@
                 0 0 100px #0ff,
                 0 0 150px #0ff;
         }
-        
+
         .round-badge {
             display: inline-block;
             background: linear-gradient(135deg, #9146FF, #6441a5);
@@ -48,13 +54,13 @@
             font-weight: 600;
             margin-top: 10px;
         }
-        
+
         .streams-container {
             display: flex;
             flex: 1;
             height: calc(100vh - 120px);
         }
-        
+
         .stream-box {
             flex: 1;
             position: relative;
@@ -63,7 +69,7 @@
             width: 960px;
             height: 540px;
         }
-        
+
         .stream-label {
             position: absolute;
             bottom: 15px;
@@ -74,13 +80,13 @@
             font-weight: bold;
             z-index: 10;
         }
-        
+
         .twitch-embed {
             width: 100%;
             height: 100%;
             border: none;
         }
-        
+
         .setup-box {
             background: rgba(145, 70, 255, 0.1);
             border: 2px solid #9146FF;
@@ -90,9 +96,11 @@
             max-width: 800px;
             display: none;
         }
-        
-        .setup-box.visible { display: block; }
-        
+
+        .setup-box.visible {
+            display: block;
+        }
+
         .domain-input {
             background: #1a1a1f;
             border: 2px solid #333;
@@ -102,7 +110,7 @@
             border-radius: 5px;
             margin: 10px 0;
         }
-        
+
         .update-btn {
             background: #9146FF;
             color: white;
@@ -113,7 +121,7 @@
             font-weight: bold;
             margin-left: 10px;
         }
-        
+
         .footer-note {
             text-align: center;
             padding: 15px;
@@ -121,7 +129,7 @@
             font-size: 0.9rem;
             border-top: 1px solid #333;
         }
-        
+
         .neonText {
             color: #fff;
             text-shadow:
@@ -134,7 +142,7 @@
                 0 0 100px #0ff,
                 0 0 150px #0ff;
         }
-        
+
         .Player {
             font-size: 3.5rem;
             text-align: center;
@@ -160,7 +168,7 @@
             right: 0;
         }
 
-        .P1{
+        .P1 {
             color: #fff;
             text-shadow:
                 0 0 5px #fff,
@@ -172,8 +180,8 @@
                 0 0 100px #00ff1a,
                 0 0 150px #00ff1a;
         }
-        
-        .P2{
+
+        .P2 {
             color: #fff;
             text-shadow:
                 0 0 5px #fff,
@@ -185,7 +193,7 @@
                 0 0 100px #ff008c,
                 0 0 150px #ff008c;
         }
-        
+
         /* Loading overlay */
         .loading-overlay {
             position: fixed;
@@ -200,7 +208,7 @@
             z-index: 1000;
             font-size: 1.5rem;
         }
-        
+
         .error-message {
             background: rgba(255, 0, 0, 0.1);
             border: 2px solid #ff0000;
@@ -211,15 +219,26 @@
             text-align: center;
             display: none;
         }
-        
-        .error-message.visible { display: block; }
-        
+
+        .error-message.visible {
+            display: block;
+        }
+
         .match-info {
             margin-top: 10px;
             color: #aaa;
         }
+
+        .game-goal-info {
+            margin-top: 5px;
+            font-size: 1.5rem;
+            color: #9146FF;
+            text-shadow: 0 0 10px rgba(145, 70, 255, 0.5);
+            font-weight: bold;
+        }
     </style>
 </head>
+
 <body>
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -228,44 +247,33 @@
             Loading Tournament Match...
         </div>
     </div>
-    
+
     <!-- Tournament Header -->
     <div class="tournament-header">
         <div class="header-title" id="tournamentTitle">CASINO SPEEDRUN CHAMPIONSHIP</div>
-        <!-- <div class="round-badge" id="roundBadge">LOADING...</div> -->
-        <!-- <div class="match-info" id="matchInfo"></div> -->
+        <div class="game-goal-info" id="gameGoalInfo"></div>
     </div>
-    
+
     <!-- Error Message -->
     <div class="error-message" id="errorMessage">
         <h3><i class="fas fa-exclamation-triangle"></i> Error Loading Match</h3>
         <p id="errorText">Unable to load match data. Please check the URL.</p>
         <p><small>Format should be: ?match_id=UUID_HERE</small></p>
     </div>
-    
+
     <!-- Stream Container -->
     <div class="streams-container" id="streamsContainer" style="display: none;">
         <!-- Player 1 Stream -->
         <div class="stream-box" id="stream1">
             <div class="stream-label" id="streamLabel1">Loading...</div>
-            <iframe 
-                class="twitch-embed"
-                id="twitchFrame1"
-                src=""
-                allowfullscreen
-                allow="autoplay; encrypted-media">
+            <iframe class="twitch-embed" id="twitchFrame1" src="" allowfullscreen allow="autoplay; encrypted-media">
             </iframe>
         </div>
-        
+
         <!-- Player 2 Stream -->
         <div class="stream-box" id="stream2">
             <div class="stream-label" id="streamLabel2">Loading...</div>
-            <iframe 
-                class="twitch-embed"
-                id="twitchFrame2"
-                src=""
-                allowfullscreen
-                allow="autoplay; encrypted-media">
+            <iframe class="twitch-embed" id="twitchFrame2" src="" allowfullscreen allow="autoplay; encrypted-media">
             </iframe>
         </div>
     </div>
@@ -279,45 +287,45 @@
             LOADING...
         </div>
     </div>
-    
+
     <!-- Domain Setup Instructions -->
     <div class="setup-box" id="setupBox">
         <h3><i class="fas fa-cog"></i> Setup Required for Twitch Embeds</h3>
         <p>Twitch requires your website domain to be authorized for embedding.</p>
-        
+
         <p><strong>Your current website domain is:</strong></p>
         <input type="text" id="domainInput" class="domain-input" placeholder="e.g., tournaments.yoursite.com">
         <button class="update-btn" onclick="updateDomains()">Update Embed URLs</button>
-        
+
         <p><small>Enter just the domain (no http://). If your site uses www, include it.</small></p>
     </div>
-<!--     
+    <!--     
     <div class="footer-note" id="footerNote">
         Tournament Stream Display | Loading Match Data...
     </div> -->
 
     <script>
         // Supabase Configuration - Replace with your actual credentials
-    const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x'; // Your publishable key
-        
+        const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x'; // Your publishable key
+
         // Extract match ID from URL
         function getMatchIdFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const matchId = urlParams.get('match_id') || urlParams.get('id');
-            
+
             // Debug: Log what we found
             console.log('URL Params:', Object.fromEntries(urlParams.entries()));
             console.log('Found matchId:', matchId);
-            
+
             return matchId;
         }
-        
+
         // Fetch match data from Supabase
         async function fetchMatchData(matchId) {
             try {
                 console.log('Fetching match data for ID:', matchId);
-                
+
                 // Using Supabase REST API (no client library needed)
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/match_details?id=eq.${matchId}`,
@@ -328,119 +336,127 @@
                         }
                     }
                 );
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const data = await response.json();
                 console.log('API Response:', data);
-                
+
                 if (!data || data.length === 0) {
                     throw new Error('Match not found in database');
                 }
-                
+
                 return data[0]; // Return first match
-                
+
             } catch (error) {
                 console.error('Error fetching match data:', error);
                 throw error;
             }
         }
-        
+
         // Update the page with match data
         function updatePageWithMatchData(matchData) {
             console.log('Updating page with:', matchData);
-            
+
             // Update tournament title and round
-            document.getElementById('tournamentTitle').textContent = 
+            document.getElementById('tournamentTitle').textContent =
                 `CASINO SPEEDRUN CHAMPIONSHIP | ${matchData.round}`;
-            // document.getElementById('roundBadge').textContent = matchData.round;
-            
+
+            // Update game and goal info
+            const gameGoalInfo = document.getElementById('gameGoalInfo');
+            if (matchData.game) {
+                gameGoalInfo.textContent = `${matchData.game} - ${matchData.goal || 'Any%'}`;
+                gameGoalInfo.style.display = 'block';
+            } else {
+                gameGoalInfo.style.display = 'none';
+            }
+
             // Update match info
             const matchDate = new Date(matchData.match_date).toLocaleDateString();
             // document.getElementById('matchInfo').textContent = 
             //     `${matchDate} | ${matchData.match_time}`;
-            
+
             // Update player names (use display_name if available, otherwise name)
             const player1Name = matchData.player1_display || matchData.player1_name || 'Player 1';
             const player2Name = matchData.player2_display || matchData.player2_name || 'Player 2';
-            
+
             document.getElementById('player1Name').textContent = player1Name;
             document.getElementById('player2Name').textContent = player2Name;
-            
+
             // Update stream labels
             document.getElementById('streamLabel1').textContent = matchData.player1_twitch || 'Player 1';
             document.getElementById('streamLabel2').textContent = matchData.player2_twitch || 'Player 2';
-            
+
             // Update Twitch iframe URLs
             const domain = window.location.hostname;
-            
+
             if (matchData.player1_twitch) {
                 const iframe1 = document.getElementById('twitchFrame1');
                 iframe1.src = `https://player.twitch.tv/?channel=${matchData.player1_twitch}&parent=${domain}&autoplay=true&muted=true`;
             }
-            
+
             if (matchData.player2_twitch) {
                 const iframe2 = document.getElementById('twitchFrame2');
                 iframe2.src = `https://player.twitch.tv/?channel=${matchData.player2_twitch}&parent=${domain}&autoplay=true&muted=true`;
             }
-            
+
             // Update footer
             // document.getElementById('footerNote').textContent = 
             //     `Tournament Stream Display | ${player1Name} vs ${player2Name} | ${matchData.round}`;
-            
+
             // Show the streams container
             document.getElementById('streamsContainer').style.display = 'flex';
         }
-        
+
         // Show error message
         function showError(message) {
             document.getElementById('errorText').textContent = message;
             document.getElementById('errorMessage').classList.add('visible');
             document.getElementById('loadingOverlay').style.display = 'none';
         }
-        
+
         // Main initialization
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async function () {
             console.log('Page loaded, initializing...');
-            
+
             try {
                 // Get match ID from URL
                 const matchId = getMatchIdFromUrl();
-                
+
                 if (!matchId) {
                     showError('No match ID found in URL. Please use ?match_id=UUID format.');
                     return;
                 }
-                
+
                 // Validate UUID format
                 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
                 if (!uuidRegex.test(matchId)) {
                     showError('Invalid match ID format. Please check the URL.');
                     return;
                 }
-                
+
                 // Fetch match data
                 const matchData = await fetchMatchData(matchId);
-                
+
                 // Update the page
                 updatePageWithMatchData(matchData);
-                
+
                 // Hide loading overlay
                 document.getElementById('loadingOverlay').style.display = 'none';
-                
+
                 // Check for domain placeholder after content loads
-                setTimeout(function() {
+                setTimeout(function () {
                     const iframes = document.querySelectorAll('.twitch-embed');
                     let hasPlaceholder = false;
-                    
+
                     iframes.forEach(iframe => {
                         if (iframe.src.includes('DOMAIN-PLACEHOLDER')) {
                             hasPlaceholder = true;
                         }
                     });
-                    
+
                     if (hasPlaceholder) {
                         document.getElementById('setupBox').classList.add('visible');
                         const currentDomain = window.location.hostname;
@@ -449,39 +465,39 @@
                         }
                     }
                 }, 3000);
-                
+
             } catch (error) {
                 console.error('Initialization error:', error);
                 showError(`Error loading match: ${error.message}`);
             }
         });
-        
+
         // Function to update the domain in embed URLs
         function updateDomains() {
             const domain = document.getElementById('domainInput').value.trim();
-            
+
             if (!domain) {
                 alert("Please enter your website domain");
                 return;
             }
-            
+
             // Remove http:// or https:// if user included it
             const cleanDomain = domain.replace(/^https?:\/\//, '');
-            
+
             // Update both iframe URLs
             const iframes = document.querySelectorAll('.twitch-embed');
             iframes.forEach(iframe => {
                 const newSrc = iframe.src.replace('DOMAIN-PLACEHOLDER', cleanDomain);
                 iframe.src = newSrc;
             });
-            
+
             // Hide setup box and reload iframes
             document.getElementById('setupBox').classList.remove('visible');
             alert("Domain updated! The streams should now load.");
         }
-        
+
         // Auto-update domain on page load if needed
-        window.onload = function() {
+        window.onload = function () {
             const iframes = document.querySelectorAll('.twitch-embed');
             iframes.forEach(iframe => {
                 if (iframe.src.includes('DOMAIN-PLACEHOLDER')) {
@@ -493,7 +509,7 @@
                 }
             });
         };
-        
+
         // Utility: Format date
         function formatDate(dateString) {
             const date = new Date(dateString);
@@ -506,4 +522,5 @@
         }
     </script>
 </body>
+
 </html>
