@@ -1156,6 +1156,9 @@
                             <button class="action-btn edit-btn" onclick="editMatch('${match.id}')">
                                 <i class="fas fa-edit"></i> Edit
                             </button>
+                            <button class="action-btn" onclick="copyOverlayLink('${match.id}')" style="background:#444; color:white;">
+                                <i class="fas fa-copy"></i> Copy Link
+                            </button>
                             
                             ${match.status === 'scheduled' ? `
                                 <button class="action-btn go-live-btn" onclick="updateMatchStatus('${match.id}', 'live')">
@@ -1289,6 +1292,16 @@
             winnerModal.style.display = 'flex';
         }
 
+        async function copyOverlayLink(matchId) {
+            const url = `${window.location.origin}/TK.html?match_id=${matchId}`;
+            try {
+                await navigator.clipboard.writeText(url);
+                showResult('✅ Overlay link copied!', 'success');
+            } catch (err) {
+                showResult('❌ Failed to copy link', 'error');
+            }
+        }
+
         // Get next match information based on current round and bracket position
         async function getNextMatchInfo(currentMatch, winnerId, loserId) {
             const round = currentMatch.round;
@@ -1313,41 +1326,33 @@
                 if (round === 'ROUND 1') {
                     switch (bracketPosition) {
                         case 1: // ROUND 1 position 1
-                            // Winner goes to Winners Semi 1 Player 1
                             result.winnersMatch = allDbMatches.find(m =>
                                 m.round === 'WINNERS SEMI-FINAL' && m.bracket_position === 1
                             );
-                            // Loser goes to Losers Round 1 position 1 Player 1
                             result.losersMatch = allDbMatches.find(m =>
                                 m.round === 'LOSERS ROUND 1' && m.bracket_position === 1
                             );
                             break;
                         case 2: // ROUND 1 position 2
-                            // Winner goes to Winners Semi 1 Player 2
                             result.winnersMatch = allDbMatches.find(m =>
                                 m.round === 'WINNERS SEMI-FINAL' && m.bracket_position === 1
                             );
-                            // Loser goes to Losers Round 1 position 2 Player 1
                             result.losersMatch = allDbMatches.find(m =>
                                 m.round === 'LOSERS ROUND 1' && m.bracket_position === 1
                             );
                             break;
                         case 3: // ROUND 1 position 3
-                            // Winner goes to Winners Semi 2 Player 1
                             result.winnersMatch = allDbMatches.find(m =>
                                 m.round === 'WINNERS SEMI-FINAL' && m.bracket_position === 2
                             );
-                            // Loser goes to Losers Round 1 position 1 Player 2
                             result.losersMatch = allDbMatches.find(m =>
                                 m.round === 'LOSERS ROUND 1' && m.bracket_position === 2
                             );
                             break;
                         case 4: // ROUND 1 position 4
-                            // Winner goes to Winners Semi 2 Player 2
                             result.winnersMatch = allDbMatches.find(m =>
                                 m.round === 'WINNERS SEMI-FINAL' && m.bracket_position === 2
                             );
-                            // Loser goes to Losers Round 1 position 2 Player 2
                             result.losersMatch = allDbMatches.find(m =>
                                 m.round === 'LOSERS ROUND 1' && m.bracket_position === 2
                             );
@@ -1359,21 +1364,17 @@
                 else if (round === 'WINNERS SEMI-FINAL') {
                     switch (bracketPosition) {
                         case 1: // Winners Semi 1
-                            // Winner goes to Winners Final Player 1
                             result.winnersMatch = allDbMatches.find(m =>
                                 m.round === 'WINNERS FINAL' && m.bracket_position === 1
                             );
-                            // Loser goes to Losers Round 2 position 1 Player 2
                             result.losersMatch = allDbMatches.find(m =>
                                 m.round === 'LOSERS ROUND 2' && m.bracket_position === 1
                             );
                             break;
                         case 2: // Winners Semi 2
-                            // Winner goes to Winners Final Player 2
                             result.winnersMatch = allDbMatches.find(m =>
                                 m.round === 'WINNERS FINAL' && m.bracket_position === 1
                             );
-                            // Loser goes to Losers Round 2 position 2 Player 2
                             result.losersMatch = allDbMatches.find(m =>
                                 m.round === 'LOSERS ROUND 2' && m.bracket_position === 2
                             );
@@ -1385,19 +1386,15 @@
                 else if (round === 'LOSERS ROUND 1') {
                     switch (bracketPosition) {
                         case 1: // Losers Round 1 position 1
-                            // Winner goes to Losers Round 2 position 1 Player 1
                             result.winnersMatch = allDbMatches.find(m =>
                                 m.round === 'LOSERS ROUND 2' && m.bracket_position === 1
                             );
-                            // Loser eliminated (2 losses)
                             console.log('Loser eliminated (2 losses)');
                             break;
                         case 2: // Losers Round 1 position 2
-                            // Winner goes to Losers Round 2 position 2 Player 1
                             result.winnersMatch = allDbMatches.find(m =>
                                 m.round === 'LOSERS ROUND 2' && m.bracket_position === 2
                             );
-                            // Loser eliminated (2 losses)
                             console.log('Loser eliminated (2 losses)');
                             break;
                     }
@@ -1407,19 +1404,15 @@
                 else if (round === 'LOSERS ROUND 2') {
                     switch (bracketPosition) {
                         case 1: // Losers Round 2 position 1
-                            // Winner goes to Losers Round 3 Player 1
                             result.winnersMatch = allDbMatches.find(m =>
                                 m.round === 'LOSERS ROUND 3' && m.bracket_position === 1
                             );
-                            // Loser eliminated (2 losses)
                             console.log('Loser eliminated (2 losses)');
                             break;
                         case 2: // Losers Round 2 position 2
-                            // Winner goes to Losers Round 3 Player 2
                             result.winnersMatch = allDbMatches.find(m =>
                                 m.round === 'LOSERS ROUND 3' && m.bracket_position === 1
                             );
-                            // Loser eliminated (2 losses)
                             console.log('Loser eliminated (2 losses)');
                             break;
                     }
@@ -1427,11 +1420,9 @@
 
                 // Winners Final logic (1 match)
                 else if (round === 'WINNERS FINAL') {
-                    // Winner goes to Grand Final Player 1
                     result.winnersMatch = allDbMatches.find(m =>
                         m.round === 'GRAND FINAL' && m.bracket_position === 1
                     );
-                    // Loser goes to Losers Final Player 1
                     result.losersMatch = allDbMatches.find(m =>
                         m.round === 'LOSERS FINAL' && m.bracket_position === 1
                     );
@@ -1439,21 +1430,17 @@
 
                 // Losers Round 3 logic (1 match)
                 else if (round === 'LOSERS ROUND 3') {
-                    // Winner goes to Losers Final Player 2
                     result.winnersMatch = allDbMatches.find(m =>
                         m.round === 'LOSERS FINAL' && m.bracket_position === 1
                     );
-                    // Loser eliminated (2 losses)
                     console.log('Loser eliminated (2 losses)');
                 }
 
                 // Losers Final logic (1 match)
                 else if (round === 'LOSERS FINAL') {
-                    // Winner goes to Grand Final Player 2
                     result.winnersMatch = allDbMatches.find(m =>
                         m.round === 'GRAND FINAL' && m.bracket_position === 1
                     );
-                    // Loser eliminated (2 losses)
                     console.log('Loser eliminated (2 losses)');
                 }
 
