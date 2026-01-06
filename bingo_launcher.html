@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Bingo Launcher</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-bright: #FBF5B7;
+            --felt: #004d26;
+            --suit-red: #d40000;
+            --suit-black: #1a1a1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: #000;
+            background-image: url('./Assets/casino_bg.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .launcher-card {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
+            text-align: center;
+        }
+
+        .launcher-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--gold-bright);
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-group.checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .form-group.checkbox-group input {
+            width: auto;
+            height: 20px;
+            width: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        option {
+            background: #111;
+            color: white;
+        }
+
+        .launch-btn {
+            width: 100%;
+            background: var(--gold);
+            color: black;
+            border: none;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .launch-btn:hover {
+            background: var(--gold-bright);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px var(--gold);
+        }
+
+        .troubleshoot-box {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            text-align: left;
+        }
+
+        .troubleshoot-title {
+            color: var(--gold);
+            font-size: 0.9rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .solution-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .solution-card strong {
+            color: var(--gold-bright);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .solution-card a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .solution-card a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--gold);
+        }
+
+        .status-msg {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="launcher-card">
+        <div class="launcher-title"><i class="fas fa-dice"></i> BINGO LAUNCHER</div>
+
+        <div class="form-group">
+            <label for="matchSelect">Select Match</label>
+            <select id="matchSelect">
+                <option value="">Loading matches...</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="bingoUrl">BingoSync Room URL</label>
+            <input type="text" id="bingoUrl" placeholder="https://bingosync.com/room/... (Optional if Transparent)">
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="transparentMode">
+            <label for="transparentMode" style="margin-bottom: 0; cursor: pointer;">Transparent Mode (Bypass Embedding
+                Errors)</label>
+        </div>
+
+        <button class="launch-btn" onclick="launchOverlay()">
+            <i class="fas fa-external-link-alt"></i> Launch Bingo Overlay
+        </button>
+
+        <div id="statusMsg" class="status-msg"></div>
+
+        <!-- Troubleshooting Section -->
+        <div class="troubleshoot-box">
+            <div class="troubleshoot-title"><i class="fas fa-exclamation-triangle"></i> "REFUSED TO CONNECT" FIX?</div>
+
+            <div class="solution-card">
+                <strong>Solution A: Browser Extension (Recommended)</strong>
+                Install "Ignore X-Frame-Options" to allow Bingosync to load directly in the frame.
+                <br><a
+                    href="https://chrome.google.com/webstore/detail/ignore-x-frame-headers/gleabckgapmihmocgoekbabnldnabbjh"
+                    target="_blank">Download for Chrome/Edge</a>
+            </div>
+
+            <div class="solution-card">
+                <strong>Solution B: Transparent Mode</strong>
+                Enable the toggle above. This leaves a "hole" in the overlay so you can place your Bingo tab BEHIND the
+                overlay in OBS.
+            </div>
+        </div>
+
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Return to Dashboard</a>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://ofkzngjawgimpdwuycqd.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_A22ZrmtTDJYaHCI-HCCRjA_jYhTKJ-x';
+
+        async function loadMatches() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/match_details?select=*&order=created_at.desc`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+
+                if (!response.ok) throw new Error("Failed to load matches");
+                const matches = await response.json();
+
+                const select = document.getElementById('matchSelect');
+                select.innerHTML = '<option value="">-- Choose an Active Match --</option>';
+
+                matches.forEach(m => {
+                    const p1 = m.player1_display || m.player1_name || 'TBD';
+                    const p2 = m.player2_display || m.player2_name || 'TBD';
+                    const round = m.round || 'Unknown Round';
+                    const opt = document.createElement('option');
+                    opt.value = m.id;
+                    opt.textContent = `${round}: ${p1} vs ${p2}`;
+                    select.appendChild(opt);
+                });
+
+            } catch (err) {
+                document.getElementById('statusMsg').textContent = "Error loading matches: " + err.message;
+                document.getElementById('statusMsg').style.color = '#ff4444';
+            }
+        }
+
+        function launchOverlay() {
+            const matchId = document.getElementById('matchSelect').value;
+            const bingoUrl = document.getElementById('bingoUrl').value.trim();
+            const isTransparent = document.getElementById('transparentMode').checked;
+
+            if (!matchId) {
+                alert("Please select a match first!");
+                return;
+            }
+
+            let url = `casino_bingo_overlay.html?match_id=${matchId}`;
+            if (bingoUrl) url += `&bingo=${encodeURIComponent(bingoUrl)}`;
+            if (isTransparent) url += `&transparent=true`;
+
+            window.open(url, '_blank');
+        }
+
+        window.onload = loadMatches;
+    </script>
+</body>
+
+</html>
