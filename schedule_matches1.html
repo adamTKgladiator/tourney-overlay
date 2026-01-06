@@ -969,7 +969,7 @@
                     // Find the freshly loaded match to get the latest player data (including discord_id)
                     const updatedMatch = allMatches.find(m => m.id === (matchIdToEdit || matchData.id));
                     if (updatedMatch) {
-                        await sendDiscordNotification(webhookUrl, updatedMatch.player1, updatedMatch.player2, round, dateTime, matchIdToEdit ? 'Updated' : 'New');
+                        await sendDiscordNotification(webhookUrl, updatedMatch.player1, updatedMatch.player2, round, dateTime, matchIdToEdit ? 'Updated' : 'New', updatedMatch.id);
                         showResult('Match saved & Discord notification sent!', 'success');
                     }
                 }
@@ -1075,10 +1075,11 @@
             }
         }
 
-        async function sendDiscordNotification(webhookUrl, p1, p2, round, dateObj, actionType) {
+        async function sendDiscordNotification(webhookUrl, p1, p2, round, dateObj, actionType, matchId) {
             console.log("Sending Discord Notification for:", p1.name, "(ID:", p1.discord_id, ") vs", p2.name, "(ID:", p2.discord_id, ")");
             try {
                 const unixTime = Math.floor(dateObj.getTime() / 1000);
+                const overlayUrl = `${window.location.origin}/TK.html?match_id=${matchId}`;
 
                 // Embed Color: Green for New, Orange for Update
                 const color = actionType === 'New' ? 5763719 : 16753920;
@@ -1090,7 +1091,6 @@
                 const payload = {
                     username: "Kolizzian", // Updated name as well
                     avatar_url: window.location.origin.startsWith('http') ? `${window.location.origin}/KSC.png` : "https://i.imgur.com/4M34hi2.png",
-                    content: `${p1Ping} vs ${p2Ping}`,
                     embeds: [
                         {
                             title: "⚔️ NEW MATCH SCHEDULED! ⚔️",
@@ -1099,17 +1099,22 @@
                             fields: [
                                 {
                                     name: "Player 1",
-                                    value: `**${p1.name}**\n[Twitch](https://twitch.tv/${p1.twitch_username})`,
+                                    value: `${p1Ping}\n[Twitch](https://twitch.tv/${p1.twitch_username})`,
                                     inline: true
                                 },
                                 {
                                     name: "Player 2",
-                                    value: `**${p2.name}**\n[Twitch](https://twitch.tv/${p2.twitch_username})`,
+                                    value: `${p2Ping}\n[Twitch](https://twitch.tv/${p2.twitch_username})`,
                                     inline: true
                                 },
                                 {
                                     name: "📅 Date & Time",
                                     value: `<t:${unixTime}:F>\n(<t:${unixTime}:R>)`, // Discord Dynamic Timestamp
+                                    inline: false
+                                },
+                                {
+                                    name: "🔗 Watch / Overlay",
+                                    value: `[Open Overlay](${overlayUrl})`,
                                     inline: false
                                 }
                             ],
