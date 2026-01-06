@@ -853,7 +853,7 @@
         function viewMatch(matchId) {
             const match = allMatches.find(m => m.id === matchId);
             const overlayFile = match?.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
-                (match?.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+                (match?.match_type === 'roulette' ? 'casino_roulette.html' : 'casino_overlay.html');
 
             const url = new URL(overlayFile + '?match_id=' + matchId, window.location.href).href;
             window.open(url, '_blank');
@@ -976,7 +976,7 @@
                     // CREATE MODE
                     matchData.id = crypto.randomUUID();
                     const overlayFile = matchType === 'bingo' ? 'casino_overlay_bingo.html' :
-                        (matchType === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+                        (matchType === 'roulette' ? 'casino_roulette.html' : 'casino_overlay.html');
 
                     matchData.layout_url = new URL(overlayFile + '?match_id=' + matchData.id, window.location.href).href;
                 }
@@ -1144,7 +1144,7 @@
             try {
                 const m = allMatches.find(x => x.id === matchId);
                 const overlayFile = m?.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
-                    (m?.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+                    (m?.match_type === 'roulette' ? 'casino_roulette.html' : 'casino_overlay.html');
 
                 const unixTime = Math.floor(dateObj.getTime() / 1000);
                 const overlayUrl = new URL(overlayFile + '?match_id=' + matchId, window.location.href).href;

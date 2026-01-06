@@ -496,7 +496,7 @@
                 actions = `<div style="text-align:center; color:#00ff1a; font-weight:bold"><i class="fas fa-check"></i> Completed</div>`;
             } else {
                 const overlayFile = m.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
-                    (m.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+                    (m.match_type === 'roulette' ? 'casino_roulette.html' : 'casino_overlay.html');
                 actions = `
                 <div class="actions">
                     <button class="btn btn-schedule" onclick="openSchedule('${m.id}')"><i class="fas fa-calendar"></i> ${m.match_date ? 'Resched' : 'Schedule'}</button>
@@ -630,7 +630,7 @@
         window.copyOverlayLink = async (matchId) => {
             const m = matches.find(x => x.id === matchId);
             const overlayFile = m?.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
-                (m?.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+                (m?.match_type === 'roulette' ? 'casino_roulette.html' : 'casino_overlay.html');
 
             const url = new URL(overlayFile + '?match_id=' + matchId, window.location.href).href;
             try {
@@ -691,7 +691,7 @@
             try {
                 const m = matches.find(x => x.id === matchId);
                 const overlayFile = m?.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
-                    (m?.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+                    (m?.match_type === 'roulette' ? 'casino_roulette.html' : 'casino_overlay.html');
 
                 const unixTime = Math.floor(dateObj.getTime() / 1000);
                 const color = 5763719; // Green
