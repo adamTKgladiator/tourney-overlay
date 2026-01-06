@@ -327,7 +327,17 @@
             <span class="close" onclick="closeModal('scheduleModal')">&times;</span>
             <h2>Schedule Match</h2>
             <p id="scheduleMatchInfo" style="color:#aaa; margin-bottom:10px"></p>
-            <input type="datetime-local" id="scheduleTime">
+            <input type="datetime-local" id="scheduleTime" style="margin-bottom:15px">
+            <div style="margin-bottom:10px;">
+                <label style="color: #aaa; font-size: 0.9rem;">Game</label>
+                <input type="text" id="scheduleGame" placeholder="e.g., Grand Theft Auto V"
+                    style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; margin-top: 5px;">
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="color: #aaa; font-size: 0.9rem;">Goal</label>
+                <input type="text" id="scheduleGoal" placeholder="e.g., Any% No JS"
+                    style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; margin-top: 5px;">
+            </div>
             <button class="btn btn-schedule" style="width:100%" onclick="saveSchedule()">Save Schedule</button>
         </div>
     </div>
@@ -445,6 +455,7 @@
             const p1Name = m.player1 ? m.player1.name : 'TBD';
             const p2Name = m.player2 ? m.player2.name : 'TBD';
 
+            const gameGoal = m.game ? `<div style="font-size:0.8rem; color:#888; margin-bottom:5px"><strong>${m.game}</strong> - ${m.goal || 'N/A'}</div>` : '';
             const timeDisplay = m.match_date ? new Date(m.match_date).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' }) : 'No time set';
 
             let actions = '';
@@ -464,15 +475,16 @@
             }
 
             div.innerHTML = `
-            <div class="match-round">${m.round} (M${m.bracket_position})</div>
-            <div class="match-players">
-                <span>${p1Name}</span>
-                <span class="vs">vs</span>
-                <span>${p2Name}</span>
-            </div>
-            <div class="match-time"><i class="far fa-clock"></i> ${timeDisplay}</div>
-            ${actions}
-        `;
+                <div class="match-round">${m.round} (M${m.bracket_position})</div>
+                ${gameGoal}
+                <div class="match-players">
+                    <span>${p1Name}</span>
+                    <span class="vs">vs</span>
+                    <span>${p2Name}</span>
+                </div>
+                <div class="match-time"><i class="far fa-clock"></i> ${timeDisplay}</div>
+                ${actions}
+            `;
             return div;
         }
 
@@ -482,6 +494,8 @@
             selectedMatchId = id;
             const m = matches.find(x => x.id === id);
             document.getElementById('scheduleMatchInfo').textContent = `${m.round}: ${m.player1.name} vs ${m.player2.name}`;
+            document.getElementById('scheduleGame').value = m.game || '';
+            document.getElementById('scheduleGoal').value = m.goal || '';
 
             // Format for datetime-local
             if (m.match_date) {
@@ -499,13 +513,17 @@
 
         window.saveSchedule = async () => {
             const time = document.getElementById('scheduleTime').value;
+            const game = document.getElementById('scheduleGame').value.trim();
+            const goal = document.getElementById('scheduleGoal').value.trim();
             if (!time) return alert('Select time');
 
             const dateObj = new Date(time);
 
             await updateMatch(selectedMatchId, {
                 match_date: dateObj.toISOString(),
-                status: 'scheduled'
+                status: 'scheduled',
+                game: game,
+                goal: goal
             });
 
             closeModal('scheduleModal');
@@ -517,7 +535,7 @@
             if (webhookUrl) {
                 const m = matches.find(x => x.id === selectedMatchId);
                 if (m) {
-                    await sendDiscordNotification(webhookUrl, m.player1, m.player2, m.round, dateObj, 'Scheduled', m.id);
+                    await sendDiscordNotification(webhookUrl, m.player1, m.player2, m.round, dateObj, 'Scheduled', m.id, game, goal);
                 }
             }
         };
@@ -612,7 +630,7 @@
             }
         }
 
-        async function sendDiscordNotification(webhookUrl, p1, p2, round, dateObj, actionType, matchId) {
+        async function sendDiscordNotification(webhookUrl, p1, p2, round, dateObj, actionType, matchId, game, goal) {
             console.log("Sending Discord Notification for:", p1.name, "(ID:", p1.discord_id, ") vs", p2.name, "(ID:", p2.discord_id, ")");
             try {
                 const unixTime = Math.floor(dateObj.getTime() / 1000);
@@ -629,7 +647,7 @@
                     embeds: [
                         {
                             title: "⚔️ NEW MATCH SCHEDULED! ⚔️",
-                            description: `**${round}** has been scheduled! (V2 Scheduler)`,
+                            description: `**${round}** has been scheduled! (V2 Scheduler)\n**Game:** ${game}\n**Goal:** ${goal}`,
                             color: color,
                             fields: [
                                 {

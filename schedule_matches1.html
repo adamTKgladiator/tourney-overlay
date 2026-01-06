@@ -494,7 +494,17 @@
 
                 <div class="form-group">
                     <label for="round"><i class="fas fa-trophy"></i> Round</label>
-                    <input type="text" id="round" placeholder="e.g. Round 1, Semi Final, Exhibition" required>
+                    <input type="text" id="round" placeholder="e.g., Round 1, Semi Final, Exhibition" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="game"><i class="fas fa-gamepad"></i> Game</label>
+                    <input type="text" id="game" placeholder="e.g., Grand Theft Auto V" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="goal"><i class="fas fa-bullseye"></i> Goal</label>
+                    <input type="text" id="goal" placeholder="e.g., Any% No JS" required>
                 </div>
 
                 <div class="form-group">
@@ -740,6 +750,8 @@
                         </div>
                         
                         <div class="match-time">
+                            <strong>Game:</strong> ${match.game || 'N/A'}<br>
+                            <strong>Goal:</strong> ${match.goal || 'N/A'}<br>
                             <strong>Time:</strong> ${matchTime}
                         </div>
                         
@@ -895,6 +907,8 @@
             const player1Id = document.getElementById('player1').value;
             const player2Id = document.getElementById('player2').value;
             const round = document.getElementById('round').value;
+            const game = document.getElementById('game').value;
+            const goal = document.getElementById('goal').value;
             const matchDate = document.getElementById('matchDate').value;
             const matchTime = document.getElementById('matchTime').value;
             const status = document.getElementById('matchStatus').value;
@@ -916,6 +930,8 @@
                     player1_id: player1Id,
                     player2_id: player2Id,
                     round: round,
+                    game: game,
+                    goal: goal,
                     match_date: dateTime.toISOString(),
                     match_time: timeString,
                     status: status
@@ -969,7 +985,7 @@
                     // Find the freshly loaded match to get the latest player data (including discord_id)
                     const updatedMatch = allMatches.find(m => m.id === (matchIdToEdit || matchData.id));
                     if (updatedMatch) {
-                        await sendDiscordNotification(webhookUrl, updatedMatch.player1, updatedMatch.player2, round, dateTime, matchIdToEdit ? 'Updated' : 'New', updatedMatch.id);
+                        await sendDiscordNotification(webhookUrl, updatedMatch.player1, updatedMatch.player2, round, dateTime, matchIdToEdit ? 'Updated' : 'New', updatedMatch.id, game, goal);
                         showResult('Match saved & Discord notification sent!', 'success');
                     }
                 }
@@ -1007,6 +1023,8 @@
             if (match.player1) document.getElementById('player1').value = match.player1.id;
             if (match.player2) document.getElementById('player2').value = match.player2.id;
             document.getElementById('round').value = match.round || '';
+            document.getElementById('game').value = match.game || '';
+            document.getElementById('goal').value = match.goal || '';
 
             if (match.match_date) {
                 const dateObj = new Date(match.match_date);
@@ -1075,7 +1093,7 @@
             }
         }
 
-        async function sendDiscordNotification(webhookUrl, p1, p2, round, dateObj, actionType, matchId) {
+        async function sendDiscordNotification(webhookUrl, p1, p2, round, dateObj, actionType, matchId, game, goal) {
             console.log("Sending Discord Notification for:", p1.name, "(ID:", p1.discord_id, ") vs", p2.name, "(ID:", p2.discord_id, ")");
             try {
                 const unixTime = Math.floor(dateObj.getTime() / 1000);
@@ -1094,7 +1112,7 @@
                     embeds: [
                         {
                             title: "⚔️ NEW MATCH SCHEDULED! ⚔️",
-                            description: `**${round}** has been scheduled!`,
+                            description: `**${round}** has been scheduled!\n**Game:** ${game}\n**Goal:** ${goal}`,
                             color: color,
                             fields: [
                                 {
