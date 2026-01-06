@@ -259,8 +259,8 @@
             </div>
 
             <div class="input-group">
-                <label for="timezone"><i class="fas fa-clock"></i> Timezone</label>
-                <input type="text" id="timezone" placeholder="e.g., EST" required>
+                <label for="discordId"><i class="fab fa-discord"></i> Discord ID (Numeric or @username)</label>
+                <input type="text" id="discordId" placeholder="e.g., 123456789012345678" required>
             </div>
 
             <input type="hidden" id="editingId" value="">
@@ -308,7 +308,7 @@
                 name: document.getElementById('playerName').value.trim(),
                 twitch_username: document.getElementById('twitchUsername').value.trim().toLowerCase(),
                 display_name: document.getElementById('displayName').value.trim() || document.getElementById('playerName').value.trim(),
-                timezone: document.getElementById('timezone').value.trim()
+                discord_id: document.getElementById('discordId').value.trim()
             };
 
             if (!data.name) return showResult('Name required', 'error');
@@ -365,14 +365,14 @@
                         const safeName = p.name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                         const safeDisplay = (p.display_name || p.name).replace(/</g, "&lt;").replace(/>/g, "&gt;");
                         const safeTwitch = p.twitch_username.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                        const safeTimezone = (p.timezone || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                        const safeDiscord = (p.discord_id || '').replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
                         const item = document.createElement('div');
                         item.className = 'player-item';
                         item.innerHTML = `
                             <div class="player-info">
                                 <div class="player-name">${safeName} (${safeDisplay})</div>
-                                <div class="player-twitch">@${safeTwitch} • ${safeTimezone}</div>
+                                <div class="player-twitch">@${safeTwitch} • Discord: ${safeDiscord || 'N/A'}</div>
                             </div>
                             <div class="action-buttons">
                                 <button class="action-btn edit-btn" onclick='editPlayer(${JSON.stringify(p).replace(/'/g, "&#39;")})'>
@@ -438,7 +438,7 @@
             document.getElementById('playerName').value = player.name;
             document.getElementById('twitchUsername').value = player.twitch_username;
             document.getElementById('displayName').value = player.display_name || player.name;
-            document.getElementById('timezone').value = player.timezone || '';
+            document.getElementById('discordId').value = player.discord_id || '';
             document.getElementById('editingId').value = player.id;
 
             const btn = document.getElementById('submitBtn');
@@ -478,11 +478,11 @@
         }
 
         // Quick add buttons for common players
-        function quickAddPlayer(name, twitch, display, timezone) {
+        function quickAddPlayer(name, twitch, display, discordId) {
             document.getElementById('playerName').value = name;
             document.getElementById('twitchUsername').value = twitch;
             document.getElementById('displayName').value = display || name;
-            document.getElementById('timezone').value = timezone;
+            document.getElementById('discordId').value = discordId;
         }
 
         /*
