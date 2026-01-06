@@ -6,19 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Double Elimination Tournament Bracket v2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-bright: #FBF5B7;
+            --neon-glow: rgba(212, 175, 55, 0.4);
+            --felt: #004d26;
+            --dark-felt: #002b15;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
         body {
-            background-image: url('./Assets/BG.png');
+            background-color: #000;
+            background-image: url('./Assets/casino_bg.png');
             background-size: cover;
             background-attachment: fixed;
-            color: #ccc;
+            background-position: center;
+            color: #eee;
             min-height: 100vh;
             padding: 20px;
             overflow-x: auto;
@@ -27,24 +38,21 @@
         /* Header & Controls */
         .tournament-header {
             text-align: center;
-            padding: 20px;
-            margin-bottom: 30px;
+            padding: 10px 20px;
+            margin-bottom: 10px;
         }
 
         .header-title {
-            font-size: 3rem;
-            color: #fff;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--gold-bright);
             text-shadow:
-                0 0 5px #fff,
-                0 0 10px #fff,
-                0 0 20px #fff,
-                0 0 40px #0ff,
-                0 0 80px #0ff,
-                0 0 90px #0ff,
-                0 0 100px #0ff,
-                0 0 150px #0ff;
+                0 0 10px var(--neon-glow),
+                0 0 20px var(--neon-glow),
+                0 0 40px rgba(0, 0, 0, 0.8);
             margin-bottom: 5px;
             text-transform: uppercase;
+            letter-spacing: 5px;
         }
 
         .header-subtitle {
@@ -96,8 +104,8 @@
         .obs-scroll-container {
             display: flex;
             flex-direction: column;
-            gap: 40px;
-            padding: 20px;
+            gap: 20px;
+            padding: 10px 20px;
             min-width: 1200px;
             position: relative;
         }
@@ -108,14 +116,15 @@
         }
 
         .section-header {
-            font-size: 1.2rem;
-            color: #a970ff;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--gold);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 1px solid #9146FF;
-            margin-bottom: 20px;
-            padding-bottom: 5px;
-            text-shadow: 0 0 5px rgba(145, 70, 255, 0.5);
+            letter-spacing: 3px;
+            border-bottom: 2px solid var(--gold);
+            margin-bottom: 25px;
+            padding-bottom: 8px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         }
 
         /* Bracket Container & SVG Context */
@@ -132,7 +141,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-around;
-            width: 200px;
+            width: 250px;
             position: relative;
         }
 
@@ -147,21 +156,23 @@
 
         /* Match Card - Styled to match theme */
         .match-node {
-            background: rgba(20, 20, 20, 0.95);
-            border: 1px solid #444;
-            border-radius: 3px;
-            margin: 10px 0;
+            background: rgba(0, 43, 21, 0.9);
+            /* Dark Felt */
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+            margin: 12px 0;
             position: relative;
             z-index: 5;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             transition: all 0.2s;
             cursor: pointer;
         }
 
         .match-node:hover {
-            border-color: #9146FF;
-            box-shadow: 0 0 10px rgba(145, 70, 255, 0.2);
-            transform: translateY(-1px);
+            border-color: var(--gold-bright);
+            box-shadow: 0 0 20px var(--neon-glow);
+            transform: translateY(-2px) scale(1.02);
+            z-index: 10;
         }
 
         .match-identifier {
@@ -176,8 +187,8 @@
         .match-row {
             display: flex;
             align-items: center;
-            height: 30px;
-            border-bottom: 1px solid #333;
+            height: 40px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
         }
 
         .match-row:last-child {
@@ -199,12 +210,12 @@
 
         .player-name {
             flex: 1;
-            padding: 0 10px;
-            font-size: 0.85rem;
+            padding: 0 12px;
+            font-size: 1rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            color: #aaa;
+            color: #ccc;
         }
 
         .player-score {
@@ -220,22 +231,22 @@
             color: #666;
         }
 
-        /* Winner State - Purple Theme */
+        /* Winner State - Gold Theme */
         .match-row.winner .player-name {
-            color: #fff;
-            font-weight: bold;
-            text-shadow: 0 0 5px rgba(145, 70, 255, 0.5);
+            color: var(--gold-bright);
+            font-weight: 900;
+            text-shadow: 0 0 8px var(--neon-glow);
         }
 
         .match-row.winner .player-score {
-            background: #9146FF;
-            color: #fff;
-            box-shadow: 0 0 5px #9146FF;
+            background: var(--gold);
+            color: #000;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
         }
 
         .match-row.winner .player-seed {
-            background: #333;
-            color: #ccc;
+            background: rgba(251, 245, 183, 0.1);
+            color: var(--gold);
         }
 
         /* Connector Lines */
@@ -251,12 +262,14 @@
 
         .connector {
             fill: none;
-            stroke: #555;
+            stroke: var(--gold);
             stroke-width: 2px;
+            opacity: 0.4;
         }
 
         .connector.active {
-            stroke: #7a7a7a;
+            stroke: var(--gold-bright);
+            opacity: 1;
         }
 
         /* Modal & Utils */
@@ -274,12 +287,13 @@
         }
 
         .modal-box {
-            background: #1a1a1a;
-            padding: 20px;
-            width: 400px;
-            border-radius: 5px;
-            border: 1px solid #9146FF;
-            box-shadow: 0 0 20px rgba(145, 70, 255, 0.2);
+            background: var(--dark-felt);
+            padding: 30px;
+            width: 450px;
+            border-radius: 8px;
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), 0 0 20px var(--neon-glow);
+            color: white;
         }
 
         .notification {
@@ -342,13 +356,16 @@
 
     <!-- Match Modal -->
     <div id="matchModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
+        <div class="modal-box">
+            <span class="close" style="float:right; cursor:pointer; color:var(--gold); font-size:1.5rem;">&times;</span>
             <div class="modal-body" id="modalBody"></div>
-            <div class="modal-actions">
-                <button class="setup-btn" style="background:#4299e1" id="setWinner1">P1 Win</button>
-                <button class="setup-btn" style="background:#ed8936" id="setWinner2">P2 Win</button>
-                <button class="setup-btn danger" id="resetWinner">Reset</button>
+            <div class="modal-actions" style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn" style="flex:1; background:var(--felt); border:1px solid var(--gold); color:white;"
+                    id="setWinner1">P1 Win</button>
+                <button class="btn" style="flex:1; background:var(--felt); border:1px solid var(--gold); color:white;"
+                    id="setWinner2">P2 Win</button>
+                <button class="btn danger" style="background:#400; border:1px solid #f00;"
+                    id="resetWinner">Reset</button>
             </div>
         </div>
     </div>
@@ -646,7 +663,7 @@
             const p2n = match.player2 ? (match.player2.display_name || match.player2.name) : 'TBD';
 
             body.innerHTML = `
-                <h2 style="text-align:center; color:#9146FF">${match.round}</h2>
+                <h2 style="text-align:center; color:var(--gold); text-transform:uppercase; letter-spacing:2px;">${match.round}</h2>
                 <div style="display:flex; justify-content:space-between; margin:20px 0; font-size:1.2rem;">
                     <span>${p1n}</span>
                     <span>vs</span>

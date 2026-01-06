@@ -6,18 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upcoming Tournament Matches</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-bright: #FBF5B7;
+            --neon-glow: rgba(212, 175, 55, 0.4);
+            --felt: #004d26;
+            --dark-felt: #002b15;
+            --suit-red: #d40000;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
         body {
-            background-image: url('./Assets/BG.png');
+            background-color: #000;
+            background-image: url('./Assets/casino_bg.png');
             background-size: cover;
             background-attachment: fixed;
+            background-position: center;
             color: white;
             min-height: 100vh;
             padding: 20px;
@@ -41,12 +53,12 @@
         }
 
         .obs-scroll-container::-webkit-scrollbar-thumb {
-            background: #9146FF;
+            background: var(--gold);
             border-radius: 4px;
         }
 
         .obs-scroll-container::-webkit-scrollbar-thumb:hover {
-            background: #a35cff;
+            background: var(--gold-bright);
         }
 
         .tournament-header {
@@ -60,30 +72,44 @@
 
 
         .header-title {
-            font-size: 3rem;
-            color: #fff;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--gold-bright);
             text-shadow:
-                0 0 5px #fff,
-                0 0 10px #fff,
-                0 0 20px #fff,
-                0 0 40px #0ff,
-                0 0 80px #0ff,
-                0 0 90px #0ff,
-                0 0 100px #0ff,
-                0 0 150px #0ff;
-            margin-bottom: 10px;
+                0 0 10px var(--neon-glow),
+                0 0 20px var(--neon-glow),
+                0 0 40px rgba(0, 0, 0, 0.8);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
         }
 
         .header-subtitle {
-            color: #aaa;
-            font-size: 1.2rem;
+            color: var(--gold);
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.9;
         }
 
         .timezone-info {
-            color: #00ff1a;
-            font-size: 1rem;
-            margin-top: 5px;
-            text-shadow: 0 0 5px #00ff1a;
+            color: #fff;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            font-weight: 500;
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+
+        .timezone-info i {
+            color: var(--gold);
+            margin-right: 5px;
+        }
+
+        .timezone-info span {
+            color: var(--gold-bright);
+            font-weight: 800;
         }
 
         .matches-container {
@@ -93,385 +119,203 @@
 
         .section-title {
             text-align: center;
-            font-size: 2rem;
+            font-size: 2.22rem;
+            font-weight: 800;
             margin: 40px 0 30px 0;
-            color: #fff;
-            text-shadow: 0 0 10px #9146FF;
+            color: var(--gold-bright);
+            text-shadow: 0 0 15px var(--neon-glow);
             position: relative;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 43, 21, 0.8);
+            /* Dark Felt */
             padding: 15px;
             border-radius: 10px;
-            border: 2px solid #9146FF;
+            border: 2px solid var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 4px;
         }
 
         .section-title::after {
             content: '';
             display: block;
-            width: 200px;
+            width: 300px;
             height: 3px;
-            background: linear-gradient(90deg, transparent, #9146FF, transparent);
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
             margin: 10px auto;
         }
 
         .upcoming-matches,
         .live-matches {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
             margin-bottom: 50px;
+            width: 100%;
         }
 
-        .match-card {
-            background: rgba(0, 0, 0, 0.85);
-            border: 3px solid;
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+        .match-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin-top: -10px;
         }
 
-        .match-card.upcoming {
-            border-color: #9146FF;
-            box-shadow: 0 0 20px rgba(145, 70, 255, 0.3);
-        }
-
-        .match-card.live {
-            border-color: #ff008c;
-            box-shadow: 0 0 20px rgba(255, 0, 140, 0.3);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 20px rgba(255, 0, 140, 0.3);
-            }
-
-            50% {
-                box-shadow: 0 0 30px rgba(255, 0, 140, 0.6);
-            }
-
-            100% {
-                box-shadow: 0 0 20px rgba(255, 0, 140, 0.3);
-            }
-        }
-
-        .match-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(145, 70, 255, 0.4);
-        }
-
-        .match-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #333;
-        }
-
-        .match-round {
-            background: linear-gradient(135deg, #9146FF, #6441a5);
-            color: white;
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-weight: bold;
+        .match-table th {
+            text-align: left;
+            padding: 15px 20px;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
             font-size: 0.9rem;
+            border-bottom: 2px solid var(--gold);
         }
 
-        .match-status {
-            background: #333;
-            color: #aaa;
-            padding: 4px 12px;
-            border-radius: 20px;
+        .match-row-item {
+            background: rgba(0, 43, 21, 0.9);
+            /* Dark Felt */
+            border: 1px solid var(--gold);
+            transition: all 0.3s ease;
+        }
+
+        .match-row-item:hover {
+            background: rgba(0, 60, 30, 0.95);
+            transform: scale(1.005);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .match-row-item td {
+            padding: 15px 20px;
+            vertical-align: middle;
+            border-top: 1px solid var(--gold);
+            border-bottom: 1px solid var(--gold);
+        }
+
+        .match-row-item td:first-child {
+            border-left: 1px solid var(--gold);
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+
+        .match-row-item td:last-child {
+            border-right: 1px solid var(--gold);
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .col-players {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .player-mini {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-mini .name {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--gold-bright);
+        }
+
+        .player-mini .twitch {
             font-size: 0.8rem;
+            color: var(--gold);
+            opacity: 0.8;
         }
 
-        .status-live {
-            background: linear-gradient(135deg, #ff008c, #cc006f);
+        .col-vs {
+            font-weight: 900;
+            color: var(--suit-red);
+            font-size: 1rem;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+
+        .badge-live {
+            background: var(--suit-red);
             color: white;
             animation: blink 1.5s infinite;
         }
 
-        @keyframes blink {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.7;
-            }
+        .badge-upcoming {
+            background: var(--dark-felt);
+            border: 1px solid var(--gold);
+            color: var(--gold-bright);
         }
 
-        .match-players {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 25px 0;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            position: relative;
+        .col-info {
+            font-weight: 700;
         }
 
-        .player {
-            text-align: center;
-            flex: 1;
-            position: relative;
-            z-index: 1;
+        .col-info .time {
+            display: block;
+            color: var(--gold-bright);
+            font-size: 1.1rem;
         }
 
-        .player-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #9146FF;
-        }
-
-        .player-name {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 5px;
-        }
-
-        .player-twitch {
-            color: #9146FF;
-            font-size: 1rem;
-            margin-bottom: 10px;
-        }
-
-        .vs {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: #fff;
-            font-size: 1.5rem;
-            font-weight: bold;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid #9146FF;
-            z-index: 2;
-        }
-
-        .match-info {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #333;
-        }
-
-        .info-row:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: #aaa;
-            font-weight: 600;
-        }
-
-        .info-value {
-            color: #fff;
-            font-weight: bold;
-        }
-
-        .countdown {
-            background: rgba(145, 70, 255, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .countdown-title {
-            color: #aaa;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-
-        .countdown-timer {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .time-unit {
-            text-align: center;
-            min-width: 70px;
-        }
-
-        .time-value {
-            font-size: 2.2rem;
-            font-weight: bold;
-            color: #00ff1a;
-            text-shadow: 0 0 10px #00ff1a;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 5px;
-        }
-
-        .time-label {
-            color: #aaa;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
-        .match-started {
-            text-align: center;
-            padding: 15px;
-            background: rgba(0, 255, 26, 0.1);
-            border: 2px solid #00ff1a;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        .match-started a {
-            color: #00ff1a;
+        .table-btn {
+            background: linear-gradient(135deg, var(--gold), #b38f20);
+            color: #000;
             text-decoration: none;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 10px;
-            padding: 8px 20px;
-            background: rgba(0, 255, 26, 0.2);
-            border-radius: 5px;
-            transition: all 0.3s ease;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--gold-bright);
         }
 
-        .match-started a:hover {
-            background: rgba(0, 255, 26, 0.4);
-            transform: scale(1.05);
+        .compact-countdown {
+            font-weight: 900;
+            color: var(--gold-bright);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px var(--neon-glow);
         }
 
         .no-matches {
             text-align: center;
             padding: 60px 40px;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 43, 21, 0.6);
             border-radius: 15px;
-            border: 2px dashed #9146FF;
-            grid-column: 1 / -1;
+            border: 2px dashed var(--gold);
+        }
+
+        .no-matches h3 {
+            color: var(--gold-bright);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .no-matches p {
+            color: var(--gold);
+            opacity: 0.8;
+            font-size: 1.1rem;
         }
 
         .no-matches-icon {
             font-size: 4rem;
-            color: #9146FF;
-            opacity: 0.5;
+            color: var(--gold-bright);
             margin-bottom: 20px;
+            text-shadow: 0 0 15px var(--neon-glow);
         }
 
-        .no-matches h3 {
-            color: #fff;
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
+        @media (max-width: 900px) {
 
-        .no-matches p {
-            color: #aaa;
-            font-size: 1.1rem;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 60px;
-            grid-column: 1 / -1;
-        }
-
-        .loading i {
-            font-size: 3rem;
-            color: #9146FF;
-            margin-bottom: 20px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .loading p {
-            color: #aaa;
-            font-size: 1.2rem;
-        }
-
-        .footer-note {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            margin-top: 40px;
-            border-top: 1px solid #333;
-        }
-
-        .local-time-display {
-            text-align: center;
-            color: #aaa;
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-
-        @media (max-width: 768px) {
-            .header-title {
-                font-size: 2rem;
-            }
-
-            .upcoming-matches,
-            .live-matches {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .match-card {
-                padding: 20px;
-            }
-
-            .match-players {
-                flex-direction: column;
-                gap: 20px;
-                padding: 30px 20px;
-            }
-
-            .vs {
-                position: relative;
-                left: auto;
-                top: auto;
-                transform: none;
-                margin: 10px 0;
-                order: 2;
-            }
-
-            .countdown-timer {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-
-            .time-unit {
-                min-width: 60px;
-            }
-
-            .time-value {
-                font-size: 1.8rem;
+            .match-table th:nth-child(3),
+            .match-table td:nth-child(3) {
+                display: none;
             }
         }
 
@@ -480,19 +324,47 @@
             display: inline-block;
             margin-top: 15px;
             padding: 8px 16px;
-            background: linear-gradient(135deg, #9146FF, #6441a5);
-            color: white;
+            background: linear-gradient(135deg, var(--gold), #b38f20);
+            color: #000;
             text-decoration: none;
             border-radius: 5px;
-            font-weight: bold;
-            font-size: 0.9rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
             transition: all 0.3s ease;
             text-align: center;
+            border: 1px solid var(--gold-bright);
         }
 
         .overlay-link-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(145, 70, 255, 0.4);
+            box-shadow: 0 5px 15px var(--neon-glow);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--gold-bright);
+        }
+
+        .loading i {
+            display: block;
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--neon-glow);
+        }
+
+        .footer-note {
+            text-align: center;
+            padding: 25px;
+            color: var(--gold);
+            margin-top: 50px;
+            border-top: 1px solid var(--gold);
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
         }
     </style>
 </head>
@@ -812,186 +684,122 @@
             const upcomingContainer = document.getElementById('upcomingMatches');
             const noMatchesDiv = document.getElementById('noMatches');
 
-            // Check for elements
-            if (!liveContainer || !upcomingContainer || !noMatchesDiv) {
-                console.error('Missing container elements!');
-                return;
-            }
+            if (!liveContainer || !upcomingContainer || !noMatchesDiv) return;
 
-            console.log('Rendering matches. Total:', matches.length);
-
-            // Clear previous content
             liveContainer.innerHTML = '';
             upcomingContainer.innerHTML = '';
 
-            // Separate live and upcoming matches
             const liveMatches = matches.filter(match => match.status === 'live');
-            // Only show upcoming matches that have a date set
             const upcomingMatches = matches.filter(match => match.status === 'scheduled' && match.match_date);
 
-            console.log('Live matches:', liveMatches.length);
-            console.log('Upcoming matches:', upcomingMatches.length);
-
-            // Clear existing countdown intervals
             countdownIntervals.forEach(interval => clearInterval(interval));
             countdownIntervals.clear();
 
-            // Show/hide no matches message
             if (liveMatches.length === 0 && upcomingMatches.length === 0) {
-                console.log('No matches to display');
                 noMatchesDiv.style.display = 'block';
                 return;
             } else {
                 noMatchesDiv.style.display = 'none';
             }
 
+            const tableHeader = `
+                <table class="match-table">
+                    <thead>
+                        <tr>
+                            <th>Players</th>
+                            <th>Round</th>
+                            <th>Time (CET)</th>
+                            <th style="text-align:right">Action / Countdown</th>
+                        </tr>
+                    </thead>
+                    <tbody id="{ID}_body"></tbody>
+                </table>
+            `;
+
             // Render live matches
             if (liveMatches.length > 0) {
-                console.log('Rendering live matches');
+                liveContainer.innerHTML = tableHeader.replace('{ID}_body', 'live_body');
+                const tbody = document.getElementById('live_body');
                 liveMatches.forEach(match => {
-                    liveContainer.appendChild(createMatchCard(match, true));
+                    tbody.appendChild(createMatchRow(match, true));
                 });
             } else {
-                console.log('No live matches');
-                liveContainer.innerHTML = `
-                    <div class="no-matches">
-                        <i class="fas fa-broadcast-tower no-matches-icon"></i>
-                        <h3>No Live Matches</h3>
-                        <p>Check upcoming matches below!</p>
-                    </div>
-                `;
+                liveContainer.innerHTML = '<div class="no-matches"><h3>No Live Matches</h3></div>';
             }
 
             // Render upcoming matches
             if (upcomingMatches.length > 0) {
-                console.log('Rendering upcoming matches');
+                upcomingContainer.innerHTML = tableHeader.replace('{ID}_body', 'upcoming_body');
+                const tbody = document.getElementById('upcoming_body');
                 upcomingMatches.forEach(match => {
-                    upcomingContainer.appendChild(createMatchCard(match, false));
+                    tbody.appendChild(createMatchRow(match, false));
                 });
             } else {
-                console.log('No upcoming matches');
-                upcomingContainer.innerHTML = `
-                    <div class="no-matches">
-                        <i class="fas fa-clock no-matches-icon"></i>
-                        <h3>No Upcoming Matches</h3>
-                        <p>Matches will appear here once scheduled.</p>
-                    </div>
-                `;
+                upcomingContainer.innerHTML = '<div class="no-matches"><h3>No Upcoming Matches</h3></div>';
             }
         }
 
-        // Create match card element
-        function createMatchCard(match, isLive) {
+        // Create match row element
+        function createMatchRow(match, isLive) {
             const player1 = match.player1 || { name: 'Player 1', twitch_username: 'unknown' };
             const player2 = match.player2 || { name: 'Player 2', twitch_username: 'unknown' };
 
-            const card = document.createElement('div');
-            card.className = `match-card ${isLive ? 'live' : 'upcoming'}`;
-            card.dataset.matchId = match.id;
+            const tr = document.createElement('tr');
+            tr.className = 'match-row-item';
+            tr.dataset.matchId = match.id;
 
-            // Get match time
             const matchTime = parseMatchTime(match);
-
-            // Format display strings
             let cetTimeString = 'Time not set';
             let cetDateString = 'Date not set';
-            let localTimeString = 'Time not set';
 
             if (matchTime) {
-                // Format in CET
                 cetTimeString = formatCETTime(matchTime);
                 cetDateString = formatCETDate(matchTime);
-                localTimeString = formatLocalTime(matchTime);
-            } else if (match.match_time) {
-                // Fallback to raw match_time if parsing failed
-                cetTimeString = match.match_time + ' CET';
-                cetDateString = match.match_date ? new Date(match.match_date).toLocaleDateString() : 'Date not set';
             }
 
-            console.log('Creating card for match:', match.round, 'CET:', cetTimeString);
-
-            // Create card content
             const overlayFile = match.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
-                (match.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
+                (match.match_type === 'roulette' ? 'casino_roulette.html' : 'casino_overlay.html');
 
-            card.innerHTML = `
-                <div class="match-header">
-                    <span class="match-round">${match.round || 'TOURNAMENT MATCH'}</span>
-                    <span class="match-status ${isLive ? 'status-live' : ''}">
-                        ${isLive ? '🔴 LIVE NOW' : '⏰ UPCOMING'}
+            tr.innerHTML = `
+                <td>
+                    <div class="col-players">
+                        <div class="player-mini">
+                            <span class="name">${player1.name}</span>
+                            <span class="twitch">@${player1.twitch_username}</span>
+                        </div>
+                        <span class="col-vs">VS</span>
+                        <div class="player-mini">
+                            <span class="name">${player2.name}</span>
+                            <span class="twitch">@${player2.twitch_username}</span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge ${isLive ? 'badge-live' : 'badge-upcoming'}">
+                        ${isLive ? 'LIVE NOW' : (match.round || 'MATCH')}
                     </span>
-                </div>
-                
-                <div class="match-players">
-                    <div class="player">
-                        <div class="player-icon">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="player-name">${player1.name}</div>
-                        <div class="player-twitch">@${player1.twitch_username}</div>
+                </td>
+                <td>
+                    <div class="col-info">
+                        <span class="time">${cetTimeString}</span>
+                        <span style="font-size:0.8rem; opacity:0.6">${cetDateString}</span>
                     </div>
-                    
-                    <div class="vs">VS</div>
-                    
-                    <div class="player">
-                        <div class="player-icon">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="player-name">${player2.name}</div>
-                        <div class="player-twitch">@${player2.twitch_username}</div>
-                    </div>
-                </div>
-                
-                <div class="match-info">
-                    <div class="info-row">
-                        <span class="info-label">Date (CET):</span>
-                        <span class="info-value">${cetDateString}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Time (CET):</span>
-                        <span class="info-value">${cetTimeString}</span>
-                    </div>
-                    <div class="local-time-display">
-                        Your local time: ${localTimeString}
-                    </div>
-                </div>
-                
-                ${isLive ? `
-                    <div class="match-started">
-                        <strong>🎮 MATCH IS LIVE!</strong>
-                        <a href="${overlayFile}?match_id=${match.id}" target="_blank">
-                            <i class="fas fa-external-link-alt"></i> Watch Live Stream
+                </td>
+                <td class="col-action">
+                    ${isLive ? `
+                        <a href="${overlayFile}?match_id=${match.id}" target="_blank" class="table-btn">
+                            <i class="fas fa-broadcast-tower"></i> WATCH LIVE
                         </a>
-                    </div>
-                ` : `
-                    <div class="countdown">
-                        <div class="countdown-title">Match starts in:</div>
-                        <div class="countdown-timer" id="countdown-${match.id}">
-                            <div class="time-unit">
-                                <div class="time-value">00</div>
-                                <div class="time-label">Days</div>
-                            </div>
-                            <div class="time-unit">
-                                <div class="time-value">00</div>
-                                <div class="time-label">Hours</div>
-                            </div>
-                            <div class="time-unit">
-                                <div class="time-value">00</div>
-                                <div class="time-label">Minutes</div>
-                            </div>
-                            <div class="time-unit">
-                                <div class="time-value">00</div>
-                                <div class="time-label">Seconds</div>
-                            </div>
-                        </div>
-                        <a href="${overlayFile}?match_id=${match.id}" target="_blank" class="overlay-link-btn">
-                            <i class="fas fa-desktop"></i> Open Overlay
+                    ` : `
+                        <div class="compact-countdown" id="countdown-${match.id}">--:--:--</div>
+                        <a href="${overlayFile}?match_id=${match.id}" target="_blank" class="table-btn" style="margin-top:10px">
+                            <i class="fas fa-desktop"></i> OPEN OVERLAY
                         </a>
-                    </div>
-                `}
+                    `}
+                </td>
             `;
 
-            return card;
+            return tr;
         }
 
         // Start countdown timers for all upcoming matches
@@ -1007,35 +815,22 @@
 
         // Start individual countdown timer
         function startCountdownTimer(matchId) {
-            // Clear existing interval
             if (countdownIntervals.has(matchId)) {
                 clearInterval(countdownIntervals.get(matchId));
             }
 
-            // Get countdown element
             const countdownEl = document.getElementById(`countdown-${matchId}`);
             if (!countdownEl) {
-                console.log('No countdown element for match:', matchId);
                 return;
             }
 
-            // Time units elements
-            const daysEl = countdownEl.querySelector('.time-unit:nth-child(1) .time-value');
-            const hoursEl = countdownEl.querySelector('.time-unit:nth-child(2) .time-value');
-            const minutesEl = countdownEl.querySelector('.time-unit:nth-child(3) .time-value');
-            const secondsEl = countdownEl.querySelector('.time-unit:nth-child(4) .time-value');
-
-            // Update countdown immediately
             updateCountdown();
-
-            // Set interval to update every second
             const interval = setInterval(updateCountdown, 1000);
             countdownIntervals.set(matchId, interval);
 
             function updateCountdown() {
                 const match = matches.find(m => m.id === matchId);
                 if (!match) {
-                    console.log('Match not found for countdown:', matchId);
                     clearInterval(interval);
                     countdownIntervals.delete(matchId);
                     return;
@@ -1044,37 +839,19 @@
                 const timeUntil = calculateTimeUntilMatch(match);
 
                 if (!timeUntil || timeUntil.hasStarted) {
-                    // Match time has arrived
-                    daysEl.textContent = '00';
-                    hoursEl.textContent = '00';
-                    minutesEl.textContent = '00';
-                    secondsEl.textContent = '00';
-
-                    // Change to "Match Starting" message
-                    if (timeUntil && timeUntil.hasStarted && countdownEl.parentElement) {
-                        const overlayFile = match.match_type === 'bingo' ? 'casino_overlay_bingo.html' :
-                            (match.match_type === 'roulette' ? 'casino_roulette.html' : 'TK.html');
-                        countdownEl.parentElement.innerHTML = `
-                            <div class="match-started">
-                                <strong>🎮 MATCH STARTING!</strong>
-                                <a href="${overlayFile}?match_id=${matchId}" target="_blank">
-                                    <i class="fas fa-external-link-alt"></i> Watch Live Stream
-                                </a>
-                            </div>
-                        `;
-                    }
-
-                    // Clear interval
+                    countdownEl.textContent = "STARTING...";
+                    countdownEl.style.color = "var(--suit-red)";
                     clearInterval(interval);
                     countdownIntervals.delete(matchId);
                     return;
                 }
 
-                // Update display
-                daysEl.textContent = timeUntil.days.toString().padStart(2, '0');
-                hoursEl.textContent = timeUntil.hours.toString().padStart(2, '0');
-                minutesEl.textContent = timeUntil.minutes.toString().padStart(2, '0');
-                secondsEl.textContent = timeUntil.seconds.toString().padStart(2, '0');
+                const d = timeUntil.days.toString().padStart(2, '0');
+                const h = timeUntil.hours.toString().padStart(2, '0');
+                const m = timeUntil.minutes.toString().padStart(2, '0');
+                const s = timeUntil.seconds.toString().padStart(2, '0');
+
+                countdownEl.textContent = `${d > 0 ? d + 'd ' : ''}${h}:${m}:${s}`;
             }
         }
 
