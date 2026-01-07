@@ -386,6 +386,7 @@
 
         // Copying the Logic Map from bracket_v2 to ensure consistency
         const PROGRESSION_MAP = {
+            // --- 8-Player Logic ---
             'ROUND 1': {
                 1: { w: { r: 'WINNERS SEMI-FINAL', p: 1, s: 'p1' }, l: { r: 'LOSERS ROUND 1', p: 1, s: 'p1' } },
                 2: { w: { r: 'WINNERS SEMI-FINAL', p: 1, s: 'p2' }, l: { r: 'LOSERS ROUND 1', p: 1, s: 'p2' } },
@@ -411,6 +412,41 @@
                 1: { w: { r: 'LOSERS FINAL', p: 1, s: 'p2' } }
             },
             'LOSERS FINAL': {
+                1: { w: { r: 'GRAND FINAL', p: 1, s: 'p2' } }
+            },
+
+            // --- 9-Player Logic ---
+            'PLAY-IN': {
+                1: { w: { r: 'QUARTER FINALS', p: 1, s: 'p2' }, l: { r: 'LB ROUND 1', p: 1, s: 'p1' } }
+            },
+            'QUARTER FINALS': {
+                1: { w: { r: 'SEMI FINALS', p: 1, s: 'p1' }, l: { r: 'LB ROUND 2', p: 1, s: 'p2' } }, // 1 vs W(Play-In)
+                2: { w: { r: 'SEMI FINALS', p: 1, s: 'p2' }, l: { r: 'LB ROUND 1', p: 1, s: 'p2' } }, // 4 vs 5
+                3: { w: { r: 'SEMI FINALS', p: 2, s: 'p1' }, l: { r: 'LB ROUND 2', p: 2, s: 'p1' } }, // 3 vs 6
+                4: { w: { r: 'SEMI FINALS', p: 2, s: 'p2' }, l: { r: 'LB ROUND 2', p: 2, s: 'p2' } }  // 2 vs 7
+            },
+            'SEMI FINALS': {
+                1: { w: { r: 'UPPER FINAL', p: 1, s: 'p1' }, l: { r: 'LB ROUND 3', p: 2, s: 'p1' } },
+                2: { w: { r: 'UPPER FINAL', p: 1, s: 'p2' }, l: { r: 'LB ROUND 3', p: 1, s: 'p1' } }
+            },
+            'UPPER FINAL': {
+                1: { w: { r: 'GRAND FINAL', p: 1, s: 'p1' }, l: { r: 'LOWER FINAL', p: 1, s: 'p1' } }
+            },
+            'LB ROUND 1': {
+                1: { w: { r: 'LB ROUND 2', p: 1, s: 'p1' } }
+            },
+            'LB ROUND 2': {
+                1: { w: { r: 'LB ROUND 3', p: 1, s: 'p2' } },
+                2: { w: { r: 'LB ROUND 3', p: 2, s: 'p2' } }
+            },
+            'LB ROUND 3': {
+                1: { w: { r: 'LB ROUND 4', p: 1, s: 'p1' } },
+                2: { w: { r: 'LB ROUND 4', p: 1, s: 'p2' } }
+            },
+            'LB ROUND 4': {
+                1: { w: { r: 'LOWER FINAL', p: 1, s: 'p2' } }
+            },
+            'LOWER FINAL': {
                 1: { w: { r: 'GRAND FINAL', p: 1, s: 'p2' } }
             }
         };
