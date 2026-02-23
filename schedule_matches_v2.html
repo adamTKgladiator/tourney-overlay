@@ -218,6 +218,14 @@
             grid-column: span 2;
         }
 
+        .btn-postpone {
+            background: #FF9800;
+        }
+
+        .btn-postpone:hover {
+            background: #e68900;
+        }
+
         /* Modal */
         .modal {
             display: none;
@@ -540,6 +548,7 @@
                         `<button class="btn btn-complete" onclick="openResult('${m.id}')"><i class="fas fa-flag-checkered"></i> End</button>` :
                         `<button class="btn btn-live" onclick="setStatus('${m.id}', 'live')"><i class="fas fa-broadcast-tower"></i> Live</button>`
                     }
+                    ${m.match_date ? `<button class="btn btn-postpone" onclick="postponeMatch('${m.id}')"><i class="fas fa-calendar-times"></i> Postpone</button>` : ''}
                     <button class="btn btn-overlay" onclick="window.open('${overlayFile}?match_id=${m.id}', '_blank')"><i class="fas fa-desktop"></i> Open</button>
                     <button class="btn" onclick="copyOverlayLink('${m.id}')" style="background:#444; color:white;"><i class="fas fa-copy"></i> Copy</button>
                 </div>
@@ -624,6 +633,17 @@
                 loadMatches();
                 notify(`Match is now ${status}`);
             }
+        };
+
+        window.postponeMatch = async (id) => {
+            const m = matches.find(x => x.id === id);
+            if (!m) return;
+            const p1 = m.player1?.name || 'Player 1';
+            const p2 = m.player2?.name || 'Player 2';
+            if (!confirm(`Postpone "${m.round}" (${p1} vs ${p2})? This will clear the scheduled date and reset the match to unscheduled.`)) return;
+            await updateMatch(id, { status: 'unscheduled', match_date: null, match_time: null });
+            loadMatches();
+            notify('Match postponed — date cleared, status reset to unscheduled.');
         };
 
         window.openResult = (id) => {

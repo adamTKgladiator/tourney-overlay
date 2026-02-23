@@ -338,6 +338,15 @@
             background: linear-gradient(135deg, #444, #777);
         }
 
+        .postpone-btn {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+        }
+
+        .postpone-btn:hover {
+            background: linear-gradient(135deg, #FFB74D, #FF9800);
+        }
+
         .no-matches {
             text-align: center;
             padding: 40px;
@@ -788,6 +797,9 @@
                                 <button class="action-btn go-live-btn" onclick="updateMatchStatus('${match.id}', 'live')">
                                     <i class="fas fa-broadcast-tower"></i> Go Live
                                 </button>
+                                <button class="action-btn postpone-btn" onclick="postponeMatch('${match.id}')">
+                                    <i class="fas fa-calendar-times"></i> Postpone
+                                </button>
                             ` : ''}
                             
                             ${match.status === 'live' ? `
@@ -857,6 +869,64 @@
 
             const url = new URL(overlayFile + '?match_id=' + matchId, window.location.href).href;
             window.open(url, '_blank');
+        }
+
+        // Postpone a match — clears date/time and resets status to unscheduled
+        async function postponeMatch(matchId) {
+            const match = allMatches.find(m => m.id === matchId);
+            if (!match) return;
+
+            const p1 = match.player1?.name || 'Player 1';
+            const p2 = match.player2?.name || 'Player 2';
+            if (!confirm(`Postpone "${match.round}" (${p1} vs ${p2})? This will clear the scheduled date and reset the match to unscheduled.`)) return;
+
+            try {
+                const matchElement = document.querySelector(`[data-match-id="${matchId}"]`);
+                if (matchElement) {
+                    matchElement.style.opacity = '0.5';
+                    matchElement.style.pointerEvents = 'none';
+                }
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?id=eq.${matchId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify({ status: 'unscheduled', match_date: null, match_time: null })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}`);
+                }
+
+                // Update local data
+                const matchIndex = allMatches.findIndex(m => m.id === matchId);
+                if (matchIndex !== -1) {
+                    allMatches[matchIndex].status = 'unscheduled';
+                    allMatches[matchIndex].match_date = null;
+                    allMatches[matchIndex].match_time = null;
+                }
+
+                // Re-render
+                const activeTab = document.querySelector('.filter-tab.active');
+                const currentFilter = activeTab ? activeTab.textContent.toLowerCase() : 'all';
+                renderMatches(currentFilter);
+
+                showResult('📅 Match postponed — date cleared, status reset to unscheduled.', 'success');
+
+            } catch (error) {
+                console.error('Error postponing match:', error);
+                showResult(`Error: ${error.message}`, 'error');
+                const matchElement = document.querySelector(`[data-match-id="${matchId}"]`);
+                if (matchElement) {
+                    matchElement.style.opacity = '1';
+                    matchElement.style.pointerEvents = 'auto';
+                }
+            }
         }
 
         // Update match status (scheduled → live → completed)

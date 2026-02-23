@@ -278,9 +278,9 @@
         .compact-countdown {
             font-weight: 900;
             color: var(--gold-bright);
-            font-size: 1.1rem;
-            margin-bottom: 5px;
+            font-size: 1.5rem;
             text-shadow: 0 0 10px var(--neon-glow);
+            text-align: center;
         }
 
         .no-matches {
@@ -383,15 +383,6 @@
     <div class="obs-scroll-container" id="scrollContainer">
         <!-- Matches Container -->
         <div class="matches-container">
-            <!-- Live Matches Section -->
-            <h2 class="section-title"><i class="fas fa-broadcast-tower"></i> LIVE NOW</h2>
-            <div class="live-matches" id="liveMatches">
-                <div class="loading" id="liveLoading">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading live matches...</p>
-                </div>
-            </div>
-
             <!-- Upcoming Matches Section -->
             <h2 class="section-title"><i class="fas fa-clock"></i> UPCOMING MATCHES</h2>
             <div class="upcoming-matches" id="upcomingMatches">
@@ -401,10 +392,19 @@
                 </div>
             </div>
 
+            <!-- Not Yet Scheduled Section -->
+            <h2 class="section-title"><i class="fas fa-hourglass-half"></i> NOT YET SCHEDULED</h2>
+            <div class="upcoming-matches" id="pendingMatches">
+                <div class="loading" id="pendingLoading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading pending matches...</p>
+                </div>
+            </div>
+
             <!-- No Matches Message -->
             <div class="no-matches" id="noMatches" style="display: none;">
                 <i class="fas fa-calendar-times no-matches-icon"></i>
-                <h3>No Scheduled Matches</h3>
+                <h3>No Matches Found</h3>
                 <p>Check back later for upcoming tournament matches!</p>
             </div>
 
@@ -613,19 +613,17 @@
             };
         }
 
+        // All matches (including unscheduled)
+        let allMatches = [];
+
         // Load matches from database
         async function loadMatches() {
             try {
-                // Show loading states
-                const liveLoading = document.getElementById('liveLoading');
                 const upcomingLoading = document.getElementById('upcomingLoading');
-
-                if (liveLoading) liveLoading.style.display = 'block';
+                const pendingLoading = document.getElementById('pendingLoading');
                 if (upcomingLoading) upcomingLoading.style.display = 'block';
+                if (pendingLoading) pendingLoading.style.display = 'block';
 
-                console.log('Loading matches from database...');
-
-                // Fetch ALL matches with player data
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/matches?select=*,player1:players!matches_player1_id_fkey(*),player2:players!matches_player2_id_fkey(*)&order=match_date.asc`,
                     {
@@ -636,68 +634,54 @@
                     }
                 );
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 
-                const allMatches = await response.json();
-                console.log('All matches from database:', allMatches.length, 'matches');
+                allMatches = await response.json();
 
-                // Show ALL scheduled and live matches
-                matches = allMatches.filter(match => {
-                    const isScheduledOrLive = match.status === 'scheduled' || match.status === 'live';
-                    console.log(`Match ${match.id} (${match.round}): status=${match.status}, included=${isScheduledOrLive}`);
-                    return isScheduledOrLive;
-                });
+                // Scheduled upcoming matches (have a date, not completed)
+                matches = allMatches.filter(m => m.match_date && m.status !== 'completed');
+                matches.sort((a, b) => (parseMatchTime(a) || new Date(0)) - (parseMatchTime(b) || new Date(0)));
 
-                console.log('Filtered matches (scheduled/live):', matches.length, 'matches');
-
-                // Sort by date
-                matches.sort((a, b) => {
-                    const timeA = parseMatchTime(a) || new Date(0);
-                    const timeB = parseMatchTime(b) || new Date(0);
-                    return timeA - timeB;
-                });
-
-                // Render matches
                 renderMatches();
-
-                // Start countdown timers
                 startCountdowns();
 
             } catch (error) {
                 console.error('Error loading matches:', error);
                 showErrorMessage();
             } finally {
-                // Hide loading states
-                const liveLoading = document.getElementById('liveLoading');
                 const upcomingLoading = document.getElementById('upcomingLoading');
-
-                if (liveLoading) liveLoading.style.display = 'none';
+                const pendingLoading = document.getElementById('pendingLoading');
                 if (upcomingLoading) upcomingLoading.style.display = 'none';
+                if (pendingLoading) pendingLoading.style.display = 'none';
             }
         }
 
         // Render matches
         function renderMatches() {
-            const liveContainer = document.getElementById('liveMatches');
             const upcomingContainer = document.getElementById('upcomingMatches');
+            const pendingContainer = document.getElementById('pendingMatches');
             const noMatchesDiv = document.getElementById('noMatches');
 
-            if (!liveContainer || !upcomingContainer || !noMatchesDiv) return;
+            if (!upcomingContainer || !pendingContainer || !noMatchesDiv) return;
 
-            liveContainer.innerHTML = '';
             upcomingContainer.innerHTML = '';
-
-            const liveMatches = matches.filter(match => match.status === 'live');
-            const upcomingMatches = matches.filter(match => match.status === 'scheduled' && match.match_date);
+            pendingContainer.innerHTML = '';
 
             countdownIntervals.forEach(interval => clearInterval(interval));
             countdownIntervals.clear();
 
-            if (liveMatches.length === 0 && upcomingMatches.length === 0) {
+            // Scheduled: have a date, not completed
+            const upcomingMatches = matches.filter(m => m.match_date && m.status !== 'completed');
+
+            // Pending: no date set, both players assigned, not completed
+            const pendingMatches = allMatches.filter(m =>
+                !m.match_date &&
+                m.status !== 'completed' &&
+                m.player1 && m.player2
+            );
+
+            if (upcomingMatches.length === 0 && pendingMatches.length === 0) {
                 noMatchesDiv.style.display = 'block';
-                return;
             } else {
                 noMatchesDiv.style.display = 'none';
             }
@@ -708,38 +692,35 @@
                         <tr>
                             <th>Players</th>
                             <th>Round</th>
+                            <th>Game / Goal</th>
                             <th>Time (CET)</th>
-                            <th style="text-align:right">Action / Countdown</th>
+                            <th style="text-align:right">Countdown</th>
                         </tr>
                     </thead>
                     <tbody id="{ID}_body"></tbody>
                 </table>
             `;
 
-            // Render live matches
-            if (liveMatches.length > 0) {
-                liveContainer.innerHTML = tableHeader.replace('{ID}_body', 'live_body');
-                const tbody = document.getElementById('live_body');
-                liveMatches.forEach(match => {
-                    tbody.appendChild(createMatchRow(match, true));
-                });
-            } else {
-                liveContainer.innerHTML = '<div class="no-matches"><h3>No Live Matches</h3></div>';
-            }
-
-            // Render upcoming matches
+            // Render upcoming (scheduled) matches
             if (upcomingMatches.length > 0) {
                 upcomingContainer.innerHTML = tableHeader.replace('{ID}_body', 'upcoming_body');
                 const tbody = document.getElementById('upcoming_body');
-                upcomingMatches.forEach(match => {
-                    tbody.appendChild(createMatchRow(match, false));
-                });
+                upcomingMatches.forEach(match => tbody.appendChild(createMatchRow(match, false)));
             } else {
-                upcomingContainer.innerHTML = '<div class="no-matches"><h3>No Upcoming Matches</h3></div>';
+                upcomingContainer.innerHTML = '<div class="no-matches"><h3>No Upcoming Matches Scheduled</h3></div>';
+            }
+
+            // Render not-yet-scheduled matches
+            if (pendingMatches.length > 0) {
+                pendingContainer.innerHTML = tableHeader.replace('{ID}_body', 'pending_body');
+                const tbody = document.getElementById('pending_body');
+                pendingMatches.forEach(match => tbody.appendChild(createPendingRow(match)));
+            } else {
+                pendingContainer.innerHTML = '<div class="no-matches"><h3>All Matches Have Been Scheduled!</h3></div>';
             }
         }
 
-        // Create match row element
+        // Create match row element (for scheduled matches)
         function createMatchRow(match, isLive) {
             const player1 = match.player1 || { name: 'Player 1', twitch_username: 'unknown' };
             const player2 = match.player2 || { name: 'Player 2', twitch_username: 'unknown' };
@@ -775,9 +756,11 @@
                     </div>
                 </td>
                 <td>
-                    <span class="badge ${isLive ? 'badge-live' : 'badge-upcoming'}">
-                        ${isLive ? 'LIVE NOW' : (match.round || 'MATCH')}
-                    </span>
+                    <span class="badge badge-upcoming">${match.round || 'MATCH'}</span>
+                </td>
+                <td>
+                    <div style="font-size:0.85rem; color:var(--gold); font-weight:700">${match.game || '<span style="opacity:0.4">TBD</span>'}</div>
+                    <div style="font-size:0.78rem; color:var(--gold-bright); opacity:0.7; margin-top:3px">${match.goal || ''}</div>
                 </td>
                 <td>
                     <div class="col-info">
@@ -785,17 +768,52 @@
                         <span style="font-size:0.8rem; opacity:0.6">${cetDateString}</span>
                     </div>
                 </td>
+                <td class="col-action" style="text-align:center;">
+                    <div class="compact-countdown" id="countdown-${match.id}">--:--:--</div>
+                </td>
+            `;
+
+            return tr;
+        }
+
+        // Create a row for a not-yet-scheduled match
+        function createPendingRow(match) {
+            const player1 = match.player1 || { name: 'Player 1', twitch_username: 'unknown' };
+            const player2 = match.player2 || { name: 'Player 2', twitch_username: 'unknown' };
+
+            const tr = document.createElement('tr');
+            tr.className = 'match-row-item';
+            tr.dataset.matchId = match.id;
+
+            tr.innerHTML = `
+                <td>
+                    <div class="col-players">
+                        <div class="player-mini">
+                            <span class="name">${player1.name}</span>
+                            <span class="twitch">@${player1.twitch_username}</span>
+                        </div>
+                        <span class="col-vs">VS</span>
+                        <div class="player-mini">
+                            <span class="name">${player2.name}</span>
+                            <span class="twitch">@${player2.twitch_username}</span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge badge-upcoming">${match.round || 'MATCH'}</span>
+                </td>
+                <td>
+                    <div style="font-size:0.85rem; color:var(--gold); font-weight:700">${match.game || '<span style="opacity:0.4">TBD</span>'}</div>
+                    <div style="font-size:0.78rem; color:var(--gold-bright); opacity:0.7; margin-top:3px">${match.goal || ''}</div>
+                </td>
+                <td>
+                    <div class="col-info">
+                        <span class="time" style="color: rgba(212,175,55,0.5); font-size:0.95rem;">TBD</span>
+                        <span style="font-size:0.8rem; opacity:0.4">Date not set</span>
+                    </div>
+                </td>
                 <td class="col-action">
-                    ${isLive ? `
-                        <a href="${overlayFile}?match_id=${match.id}" target="_blank" class="table-btn">
-                            <i class="fas fa-broadcast-tower"></i> WATCH LIVE
-                        </a>
-                    ` : `
-                        <div class="compact-countdown" id="countdown-${match.id}">--:--:--</div>
-                        <a href="${overlayFile}?match_id=${match.id}" target="_blank" class="table-btn" style="margin-top:10px">
-                            <i class="fas fa-desktop"></i> OPEN OVERLAY
-                        </a>
-                    `}
+                    <span style="color: rgba(212,175,55,0.5); font-weight:700; font-size:0.9rem;">TBD</span>
                 </td>
             `;
 
@@ -804,12 +822,8 @@
 
         // Start countdown timers for all upcoming matches
         function startCountdowns() {
-            console.log('Starting countdowns for', matches.filter(m => m.status !== 'live').length, 'matches');
-
             matches.forEach(match => {
-                if (match.status !== 'live') {
-                    startCountdownTimer(match.id);
-                }
+                if (match.match_date) startCountdownTimer(match.id);
             });
         }
 
@@ -857,12 +871,6 @@
 
         // Show error message
         function showErrorMessage() {
-            const upcomingContainer = document.getElementById('upcomingMatches');
-            const liveContainer = document.getElementById('liveMatches');
-
-            // Check for containers
-            if (!upcomingContainer || !liveContainer) return;
-
             const errorHtml = `
                 <div class="no-matches">
                     <i class="fas fa-exclamation-triangle no-matches-icon"></i>
@@ -870,16 +878,14 @@
                     <p>Please check your connection and try again.</p>
                 </div>
             `;
-
-            upcomingContainer.innerHTML = errorHtml;
-            liveContainer.innerHTML = errorHtml;
-
-            // Hide loading states
-            const liveLoading = document.getElementById('liveLoading');
+            const upcomingContainer = document.getElementById('upcomingMatches');
+            const pendingContainer = document.getElementById('pendingMatches');
+            if (upcomingContainer) upcomingContainer.innerHTML = errorHtml;
+            if (pendingContainer) pendingContainer.innerHTML = errorHtml;
             const upcomingLoading = document.getElementById('upcomingLoading');
-
-            if (liveLoading) liveLoading.style.display = 'none';
+            const pendingLoading = document.getElementById('pendingLoading');
             if (upcomingLoading) upcomingLoading.style.display = 'none';
+            if (pendingLoading) pendingLoading.style.display = 'none';
         }
     </script>
 </body>
