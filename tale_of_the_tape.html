@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wrestling Tale of the Tape</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --gold-bright: #FFF8DC;
+            --gold-dark: #B8860B;
+            --neon-glow: rgba(255, 215, 0, 0.6);
+
+            /* Player 1 Colors (Red) */
+            --p1-main: #e8000d;
+            --p1-glow: rgba(232, 0, 13, 0.6);
+
+            /* Player 2 Colors (Blue) */
+            --p2-main: #0066ff;
+            --p2-glow: rgba(0, 102, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: #000;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+        }
+
+        /* Animated Background from Casino */
+        .bg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .bg-image {
+            width: 100%;
+            height: 100%;
+            background-image: url('./Assets/casino_bg.png');
+            background-size: cover;
+            background-position: center;
+            animation: bgMove 20s infinite alternate ease-in-out;
+            transform: scale(1.1);
+            filter: brightness(0.6) contrast(1.2) blur(3px);
+        }
+
+        @keyframes bgMove {
+            0% {
+                transform: scale(1.1) translate(0, 0) rotate(0deg);
+            }
+
+            100% {
+                transform: scale(1.2) translate(-1%, 1%) rotate(0.5deg);
+            }
+        }
+
+        /* Main Wrapper */
+        .tape-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 90%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Tale of the Tape Header (Top) */
+        .header {
+            text-align: center;
+            padding: 20px 0 10px;
+            animation: slideDown 1s ease-out forwards;
+        }
+
+        .header h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 12px;
+            color: var(--gold-bright);
+            text-shadow: 0 0 10px var(--neon-glow), 0 0 30px var(--gold-dark);
+            background: linear-gradient(to bottom, #ffffff, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Player Portraits Headers */
+        .fighters-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            margin-bottom: 10px;
+            gap: 20px;
+        }
+
+        .fighter {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            background: rgba(0, 0, 0, 0.85);
+            border-top: 5px solid;
+            border-bottom: 5px solid;
+            overflow: hidden;
+            position: relative;
+            flex: 1;
+            max-width: 75%;
+            clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%);
+        }
+
+        .fighter-right {
+            flex-direction: row-reverse;
+            clip-path: polygon(8% 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .fighter-left {
+            border-color: var(--p1-main);
+            box-shadow: -8px 0 40px var(--p1-glow), inset 0 0 60px rgba(232, 0, 13, 0.08);
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .fighter-right {
+            border-color: var(--p2-main);
+            box-shadow: 8px 0 40px var(--p2-glow), inset 0 0 60px rgba(0, 102, 255, 0.08);
+            animation: slideInRight 1s ease-out;
+        }
+
+        /* Portrait image container */
+        .photo-wrap {
+            position: relative;
+            flex-shrink: 0;
+            width: 250px;
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .fighter-left .photo-wrap {
+            border-right: 3px solid var(--p1-main);
+        }
+
+        .fighter-right .photo-wrap {
+            border-left: 3px solid var(--p2-main);
+        }
+
+        .photo-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .fighter-left .photo-wrap::after {
+            background: linear-gradient(90deg, transparent 60%, rgba(232, 0, 13, 0.35) 100%);
+        }
+
+        .fighter-right .photo-wrap::after {
+            background: linear-gradient(270deg, transparent 60%, rgba(0, 102, 255, 0.35) 100%);
+        }
+
+        .player-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            display: block;
+            filter: contrast(1.1) saturate(1.1);
+        }
+
+        .fighter-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 12px 24px;
+            flex: 1;
+        }
+
+        .fighter-left .fighter-info {
+            text-align: left;
+        }
+
+        .fighter-right .fighter-info {
+            text-align: right;
+            align-items: flex-end;
+        }
+
+        .player-name {
+            font-size: 3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+        }
+
+        .fighter-left .player-name {
+            color: var(--p1-main);
+            filter: brightness(1.5);
+            text-shadow: 0 0 20px var(--p1-glow);
+        }
+
+        .fighter-right .player-name {
+            color: var(--p2-main);
+            filter: brightness(1.5);
+            text-shadow: 0 0 20px var(--p2-glow);
+        }
+
+        .player-nickname {
+            font-size: 1.85rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+
+        .country-flags {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .fighter-right .country-flags {
+            justify-content: flex-end;
+        }
+
+        .country-flag {
+            width: 50px;
+            height: 30px;
+            object-fit: cover;
+            border-radius: 3px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Classical Tale of the Tape Grid */
+        .tape-grid {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+
+        .tape-row {
+            display: flex;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            align-items: stretch;
+            min-height: 55px;
+            /* Fit belts if any */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: rowFadeIn 0.5s ease-out forwards;
+        }
+
+        .tape-label {
+            flex: 0 0 24%;
+            background: linear-gradient(180deg, #111, #222);
+            color: var(--gold-bright);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 900;
+            font-size: 1.4rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-left: 2px solid var(--gold);
+            border-right: 2px solid var(--gold);
+            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.1);
+        }
+
+        .tape-val {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            padding: 10px 20px;
+            letter-spacing: 1px;
+            color: #ececec;
+        }
+
+        .tape-val-l {
+            background: linear-gradient(90deg, rgba(232, 0, 13, 0.4) 0%, transparent 100%);
+            justify-content: flex-end;
+            text-align: right;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tape-val-r {
+            background: linear-gradient(-90deg, rgba(0, 102, 255, 0.4) 0%, transparent 100%);
+            justify-content: flex-start;
+            text-align: left;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-highlight {
+            color: var(--gold-bright);
+            font-size: 1.6rem;
+            margin: 0 5px;
+        }
+
+        .stat-belt {
+            height: 40px;
+            width: auto;
+            vertical-align: middle;
+            margin: 0 10px;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
+        }
+
+
+
+        /* Animations */
+        @keyframes slideDown {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes rowFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background -->
+    <div class="bg-container">
+        <div class="bg-image"></div>
+    </div>
+
+    <div class="tape-wrapper">
+        <!-- Header -->
+        <div class="header">
+            <h1>Tale of the Tape</h1>
+        </div>
+
+        </br>
+        <!-- Fighter Profiles -->
+        <div class="fighters-container">
+            <div class="fighter fighter-left">
+                <div class="photo-wrap">
+                    <img src="abdul.png" class="player-photo" alt="Abdul Photo Placeholder"
+                        onerror="this.style.display='none';">
+                </div>
+                <div class="fighter-info">
+                    <div class="player-nickname">@artificialstar</div>
+                    <div class="player-name">AbdulTheArabGuy</div>
+                    <div class="country-flags">
+                        <img src="uae_flag.png" class="country-flag" alt="UAE Flag"
+                            onerror="this.style.display='none';">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fighter fighter-right">
+                <div class="photo-wrap">
+                    <img src="tk.png" class="player-photo" alt="TK47 Photo Placeholder"
+                        onerror="this.style.display='none';">
+                </div>
+                <div class="fighter-info">
+                    <div class="player-nickname">@adamtkgladiator</div>
+                    <div class="player-name">TK47</div>
+                    <div class="country-flags">
+                        <img src="tunisia_flag.png" class="country-flag" alt="Tunisia Flag"
+                            onerror="this.style.display='none';">
+                        <img src="italy_flag.png" class="country-flag" alt="Italy Flag"
+                            onerror="this.style.display='none';">
+                    </div>
+                </div>
+            </div>
+        </div>
+        </br></br>
+        <!-- Tape Grid -->
+        <div class="tape-grid">
+
+            <div class="tape-row" style="animation-delay: 0.4s">
+                <div class="tape-val tape-val-l">
+                    1 Time (96 Days) <img src="WSC.png" class="stat-belt" onerror="this.style.display='none';">
+                </div>
+                <div class="tape-label">World Speedrunning Championship</div>
+                <div class="tape-val tape-val-r">
+                    <img src="WSC.png" class="stat-belt" onerror="this.style.display='none';"> 2 Times (791 Longest |
+                    1078 Combined Days)
+                </div>
+            </div>
+
+            <div class="tape-row" style="animation-delay: 0.6s">
+                <div class="tape-val tape-val-l">
+                    N/A
+                </div>
+                <div class="tape-label" style="font-size: 1rem; padding: 0 5px;">International King of Speedruns</div>
+                <div class="tape-val tape-val-r">
+                    <img src="IKOSTK.png" class="stat-belt" onerror="this.style.display='none';"> Current & Longest
+                    Reigning (1770 Days)
+                </div>
+            </div>
+
+            <div class="tape-row" style="animation-delay: 1.0s">
+                <div class="tape-val tape-val-l">
+                    1st Ever (21 Days) <img src="Duos1.png" class="stat-belt" onerror="this.style.display='none';">
+                </div>
+                <div class="tape-label">Intercontinental Duos Championship</div>
+                <div class="tape-val tape-val-r">
+                    <img src="Duos1.png" class="stat-belt" onerror="this.style.display='none';"> Current Champion (731
+                    Days)
+                </div>
+            </div>
+
+            <div class="tape-row" style="animation-delay: 1.2s">
+                <div class="tape-val tape-val-l">
+                    N/A
+                </div>
+                <div class="tape-label">Kolizzian's Speedrun Championship</div>
+                <div class="tape-val tape-val-r">
+                    <img src="Kolizzian's_Speedrun_Championship.png" class="stat-belt"
+                        onerror="this.style.display='none';"> 1 Time Champion
+                </div>
+            </div>
+
+
+
+            <div class="tape-row" style="animation-delay: 1.4s">
+                <div class="tape-val tape-val-l">4th Appearance</div>
+                <div class="tape-label">WSC Grand Finals Match</div>
+                <div class="tape-val tape-val-r">7th Appearance</div>
+            </div>
+
+            <div class="tape-row" style="animation-delay: 1.5s">
+                <div class="tape-val tape-val-l" style="font-size: 1.1rem; justify-content: flex-end;">
+                    <img src="WCC.png" class="stat-belt" style="height:25px;" onerror="this.style.display='none';">
+                    Wumpa Classic
+                    Championship 3
+                    <span style="color: #666; margin: 0 10px;">|</span>
+                    PlayStation Roulette 4
+                </div>
+                <div class="tape-label">SINGLE TOURNAMENT WINS</div>
+                <div class="tape-val tape-val-r" style="font-size: 1.1rem;">
+                    <img src="KSL2.png" class="stat-belt" style="height:25px;" onerror="this.style.display='none';"> KSL
+                    2
+                    <span style="color: #666; margin: 0 10px;">|</span>
+                    <img src="RRB.png" class="stat-belt" style="height:25px;" onerror="this.style.display='none';">
+                    Ripto's Rage BingOlympics
+                    <span style="color: #666; margin: 0 10px;">|</span>
+                    <img src="DD2.png" class="stat-belt" style="height:25px;" onerror="this.style.display='none';">
+                    Disney Dash 2
+                    <span style="color: #666; margin: 0 10px;">|</span>
+                    <img src="KSL1.png" class="stat-belt" style="height:25px;" onerror="this.style.display='none';">
+                    Bingo Blitz
+                </div>
+            </div>
+
+            <div class="tape-row" style="animation-delay: 1.6s">
+                <div class="tape-val tape-val-l">
+                    1 Win - 2 Losses <span style="font-size: 1rem; color: #aaa; margin-left: 5px;">(Won in PlayStation
+                        Roulette
+                        4
+                        Final)</span>
+                </div>
+                <div class="tape-label">Head 2 Head</div>
+                <div class="tape-val tape-val-r">
+                    2 Wins - 1 Loss <span style="font-size: 1rem; color: #aaa; margin-left: 5px;">(Won in Wumpa Classic
+                        Championship 3 &amp; WSC
+                        Match)</span>
+                </div>
+            </div>
+            <!-- Extra Accolades for TK47 moved into the grid -->
+
+            <div class="tape-row" style="animation-delay: 1.8s">
+                <div class="tape-val tape-val-l">
+                    3 Wins - 0 Losses
+                </div>
+                <div class="tape-label">Stats in this tournament</div>
+                <div class="tape-val tape-val-r"
+                    style="flex-direction: column; align-items: flex-start; gap: 4px; padding: 6px 20px;">
+                    <div>4 Wins - 1 Loss
+                    </div>
+                </div>
+            </div>
+            <div class="tape-row" style="animation-delay: 2.0s">
+                <div class="tape-val tape-val-l">
+                    Active since 2011
+                </div>
+                <div class="tape-label">Other Stats</div>
+                <div class="tape-val tape-val-r"
+                    style="flex-direction: column; align-items: flex-start; gap: 4px; padding: 6px 20px;">
+                    <div><img src="GRA.png" class="stat-belt" style="height:30px;" onerror="this.style.display='none';">
+                        Current Games Raced Awfully Champion</div>
+                    <div><img src="S2C_Championship_2024.png" class="stat-belt" style="height:40px;"
+                            onerror="this.style.display='none';"> Former S2C World Champion</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

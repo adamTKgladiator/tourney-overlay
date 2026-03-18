@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TK47 Champion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --gold-bright: #FFF8DC;
+            --gold-dark: #B8860B;
+            --neon-glow: rgba(255, 215, 0, 0.6);
+            --blue: #0022ff;
+            --blue-glow: rgba(0, 34, 255, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: #000;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Enhanced Animated Background */
+        .bg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .bg-image {
+            width: 100%;
+            height: 100%;
+            background-image: url('./Assets/casino_bg.png');
+            background-size: cover;
+            background-position: center;
+            animation: bgMove 15s infinite alternate ease-in-out;
+            transform: scale(1.1);
+            filter: brightness(0.8) contrast(1.1);
+        }
+
+        @keyframes bgMove {
+            0% {
+                transform: scale(1.2) translate(0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: scale(1.4) translate(-2%, 2%) rotate(1deg);
+            }
+
+            100% {
+                transform: scale(1.2) translate(2%, -2%) rotate(-1deg);
+            }
+        }
+
+        /* Floating Overlay Particles Effect */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 20%, rgba(0, 0, 0, 0.3) 100%);
+            pointer-events: none;
+        }
+
+        /* Subtle Background Glow */
+        .bg-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, rgba(0, 34, 255, 0.15) 0%, transparent 60%);
+            z-index: -1;
+            animation: pulseBg 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulseBg {
+            0% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        .title-container {
+            text-align: center;
+            perspective: 1200px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .subtitle {
+            font-size: 3rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 15px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: slideDown 1s ease-out forwards;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .main-title {
+            font-size: 6rem;
+            font-weight: 900;
+            color: var(--gold-bright);
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            text-shadow:
+                0 0 10px var(--neon-glow),
+                0 0 20px var(--neon-glow),
+                0 0 40px var(--gold-dark),
+                0 0 80px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            transform: scale(0.5);
+            animation: popIn 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s forwards, shine 3s infinite 2s;
+            position: relative;
+        }
+
+        .champion-name {
+            font-size: 11rem;
+            font-weight: 900;
+            background: linear-gradient(to bottom, #ffffff, #a3c2ff, #0044ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            filter: drop-shadow(0 0 20px var(--blue-glow)) drop-shadow(0 0 40px var(--blue));
+            opacity: 0;
+            transform: translateY(50px) rotateX(20deg);
+            animation: riseUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
+            position: relative;
+        }
+
+        /* Shine effect over text */
+        .main-title::after,
+        .champion-name::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), transparent);
+            transform: skewX(-20deg);
+            animation: sweepLight 4s infinite;
+        }
+
+        @keyframes slideDown {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes riseUp {
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+
+        @keyframes shine {
+
+            0%,
+            100% {
+                text-shadow:
+                    0 0 10px var(--neon-glow),
+                    0 0 20px var(--neon-glow),
+                    0 0 40px var(--gold-dark);
+            }
+
+            50% {
+                text-shadow:
+                    0 0 20px var(--neon-glow),
+                    0 0 40px var(--neon-glow),
+                    0 0 80px var(--gold-bright);
+            }
+        }
+
+        @keyframes sweepLight {
+            0% {
+                left: -100%;
+            }
+
+            20% {
+                left: 200%;
+            }
+
+            100% {
+                left: 200%;
+            }
+        }
+
+        /* Confetti/Particles */
+        .confetti-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 5;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 20px;
+            background-color: var(--gold);
+            top: -20px;
+            opacity: 0;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-20px) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Image placeholder for belt - if they want to add it later */
+        .belt-container {
+            margin-top: -30px;
+            opacity: 0;
+            animation: popIn 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2s forwards;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.4));
+            z-index: 15;
+            position: relative;
+        }
+
+        .belt-container img {
+            max-width: 800px;
+            width: 100%;
+            height: auto;
+            animation: floatBelt 4s ease-in-out infinite;
+        }
+
+        @keyframes floatBelt {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-container">
+        <div class="bg-image"></div>
+        <div class="particles"></div>
+    </div>
+    <div class="bg-glow"></div>
+
+    <!-- Setup for confetti particles via JS -->
+    <div class="confetti-container" id="confetti-container"></div>
+
+    <div class="title-container">
+        <div class="subtitle">NEW</div>
+        <div class="main-title">World Speedrunning Champion</div>
+
+        <!-- The belt image area -->
+        <div class="belt-container" id="beltContainer">
+            <img src="WSC.png" alt="Championship Belt" id="beltImg"
+                onerror="console.log('Image not found, please save it as WSC.png in this folder.')">
+        </div>
+
+        <div class="champion-name">TK47</div>
+    </div>
+
+    <script>
+        // Simple Confetti Generator
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#FFD700', '#FFF8DC', '#B8860B', '#ffffff', '#0044ff'];
+
+            for (let i = 0; i < 150; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
+
+                    // Randomize position, color, size, and animation duration
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's'; // 2-5s
+                    confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                    confetti.style.height = (Math.random() * 20 + 10) + 'px';
+
+                    // Random shapes: rectangles or circles
+                    if (Math.random() > 0.5) {
+                        confetti.style.borderRadius = '50%';
+                    }
+
+                    container.appendChild(confetti);
+
+                    // Clean up after animation
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }, i * 50); // Stagger creation
+            }
+        }
+
+        // Start confetti slightly after page load to match animations
+        setTimeout(createConfetti, 1000);
+
+        // Continously generate some confetti
+        setInterval(() => {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#FFD700', '#FFF8DC', '#B8860B', '#ffffff', '#0044ff'];
+
+            for (let i = 0; i < 10; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+
+                if (Math.random() > 0.5) confetti.style.borderRadius = '50%';
+
+                container.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }, 1000);
+
+        // Check if belt.png image actually loads, if it does, show it
+        const beltImg = document.getElementById('beltImg');
+        beltImg.onload = function () {
+            document.getElementById('beltContainer').style.display = 'block';
+        };
+    </script>
+</body>
+
+</html>
